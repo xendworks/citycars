@@ -1,0 +1,53 @@
+// Import variables and mixins first so they can be used in other files
+@import 'variables';
+@import 'mixins';
+
+// Import base styles and typography
+@import 'base';
+@import 'fonts';
+@import 'typography';
+
+// Import component styles
+@import 'components/navbar';
+@import 'components/buttons';
+
+// Import layout utilities
+@import 'layout';
+
+
+.m-w-600{
+  max-width: 600px;
+  width: 100%;
+}
+
+.m-w-1000{
+  max-width:1000;
+  width: 100%;
+}
+
+
+.cc-coming-soon{
+    .cc-banner-section{
+    h1{
+      font-size: 4rem;
+    }
+    }
+    }
+
+
+  .base-highlighter{
+    color: $primary-color;
+  }
+
+
+  @media (max-width: 1200px) {
+
+    .cc-coming-soon{
+      .cc-banner-section{
+        text-align: center;
+      h1{
+        font-size: 2.5rem;
+      }
+      }
+      }
+  }
