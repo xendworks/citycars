@@ -1,0 +1,66 @@
+// Responsive Container Sizes
+$container-max-width-small: 100%;
+$container-max-width-medium: 720px;
+$container-max-width-large: 960px;
+$container-max-width-xlarge: 1140px;
+
+// Breakpoints (you can define these in your variables file if you want to reuse them)
+$breakpoint-small: 576px;
+$breakpoint-medium: 768px;
+$breakpoint-large: 992px;
+$breakpoint-xlarge: 1200px;
+
+// Container class for responsive layouts
+.container {
+  width: 100%;
+  margin-right: auto;
+  margin-left: auto;
+  padding-right: 15px;
+  padding-left: 15px;
+
+  // Small devices (extra small)
+  @media (min-width: $breakpoint-small) {
+    max-width: $container-max-width-small;
+  }
+
+  // Medium devices (tablets)
+  @media (min-width: $breakpoint-medium) {
+    max-width: $container-max-width-medium;
+  }
+
+  // Large devices (desktops)
+  @media (min-width: $breakpoint-large) {
+    max-width: $container-max-width-large;
+  }
+
+  // Extra large devices (large desktops)
+  @media (min-width: $breakpoint-xlarge) {
+    max-width: $container-max-width-xlarge;
+  }
+}
+
+// Fluid container for full-width layouts
+.container-fluid {
+  width: 100%;
+  margin-right: auto;
+  margin-left: auto;
+  padding-right: 15px;
+  padding-left: 15px;
+}
+
+.container-md {
+    width: 100%;
+    margin-right: auto;
+    margin-left: auto;
+    padding-right: 30px;
+    padding-left: 30px;
+  }
+
+.center-aligned-section {
+    display: flex;
+    flex-direction: column;
+    justify-content: center; 
+    align-items: center; 
+    height: 100vh; 
+    width: 100%;
+  }

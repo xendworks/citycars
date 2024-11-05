@@ -1,0 +1,15 @@
+// Media Query Mixin
+@mixin respond-to($breakpoint) {
+    @if $breakpoint == 'mobile' {
+      @media (max-width: 768px) {
+        @content;
+      }
+    }
+  }
+  
+  // Flexbox Mixin
+  @mixin flex-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }

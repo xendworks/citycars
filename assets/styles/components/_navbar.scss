@@ -1,0 +1,44 @@
+@media (max-width: 1200px) {
+  .cc-navbar {
+    .navbar-right {
+      .chat-btn {
+        font-size: 12px; // Ensure correct specificity and nesting
+      }
+    }
+  }
+}
+
+.cc-navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: fixed;
+  background-color: $white-color;
+  font-family: $font-family-primary;
+  height: 70px;
+  padding: 0 $spacing-medium;
+
+  .navbar-left {
+    .logo {
+      height: 50px;
+    }
+  }
+
+  .navbar-right {
+    .chat-btn {
+      background-color: $primary-color;
+      font-family: $font-family-primary;
+      color: $white-color;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px; // Default font size for larger screens
+      transition: background-color 0.3s ease;
+
+      &:hover {
+        background-color: darken($primary-color, 10%);
+      }
+    }
+  }
+}
