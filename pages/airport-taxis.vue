@@ -1,0 +1,186 @@
+<template>
+  <div class="min-h-screen bg-gray-50">
+    <!-- Hero Section -->
+    <section class="bg-amber-50 py-12">
+      <div class="container mx-auto px-4 text-center">
+        <h1 class="text-3xl font-bold mb-4 font-lexend">Airport Taxi Services</h1>
+        <p class="max-w-3xl mx-auto text-gray-700 mb-8 font-inter">
+          Reliable and comfortable airport taxi service by City Cars. We provide punctual transportation to and from all major UK airports,
+          ensuring you never miss your flight or wait around after landing.
+        </p>
+
+        <!-- Booking Form -->
+        <div class="bg-white p-6 rounded-lg shadow-md max-w-4xl mx-auto">
+          <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+            <div class="md:col-span-1">
+              <label class="block text-sm font-medium text-gray-700 mb-1 font-lexend">Pick-up Location</label>
+              <input type="text" placeholder="Eg: Gatwick Airport" class="w-full p-2 border rounded-md text-sm font-inter">
+            </div>
+            <div class="md:col-span-1">
+              <label class="block text-sm font-medium text-gray-700 mb-1 font-lexend">Drop-off Location</label>
+              <input type="text" placeholder="Eg: SW1 7NL" class="w-full p-2 border rounded-md text-sm font-inter">
+            </div>
+            <div class="md:col-span-1">
+              <label class="block text-sm font-medium text-gray-700 mb-1 font-lexend">Pickup Date & Time</label>
+              <input type="text" placeholder="13-06-2024 14:30" class="w-full p-2 border rounded-md text-sm font-inter">
+            </div>
+            <div class="md:col-span-1">
+              <label class="block text-sm font-medium text-gray-700 mb-1 font-lexend">Passengers</label>
+              <select class="w-full p-2 border rounded-md text-sm font-inter">
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+              </select>
+            </div>
+            <div class="md:col-span-1 flex flex-col">
+              <label class="block text-sm font-medium text-gray-700 mb-1 font-lexend">Luggages</label>
+              <div class="flex items-center">
+                <select class="w-full p-2 border rounded-md text-sm font-inter">
+                  <option>0</option>
+                  <option>1</option>
+                  <option>2</option>
+                  <option>3</option>
+                </select>
+                <button class="ml-2 bg-amber-400 hover:bg-amber-500 text-white p-2 rounded-md">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Airport Services Section -->
+    <section class="py-16 bg-white">
+      <div class="container mx-auto px-4">
+        <h2 class="text-3xl font-bold text-center mb-12 font-lexend">Our Airport Taxi Services</h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+          <!-- Meet & Greet -->
+          <div class="bg-gray-50 rounded-lg p-6 shadow-md">
+            <div class="flex items-center mb-4">
+              <div class="bg-city-gold p-3 rounded-full mr-3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                </svg>
+              </div>
+              <h3 class="text-xl font-semibold font-lexend">Meet & Greet Service</h3>
+            </div>
+            <p class="text-gray-600 font-inter">
+              Our professional drivers will meet you at the airport arrivals with a name board. 
+              We'll help with your luggage and escort you to your waiting vehicle.
+            </p>
+          </div>
+          
+          <!-- Flight Monitoring -->
+          <div class="bg-gray-50 rounded-lg p-6 shadow-md">
+            <div class="flex items-center mb-4">
+              <div class="bg-city-gold p-3 rounded-full mr-3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
+                </svg>
+              </div>
+              <h3 class="text-xl font-semibold font-lexend">Flight Monitoring</h3>
+            </div>
+            <p class="text-gray-600 font-inter">
+              We track your flight in real-time to adjust for any delays or early arrivals, 
+              ensuring your driver is there when you land, not before or after.
+            </p>
+          </div>
+          
+          <!-- Fixed Pricing -->
+          <div class="bg-gray-50 rounded-lg p-6 shadow-md">
+            <div class="flex items-center mb-4">
+              <div class="bg-city-gold p-3 rounded-full mr-3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <h3 class="text-xl font-semibold font-lexend">Fixed Pricing</h3>
+            </div>
+            <p class="text-gray-600 font-inter">
+              No surprises with our airport taxi service. We offer fixed, competitive rates 
+              regardless of traffic conditions or time of day.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Airports We Serve -->
+    <section class="py-16 bg-gray-50">
+      <div class="container mx-auto px-4">
+        <h2 class="text-3xl font-bold text-center mb-12 font-lexend">Airports We Serve</h2>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <!-- Gatwick Airport -->
+          <div class="text-center p-6">
+            <h3 class="text-xl font-semibold mb-3 font-lexend">Gatwick Airport</h3>
+            <p class="text-gray-600 mb-4 font-inter">
+              Reliable taxi service to and from London Gatwick Airport (LGW), serving both North and South terminals.
+            </p>
+            <a href="#" class="text-city-gold hover:underline font-inter">Book Gatwick taxi →</a>
+          </div>
+          
+          <!-- Heathrow Airport -->
+          <div class="text-center p-6">
+            <h3 class="text-xl font-semibold mb-3 font-lexend">Heathrow Airport</h3>
+            <p class="text-gray-600 mb-4 font-inter">
+              Professional taxi service covering all Heathrow terminals (T2, T3, T4, T5) with meet and greet options.
+            </p>
+            <a href="#" class="text-city-gold hover:underline font-inter">Book Heathrow taxi →</a>
+          </div>
+          
+          <!-- Stansted Airport -->
+          <div class="text-center p-6">
+            <h3 class="text-xl font-semibold mb-3 font-lexend">Stansted Airport</h3>
+            <p class="text-gray-600 mb-4 font-inter">
+              Comfortable taxi service to and from London Stansted Airport (STN) with flight tracking included.
+            </p>
+            <a href="#" class="text-city-gold hover:underline font-inter">Book Stansted taxi →</a>
+          </div>
+          
+          <!-- Luton Airport -->
+          <div class="text-center p-6">
+            <h3 class="text-xl font-semibold mb-3 font-lexend">Luton Airport</h3>
+            <p class="text-gray-600 mb-4 font-inter">
+              Reliable taxi transfers to and from London Luton Airport (LTN) at competitive fixed rates.
+            </p>
+            <a href="#" class="text-city-gold hover:underline font-inter">Book Luton taxi →</a>
+          </div>
+          
+          <!-- London City Airport -->
+          <div class="text-center p-6">
+            <h3 class="text-xl font-semibold mb-3 font-lexend">London City Airport</h3>
+            <p class="text-gray-600 mb-4 font-inter">
+              Efficient taxi service to and from London City Airport (LCY) for business and leisure travelers.
+            </p>
+            <a href="#" class="text-city-gold hover:underline font-inter">Book London City taxi →</a>
+          </div>
+          
+          <!-- Other UK Airports -->
+          <div class="text-center p-6">
+            <h3 class="text-xl font-semibold mb-3 font-lexend">Other UK Airports</h3>
+            <p class="text-gray-600 mb-4 font-inter">
+              We also serve Birmingham, Manchester, Edinburgh, Glasgow, Bristol, and other UK airports.
+            </p>
+            <a href="#" class="text-city-gold hover:underline font-inter">Inquire about other airports →</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</template>
+
+<script setup>
+definePageMeta({
+  title: 'Airport Taxis - City Cars'
+})
+</script>
+
+<style scoped>
+</style> 
