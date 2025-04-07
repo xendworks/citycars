@@ -1,9 +1,9 @@
 {
-  "_hash": "7ALGm8gjCInLMyVdTnA3_1NrZkr3cnELSex2-akwfRo",
+  "_hash": "VnaOn1IP1fbxBQhbeOL-cAN5ZAaqQ4AJy1taQG2cuTM",
   "project": {
-    "rootDir": "/Users/saicharan/Documents/GitHub/citycars"
+    "rootDir": "C:/Sathish/Source Code/citycars"
   },
   "versions": {
-    "nuxt": "3.16.1"
+    "nuxt": "3.16.2"
   }
 }

@@ -1,1 +1,1 @@
-export { default } from "file:///Users/saicharan/Documents/GitHub/citycars/node_modules/.pnpm/@nuxt+vite-builder@3.16.1_@types+node@22.13.11_magicast@0.3.5_rollup@4.36.0_sass@1.86.0_terse_ubti5mbnqqpzbccjsj5smkfjfy/node_modules/@nuxt/vite-builder/dist/runtime/client.manifest.mjs"
+export { default } from "file:///C:/Sathish/Source%20Code/citycars/node_modules/@nuxt/vite-builder/dist/runtime/client.manifest.mjs"

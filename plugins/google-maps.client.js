@@ -15,7 +15,7 @@ export default defineNuxtPlugin((nuxtApp) => {
     }
     
     // API Key - Make sure this key has Places API enabled
-    const API_KEY = 'AIzaSyBeE43b49Ho8n1ULPOoddyS-BMbZH3X3Q8'
+    const API_KEY = 'AIzaSyACZ4JkEhZZAhafla2ePLtmNL7ktaxV8KM'
     
     // Create a callback function
     const callbackName = 'googleMapsInitialized_' + Date.now()

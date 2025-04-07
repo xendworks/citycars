@@ -10,18 +10,29 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@googlemaps/js-api-loader": "^1.16.8",
     "@nuxtjs/i18n": "^8.5.5",
     "@nuxtjs/tailwindcss": "^6.13.2",
     "@pinia/nuxt": "^0.5.5",
+    "@unhead/vue": "^2.0.5",
+    "@vueuse/nuxt": "^13.0.0",
     "axios": "^1.7.7",
     "dayjs": "^1.11.13",
     "element-plus": "^2.9.7",
-    "firebase": "^10.14.1",
-    "nuxt": "^3.13.0",
+    "firebase": "^11.6.0",
+    "nuxt": "^3.16.2",
     "pinia": "^3.0.1",
     "sass": "^1.80.1",
     "tailwindcss": "^3.4.14",
     "vue": "latest",
     "vue-router": "latest"
+  },
+  "devDependencies": {
+    "@nuxt/typescript-build": "^3.0.2",
+    "@types/google.maps": "^3.58.1",
+    "@types/node": "^22.14.0",
+    "sass-embedded": "^1.86.3",
+    "typescript": "^5.8.3",
+    "vue-tsc": "^2.2.8"
   }
 }

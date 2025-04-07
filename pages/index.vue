@@ -19,8 +19,8 @@
       <div class="container mx-auto px-4 mt-8">
         <div class="relative">
           <div class="flex justify-between">
-            <img src="/images/taxi-pickup.png" alt="Taxi pickup" class="w-64 h-auto" />
-            <img src="/images/taxi-dropoff.png" alt="Taxi dropoff" class="w-64 h-auto" />
+            <img src="assets/images/taxi/taxi-pickup.png" alt="Taxi pickup" class="w-64 h-auto" />
+            <img src="assets/images/taxi/taxi-dropoff.png" alt="Taxi dropoff" class="w-64 h-auto" />
           </div>
           <div class="absolute inset-x-0 bottom-0 h-2 bg-brown-300"></div>
         </div>
@@ -184,7 +184,7 @@
         <div class="flex flex-col md:flex-row items-center">
           <!-- App Screenshot -->
           <div class="md:w-1/2 mb-8 md:mb-0">
-            <img src="/images/mobile-app.png" alt="City Cars Mobile App" class="max-w-xs mx-auto" />
+            <img src="assets/images/mobile-app.png" alt="City Cars Mobile App" class="max-w-xs mx-auto" />
           </div>
           
           <!-- App Description -->
@@ -561,8 +561,9 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref } from 'vue'
 import { ElTabs, ElTabPane } from 'element-plus'
+import BookingForm from '../components/BookingForm.vue';
 
 // For tab functionality in Cities section
 const activeTab = ref('popular')
