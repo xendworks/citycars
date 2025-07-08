@@ -1,18 +1,18 @@
 // Import variables and mixins first so they can be used in other files
-@import 'variables';
-@import 'mixins';
+@use 'variables' as *;
+@use 'mixins' as *;
 
 // Import base styles and typography
-@import 'base';
-@import 'fonts';
-@import 'typography';
+@use 'base';
+@use 'fonts';
+@use 'typography';
 
 // Import component styles
-@import 'components/navbar';
-@import 'components/buttons';
+@use 'components/navbar';
+@use 'components/buttons';
 
 // Import layout utilities
-@import 'layout';
+@use 'layout';
 
 
 .m-w-600{

@@ -3,7 +3,7 @@
   "compilerOptions": {
     "strict": true,
     "skipLibCheck": true,
-    "types": ["@nuxt/types", "@types/node", "@nuxtjs/tailwindcss"],
+    "types": ["@types/node", "@nuxtjs/tailwindcss"],
     "paths": {
       "~/*": ["./*"],
       "@/*": ["./*"]

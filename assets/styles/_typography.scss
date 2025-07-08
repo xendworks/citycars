@@ -1,3 +1,5 @@
+@use 'variables' as *;
+
 // Default Typography Settings
 body {
   font-family: $font-family-secondary;
