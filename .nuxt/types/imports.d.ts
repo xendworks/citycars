@@ -259,7 +259,6 @@ declare global {
   const useNow: typeof import('../../node_modules/.pnpm/@vueuse+core@13.5.0_vue@3.5.17_typescript@5.8.3_/node_modules/@vueuse/core')['useNow']
   const useNuxtApp: typeof import('../../node_modules/.pnpm/nuxt@3.17.6_@parcel+watcher@2.5.1_@types+node@22.16.0_@vue+compiler-sfc@3.5.17_db0@0.3.2_iore_akk5xzhk3lhz2mxww32bbifm7i/node_modules/nuxt/dist/app/nuxt')['useNuxtApp']
   const useNuxtData: typeof import('../../node_modules/.pnpm/nuxt@3.17.6_@parcel+watcher@2.5.1_@types+node@22.16.0_@vue+compiler-sfc@3.5.17_db0@0.3.2_iore_akk5xzhk3lhz2mxww32bbifm7i/node_modules/nuxt/dist/app/composables/asyncData')['useNuxtData']
-  const useNuxtDevTools: typeof import('../../node_modules/.pnpm/@nuxt+devtools@2.6.2_vite@6.3.5_@types+node@22.16.0_jiti@2.4.2_sass-embedded@1.89.2_sass@1.89_g2ulsbqhhgctsivkwiefkpskue/node_modules/@nuxt/devtools/dist/runtime/use-nuxt-devtools')['useNuxtDevTools']
   const useObjectUrl: typeof import('../../node_modules/.pnpm/@vueuse+core@13.5.0_vue@3.5.17_typescript@5.8.3_/node_modules/@vueuse/core')['useObjectUrl']
   const useOffsetPagination: typeof import('../../node_modules/.pnpm/@vueuse+core@13.5.0_vue@3.5.17_typescript@5.8.3_/node_modules/@vueuse/core')['useOffsetPagination']
   const useOnline: typeof import('../../node_modules/.pnpm/@vueuse+core@13.5.0_vue@3.5.17_typescript@5.8.3_/node_modules/@vueuse/core')['useOnline']
@@ -668,7 +667,6 @@ declare module 'vue' {
     readonly useNow: UnwrapRef<typeof import('../../node_modules/.pnpm/@vueuse+core@13.5.0_vue@3.5.17_typescript@5.8.3_/node_modules/@vueuse/core')['useNow']>
     readonly useNuxtApp: UnwrapRef<typeof import('../../node_modules/.pnpm/nuxt@3.17.6_@parcel+watcher@2.5.1_@types+node@22.16.0_@vue+compiler-sfc@3.5.17_db0@0.3.2_iore_akk5xzhk3lhz2mxww32bbifm7i/node_modules/nuxt/dist/app/nuxt')['useNuxtApp']>
     readonly useNuxtData: UnwrapRef<typeof import('../../node_modules/.pnpm/nuxt@3.17.6_@parcel+watcher@2.5.1_@types+node@22.16.0_@vue+compiler-sfc@3.5.17_db0@0.3.2_iore_akk5xzhk3lhz2mxww32bbifm7i/node_modules/nuxt/dist/app/composables/asyncData')['useNuxtData']>
-    readonly useNuxtDevTools: UnwrapRef<typeof import('../../node_modules/.pnpm/@nuxt+devtools@2.6.2_vite@6.3.5_@types+node@22.16.0_jiti@2.4.2_sass-embedded@1.89.2_sass@1.89_g2ulsbqhhgctsivkwiefkpskue/node_modules/@nuxt/devtools/dist/runtime/use-nuxt-devtools')['useNuxtDevTools']>
     readonly useObjectUrl: UnwrapRef<typeof import('../../node_modules/.pnpm/@vueuse+core@13.5.0_vue@3.5.17_typescript@5.8.3_/node_modules/@vueuse/core')['useObjectUrl']>
     readonly useOffsetPagination: UnwrapRef<typeof import('../../node_modules/.pnpm/@vueuse+core@13.5.0_vue@3.5.17_typescript@5.8.3_/node_modules/@vueuse/core')['useOffsetPagination']>
     readonly useOnline: UnwrapRef<typeof import('../../node_modules/.pnpm/@vueuse+core@13.5.0_vue@3.5.17_typescript@5.8.3_/node_modules/@vueuse/core')['useOnline']>
