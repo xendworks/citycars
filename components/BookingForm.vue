@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useBookingStore } from '~/stores/booking';
+import CustomSelect from './CustomSelect.vue'
 
 // Add type declarations
 declare global {
@@ -17,6 +18,10 @@ declare global {
 
 const emit = defineEmits(['search']);
 const bookingStore = useBookingStore();
+const { $googleMaps, $googleMapsLoading, $googleMapsLoaded } = useNuxtApp()
+
+// Add loading state
+const isGoogleMapsLoading = ref(false)
 
 const API_KEY = 'AIzaSyACZ4JkEhZZAhafla2ePLtmNL7ktaxV8KM'; // Replace with your actual API key
 
@@ -42,17 +47,9 @@ const timeSlots = Array.from({ length: 24 * 4 }, (_, i) => {
 
 const loadGoogleMaps = () => {
   if (process.server) return Promise.resolve();
-  if (window.google && window.google.maps) {
-    return Promise.resolve();
-  }
-  return new Promise((resolve, reject) => {
-    const script = document.createElement('script');
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${API_KEY}&libraries=places`;
-    script.async = true;
-    script.defer = true;
-    script.onload = resolve;
-    script.onerror = reject;
-    document.head.appendChild(script);
+  isGoogleMapsLoading.value = true;
+  return ($googleMaps as () => Promise<any>)().finally(() => {
+    isGoogleMapsLoading.value = false;
   });
 };
 
@@ -61,13 +58,15 @@ const initAutocomplete = async (inputRef: any, locationRef: any) => {
   await loadGoogleMaps();
   if (inputRef.value) {
     const autocomplete = new window.google.maps.places.Autocomplete(inputRef.value, {
-      types: ['geocode'],
-      componentRestrictions: { country: 'gb' },
-      fields: ['formatted_address', 'geometry', 'name'],
+      types: ['establishment', 'geocode'],
+      componentRestrictions: { country: 'uk' }
     });
+    
     autocomplete.addListener('place_changed', () => {
       const place = autocomplete.getPlace();
-      locationRef.value = place.formatted_address || place.name;
+      if (place.geometry) {
+        locationRef.value = place.formatted_address;
+      }
     });
   }
 };
@@ -104,89 +103,85 @@ const handleSearch = () => {
 </script>
 
 <template>
-  <div class="max-w-lg mx-auto p-6">
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+  <div class="max-w-7xl mx-auto p-6 bg-white rounded-xl shadow-lg border border-gray-100">
+    <div class="flex flex-col lg:flex-row items-end gap-4">
       <!-- Pickup Location -->
-      <div class="relative">
-        <label class="block text-sm font-medium text-gray-700">Pick-up Location</label>
-        <input
-          ref="pickupInput"
-          v-model="pickupLocation"
-          type="text"
-          placeholder="Start typing a location..."
-          class="w-full p-2 border rounded-md text-sm"
-          @change="handlePickupChange"
-        />
+      <div class="flex-1 min-w-0">
+        <label class="block text-sm font-medium text-gray-700 mb-2 font-inter">Pick-up Location</label>
+        <div class="relative">
+          <input
+            ref="pickupInput"
+            v-model="pickupLocation"
+            type="text"
+            placeholder="Eg: Gatwick Airport"
+            class="w-full p-3 border-2 border-gray-200 rounded-lg text-sm shadow-sm focus:border-amber-400 focus:ring-2 focus:ring-amber-100 transition-all duration-200 hover:border-gray-300"
+            @change="handlePickupChange"
+            :disabled="isGoogleMapsLoading"
+          />
+          <div v-if="isGoogleMapsLoading" class="absolute right-3 top-1/2 transform -translate-y-1/2">
+            <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-amber-400"></div>
+          </div>
+        </div>
       </div>
 
       <!-- Drop-off Location -->
-      <div class="relative">
-        <label class="block text-sm font-medium text-gray-700">Drop-off Location</label>
-        <input
-          ref="dropoffInput"
-          v-model="dropoffLocation"
-          type="text"
-          placeholder="Enter drop-off location..."
-          class="w-full p-2 border rounded-md text-sm"
-          @change="handleDropoffChange"
-        />
+      <div class="flex-1 min-w-0">
+        <label class="block text-sm font-medium text-gray-700 mb-2">Drop-off Location</label>
+        <div class="relative">
+          <input
+            ref="dropoffInput"
+            v-model="dropoffLocation"
+            type="text"
+            placeholder="Eg: SW1 7NL"
+            class="w-full p-3 border-2 border-gray-200 rounded-lg text-sm shadow-sm focus:border-amber-400 focus:ring-2 focus:ring-amber-100 transition-all duration-200 hover:border-gray-300"
+            @change="handleDropoffChange"
+            :disabled="isGoogleMapsLoading"
+          />
+          <div v-if="isGoogleMapsLoading" class="absolute right-3 top-1/2 transform -translate-y-1/2">
+            <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-amber-400"></div>
+          </div>
+        </div>
       </div>
 
       <!-- Date Picker -->
-      <div class="md:col-span-1">
-        <label class="block text-sm font-medium text-gray-700 mb-1">Pickup Date</label>
+      <div class="flex-1 min-w-0">
+        <label class="block text-sm font-medium text-gray-700 mb-2">Pickup Date & Time</label>
         <input 
           type="date" 
           v-model="selectedDate"
-          class="w-full p-2 border rounded-md text-sm"
+          class="w-full p-3 border-2 border-gray-200 rounded-lg text-sm shadow-sm focus:border-amber-400 focus:ring-2 focus:ring-amber-100 transition-all duration-200 hover:border-gray-300"
           :min="new Date().toISOString().split('T')[0]"
         />
       </div>
 
-      <!-- Time Picker -->
-      <div class="md:col-span-1">
-        <label class="block text-sm font-medium text-gray-700 mb-1">Pickup Time</label>
-        <select 
-          v-model="selectedTime"
-          class="w-full p-2 border rounded-md text-sm"
-        >
-          <option value="">Select time</option>
-          <option v-for="time in timeSlots" :key="time" :value="time">
-            {{ time }}
-          </option>
-        </select>
-      </div>
-
       <!-- Passengers -->
-      <div class="md:col-span-1">
-        <label class="block text-sm font-medium text-gray-700 mb-1 font-lexend">Passengers</label>
-        <select v-model="passengersCount" class="w-full p-2 border rounded-md text-sm font-inter">
-          <option>1</option>
-          <option>2</option>
-          <option>3</option>
-          <option>4</option>
-        </select>
+      <div class="flex-1 min-w-0">
+        <CustomSelect
+          v-model="passengersCount"
+          :options="['1', '2', '3', '4']"
+          label="Passengers"
+        />
       </div>
 
       <!-- Luggage -->
-      <div class="md:col-span-1 flex flex-col">
-        <label class="block text-sm font-medium text-gray-700 mb-1 font-lexend">Luggages</label>
-        <div class="flex items-center">
-          <select v-model="luggageCount" class="w-full p-2 border rounded-md text-sm font-inter">
-            <option>0</option>
-            <option>1</option>
-            <option>2</option>
-            <option>3</option>
-          </select>
-          <button 
-            @click="handleSearch"
-            class="ml-2 bg-amber-400 hover:bg-amber-500 text-white p-2 rounded-md transition-colors"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
-            </svg>
-          </button>
-        </div>
+      <div class="flex-1 min-w-0">
+        <CustomSelect
+          v-model="luggageCount"
+          :options="['0', '1', '2', '3']"
+          label="Luggages"
+        />
+      </div>
+
+      <!-- Search Button -->
+      <div class="flex-shrink-0">
+        <button 
+          @click="handleSearch"
+          class="bg-amber-400 hover:bg-amber-500 text-gray-800 p-3 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-amber-300 focus:ring-offset-2"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+          </svg>
+        </button>
       </div>
     </div>
   </div>

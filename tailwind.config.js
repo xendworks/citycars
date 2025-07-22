@@ -6,11 +6,20 @@ module.exports = {
     "./pages/**/*.vue",
     "./plugins/**/*.{js,ts}",
     "./app.vue",
-    "./error.vue"
+    "./error.vue",
+    "./assets/**/*.{css,scss}"
   ],
   safelist: [
     'font-lexend',
-    'font-inter'
+    'font-inter',
+    'inter-thin',
+    'inter-light',
+    'inter-regular',
+    'inter-medium',
+    'inter-semibold',
+    'inter-bold',
+    'inter-extrabold',
+    'inter-black'
   ],
   theme: {
     extend: {

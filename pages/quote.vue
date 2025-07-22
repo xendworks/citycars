@@ -83,7 +83,7 @@
     </section>
 
     <!-- Results Section -->
-    <section v-if="hasSearched" class="py-8">
+    <section class="py-8">
       <div class="container mx-auto px-4">
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <!-- Cab Results -->
@@ -106,9 +106,15 @@
             </div>
             
             <!-- No Results -->
-            <div v-else-if="!cabResults.length" class="bg-white rounded-lg p-6 shadow-md text-center">
+            <div v-else-if="!cabResults.length && hasSearched" class="bg-white rounded-lg p-6 shadow-md text-center">
               <p class="text-lg text-gray-700">No cabs available for your search criteria.</p>
               <p class="text-sm text-gray-500 mt-2">Try adjusting your passenger count, luggage, or locations.</p>
+            </div>
+            
+            <!-- Initial State -->
+            <div v-else-if="!hasSearched" class="bg-white rounded-lg p-6 shadow-md text-center">
+              <p class="text-lg text-gray-700">Enter your journey details above to see available cabs.</p>
+              <p class="text-sm text-gray-500 mt-2">We'll show you the best options for your trip.</p>
             </div>
             
             <!-- Results List -->
@@ -122,7 +128,11 @@
               >
                 <div class="flex items-center space-x-4">
                   <div class="flex-shrink-0">
-                    <img :src="cab.imageUrl" :alt="cab.name" class="h-16 w-auto object-contain">
+                    <div class="h-16 w-24 bg-amber-100 rounded-lg flex items-center justify-center">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                    </div>
                   </div>
                   <div class="flex-1">
                     <h3 class="text-lg font-semibold">{{ cab.name }}</h3>
@@ -269,36 +279,6 @@ const formatPickupTime = computed(() => {
   return date.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })
 })
 
-// Initialize Google Maps API (mocked for now)
-onMounted(async () => {
-  try {
-    // Create a mock map element to simulate map loading
-    setTimeout(() => {
-      mapLoaded.value = true
-      // Create a placeholder for the map area
-      if (mapContainer.value) {
-        const mockMap = document.createElement('div');
-        mockMap.className = 'bg-gray-200 w-full h-full flex items-center justify-center';
-        mockMap.innerHTML = `
-          <div class="text-center p-4">
-            <div class="text-amber-500 text-5xl mb-2">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-12 h-12 mx-auto">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
-              </svg>
-            </div>
-            <p class="text-gray-600">Journey Map View</p>
-            <p class="text-gray-500 text-sm">Real map will appear here after searching</p>
-          </div>
-        `;
-        mapContainer.value.innerHTML = '';
-        mapContainer.value.appendChild(mockMap);
-      }
-    }, 500);
-  } catch (error) {
-    console.error('Failed to initialize mock map:', error)
-  }
-})
-
 // Mock function to simulate route calculation
 const calculateAndDisplayRoute = async () => {
   // Simulate API delay
@@ -371,6 +351,46 @@ const searchCabs = async () => {
     isLoading.value = false
   }
 }
+
+// Initialize with default search on page load
+onMounted(async () => {
+  try {
+    // Set default locations
+    fromLocation.value = 'Gatwick Airport'
+    toLocation.value = 'London City'
+    
+    // Create a mock map element to simulate map loading
+    setTimeout(() => {
+      mapLoaded.value = true
+      // Create a placeholder for the map area
+      if (mapContainer.value) {
+        const mockMap = document.createElement('div');
+        mockMap.className = 'bg-gray-200 w-full h-full flex items-center justify-center';
+        mockMap.innerHTML = `
+          <div class="text-center p-4">
+            <div class="text-amber-500 text-5xl mb-2">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-12 h-12 mx-auto">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+              </svg>
+            </div>
+            <p class="text-gray-600">Journey Map View</p>
+            <p class="text-gray-500 text-sm">Real map will appear here after searching</p>
+          </div>
+        `;
+        mapContainer.value.innerHTML = '';
+        mapContainer.value.appendChild(mockMap);
+      }
+    }, 500);
+    
+    // Perform initial search after a short delay
+    setTimeout(() => {
+      searchCabs()
+    }, 1000)
+    
+  } catch (error) {
+    console.error('Failed to initialize mock map:', error)
+  }
+})
 
 // Mock cab data generation
 const generateMockCabResults = () => {

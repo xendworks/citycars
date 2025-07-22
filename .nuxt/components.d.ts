@@ -13,6 +13,7 @@ type HydrationStrategies = {
 type LazyComponent<T> = (T & DefineComponent<HydrationStrategies, {}, {}, {}, {}, {}, {}, { hydrated: () => void }>)
 interface _GlobalComponents {
       'BookingForm': typeof import("../components/BookingForm.vue")['default']
+    'CustomSelect': typeof import("../components/CustomSelect.vue")['default']
     'Footer': typeof import("../components/Footer.vue")['default']
     'Navbar': typeof import("../components/Navbar.vue")['default']
     'NuxtWelcome': typeof import("../node_modules/.pnpm/nuxt@3.17.7_@netlify+blobs@9.1.2_@parcel+watcher@2.5.1_@types+node@22.16.5_@vue+compiler-sfc@_yr355xkq3ej4mz2syphokl6wbu/node_modules/nuxt/dist/app/components/welcome.vue")['default']
@@ -40,6 +41,7 @@ interface _GlobalComponents {
     'NuxtIsland': typeof import("../node_modules/.pnpm/nuxt@3.17.7_@netlify+blobs@9.1.2_@parcel+watcher@2.5.1_@types+node@22.16.5_@vue+compiler-sfc@_yr355xkq3ej4mz2syphokl6wbu/node_modules/nuxt/dist/app/components/nuxt-island")['default']
     'NuxtRouteAnnouncer': typeof import("../node_modules/.pnpm/nuxt@3.17.7_@netlify+blobs@9.1.2_@parcel+watcher@2.5.1_@types+node@22.16.5_@vue+compiler-sfc@_yr355xkq3ej4mz2syphokl6wbu/node_modules/nuxt/dist/app/components/server-placeholder")['default']
       'LazyBookingForm': LazyComponent<typeof import("../components/BookingForm.vue")['default']>
+    'LazyCustomSelect': LazyComponent<typeof import("../components/CustomSelect.vue")['default']>
     'LazyFooter': LazyComponent<typeof import("../components/Footer.vue")['default']>
     'LazyNavbar': LazyComponent<typeof import("../components/Navbar.vue")['default']>
     'LazyNuxtWelcome': LazyComponent<typeof import("../node_modules/.pnpm/nuxt@3.17.7_@netlify+blobs@9.1.2_@parcel+watcher@2.5.1_@types+node@22.16.5_@vue+compiler-sfc@_yr355xkq3ej4mz2syphokl6wbu/node_modules/nuxt/dist/app/components/welcome.vue")['default']>
@@ -73,6 +75,7 @@ declare module 'vue' {
 }
 
 export const BookingForm: typeof import("../components/BookingForm.vue")['default']
+export const CustomSelect: typeof import("../components/CustomSelect.vue")['default']
 export const Footer: typeof import("../components/Footer.vue")['default']
 export const Navbar: typeof import("../components/Navbar.vue")['default']
 export const NuxtWelcome: typeof import("../node_modules/.pnpm/nuxt@3.17.7_@netlify+blobs@9.1.2_@parcel+watcher@2.5.1_@types+node@22.16.5_@vue+compiler-sfc@_yr355xkq3ej4mz2syphokl6wbu/node_modules/nuxt/dist/app/components/welcome.vue")['default']
@@ -100,6 +103,7 @@ export const Body: typeof import("../node_modules/.pnpm/nuxt@3.17.7_@netlify+blo
 export const NuxtIsland: typeof import("../node_modules/.pnpm/nuxt@3.17.7_@netlify+blobs@9.1.2_@parcel+watcher@2.5.1_@types+node@22.16.5_@vue+compiler-sfc@_yr355xkq3ej4mz2syphokl6wbu/node_modules/nuxt/dist/app/components/nuxt-island")['default']
 export const NuxtRouteAnnouncer: typeof import("../node_modules/.pnpm/nuxt@3.17.7_@netlify+blobs@9.1.2_@parcel+watcher@2.5.1_@types+node@22.16.5_@vue+compiler-sfc@_yr355xkq3ej4mz2syphokl6wbu/node_modules/nuxt/dist/app/components/server-placeholder")['default']
 export const LazyBookingForm: LazyComponent<typeof import("../components/BookingForm.vue")['default']>
+export const LazyCustomSelect: LazyComponent<typeof import("../components/CustomSelect.vue")['default']>
 export const LazyFooter: LazyComponent<typeof import("../components/Footer.vue")['default']>
 export const LazyNavbar: LazyComponent<typeof import("../components/Navbar.vue")['default']>
 export const LazyNuxtWelcome: LazyComponent<typeof import("../node_modules/.pnpm/nuxt@3.17.7_@netlify+blobs@9.1.2_@parcel+watcher@2.5.1_@types+node@22.16.5_@vue+compiler-sfc@_yr355xkq3ej4mz2syphokl6wbu/node_modules/nuxt/dist/app/components/welcome.vue")['default']>

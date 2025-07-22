@@ -104,7 +104,7 @@
         "./imports"
       ],
       "#app-manifest": [
-        "./manifest/meta/d71cd3aa-2dbb-4130-a864-7bc883fe4f89.json"
+        "./manifest/meta/dev"
       ],
       "#components": [
         "./components"
@@ -180,6 +180,6 @@
     "../node_modules/.pnpm/@nuxt+devtools@2.6.2_vite@6.3.5_@types+node@22.16.5_jiti@2.4.2_sass-embedded@1.89.2_sass@1.89_356mad67c2rgm7tlpuc6che2m4/node_modules/@nuxt/devtools/dist/runtime/server",
     "../node_modules/.pnpm/@nuxt+telemetry@2.6.6_magicast@0.3.5/node_modules/@nuxt/telemetry/runtime/server",
     "../node_modules/.pnpm/@nuxt+telemetry@2.6.6_magicast@0.3.5/node_modules/@nuxt/telemetry/dist/runtime/server",
-    "../.output"
+    "dev"
   ]
 }

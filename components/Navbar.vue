@@ -2,7 +2,7 @@
      <!-- Top Bar -->
      <div class="bg-gray-800 font-lexend text-white py-1 px-4 text-right">
       <div class="container mx-auto">
-        <span class="mr-4 font-inter">+44 1293344804</span>
+        <span class="mr-4 font-inter">+44 1293 222710</span>
         <span class="font-inter">|</span>
         <span class="ml-4 font-inter">bookings@citycars.co.uk</span>
       </div>
