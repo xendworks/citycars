@@ -562,7 +562,6 @@
 
 <script setup>
 import { ref } from 'vue'
-import { ElTabs, ElTabPane } from 'element-plus'
 import BookingForm from '../components/BookingForm.vue';
 
 // For tab functionality in Cities section
@@ -627,8 +626,6 @@ definePageMeta({
 </script>
 
 <style scoped>
-@import 'element-plus/dist/index.css';
-
 /* Custom styles for El Tabs if needed */
 :deep(.el-tabs__nav-wrap) {
   padding-bottom: 0;

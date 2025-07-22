@@ -4,7 +4,6 @@ export default defineNuxtConfig({
   css: ["@/assets/styles/main.scss"],
   plugins: [
     { src: '~/plugins/chat.ts', mode: 'client' },
-    { src: '~/plugins/element-plus.ts', mode: 'client' },
     // { src: '~/plugins/google-maps.client.js', mode: 'client' },
   ],
   modules: [

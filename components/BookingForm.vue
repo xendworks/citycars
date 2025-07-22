@@ -41,11 +41,10 @@ const timeSlots = Array.from({ length: 24 * 4 }, (_, i) => {
 });
 
 const loadGoogleMaps = () => {
-  console.log("Hello");
+  if (process.server) return Promise.resolve();
   if (window.google && window.google.maps) {
     return Promise.resolve();
   }
-
   return new Promise((resolve, reject) => {
     const script = document.createElement('script');
     script.src = `https://maps.googleapis.com/maps/api/js?key=${API_KEY}&libraries=places`;
@@ -58,21 +57,25 @@ const loadGoogleMaps = () => {
 };
 
 const initAutocomplete = async (inputRef: any, locationRef: any) => {
+  if (process.server) return;
   await loadGoogleMaps();
-
   if (inputRef.value) {
     const autocomplete = new window.google.maps.places.Autocomplete(inputRef.value, {
       types: ['geocode'],
-      componentRestrictions: { country: 'gb' }, // Restrict to United Kingdom
-      fields: ['formatted_address', 'geometry', 'name'], // Specify the data fields we need
+      componentRestrictions: { country: 'gb' },
+      fields: ['formatted_address', 'geometry', 'name'],
     });
-
     autocomplete.addListener('place_changed', () => {
       const place = autocomplete.getPlace();
       locationRef.value = place.formatted_address || place.name;
     });
   }
 };
+
+onMounted(() => {
+  initAutocomplete(pickupInput, pickupLocation);
+  initAutocomplete(dropoffInput, dropoffLocation);
+});
 
 const handlePickupChange = async () => {
   await initAutocomplete(pickupInput, pickupLocation);
@@ -98,11 +101,6 @@ const handleSearch = () => {
   // Emit to parent
   emit('search', bookingData);
 };
-
-onMounted(() => {
-  initAutocomplete(pickupInput, pickupLocation);
-  initAutocomplete(dropoffInput, dropoffLocation);
-});
 </script>
 
 <template>
