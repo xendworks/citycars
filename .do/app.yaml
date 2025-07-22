@@ -1,0 +1,19 @@
+name: citycars
+services:
+- name: web
+  source_dir: /
+  github:
+    repo: xendworks/citycars
+    branch: main
+  run_command: npm start
+  build_command: npm run build
+  environment_slug: node-js
+  instance_count: 1
+  instance_size_slug: basic-xxs
+  health_check:
+    http_path: /
+    initial_delay_seconds: 10
+    interval_seconds: 10
+    timeout_seconds: 5
+    unhealthy_threshold: 3
+    healthy_threshold: 3 
