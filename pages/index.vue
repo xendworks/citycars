@@ -29,7 +29,7 @@
           </p>
           
           <!-- Booking Form -->
-          <div class="max-w-4xl mx-auto animate-fade-in-up">
+          <div class="max-w-6xl mx-auto animate-fade-in-up">
             <BookingForm />
           </div>
         </div>

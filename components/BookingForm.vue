@@ -29,8 +29,7 @@ const pickupLocation = ref('');
 const dropoffLocation = ref('');
 const pickupInput = ref(null);
 const dropoffInput = ref(null);
-const selectedDate = ref('');
-const selectedTime = ref('');
+const selectedDateTime = ref('');
 const passengersCount = ref(1);
 const luggageCount = ref(0);
 const size = ref('default');
@@ -88,8 +87,8 @@ const handleSearch = () => {
   const bookingData = {
     pickupLocation: pickupLocation.value,
     dropoffLocation: dropoffLocation.value,
-    pickupDate: selectedDate.value,
-    pickupTime: selectedTime.value,
+    pickupDate: selectedDateTime.value,
+    pickupTime: selectedDateTime.value,
     passengersCount: passengersCount.value,
     luggageCount: luggageCount.value,
   };
@@ -103,7 +102,7 @@ const handleSearch = () => {
 </script>
 
 <template>
-  <div class="max-w-7xl mx-auto p-4 md:p-6 bg-white rounded-xl shadow-lg border border-gray-100">
+  <div class=" mx-auto p-4 md:p-6 bg-white rounded-xl shadow-lg border border-gray-100">
     <!-- Mobile Layout (Vertical) -->
     <div class="block md:hidden space-y-4">
       <!-- Pickup Location - Full Width -->
