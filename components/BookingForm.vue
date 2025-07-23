@@ -103,8 +103,94 @@ const handleSearch = () => {
 </script>
 
 <template>
-  <div class="max-w-7xl mx-auto p-6 bg-white rounded-xl shadow-lg border border-gray-100">
-    <div class="flex flex-col lg:flex-row items-end gap-4">
+  <div class="max-w-7xl mx-auto p-4 md:p-6 bg-white rounded-xl shadow-lg border border-gray-100">
+    <!-- Mobile Layout (Vertical) -->
+    <div class="block md:hidden space-y-4">
+      <!-- Pickup Location - Full Width -->
+      <div class="w-full">
+        <label class="block text-sm font-medium text-gray-700 mb-2 font-inter">Pick-up Location</label>
+        <div class="relative">
+          <input
+            ref="pickupInput"
+            v-model="pickupLocation"
+            type="text"
+            placeholder="Eg: Gatwick Airport"
+            class="w-full p-3 border-2 border-gray-200 rounded-lg text-sm shadow-sm focus:border-amber-400 focus:ring-2 focus:ring-amber-100 transition-all duration-200 hover:border-gray-300"
+            @change="handlePickupChange"
+            :disabled="isGoogleMapsLoading"
+          />
+          <div v-if="isGoogleMapsLoading" class="absolute right-3 top-1/2 transform -translate-y-1/2">
+            <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-amber-400"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Drop-off Location - Full Width -->
+      <div class="w-full">
+        <label class="block text-sm font-medium text-gray-700 mb-2">Drop-off Location</label>
+        <div class="relative">
+          <input
+            ref="dropoffInput"
+            v-model="dropoffLocation"
+            type="text"
+            placeholder="Eg: SW1 7NL"
+            class="w-full p-3 border-2 border-gray-200 rounded-lg text-sm shadow-sm focus:border-amber-400 focus:ring-2 focus:ring-amber-100 transition-all duration-200 hover:border-gray-300"
+            @change="handleDropoffChange"
+            :disabled="isGoogleMapsLoading"
+          />
+          <div v-if="isGoogleMapsLoading" class="absolute right-3 top-1/2 transform -translate-y-1/2">
+            <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-amber-400"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Date & Time - Full Width -->
+      <div class="w-full">
+        <label class="block text-sm font-medium text-gray-700 mb-2">Pickup Date & Time</label>
+        <input 
+          type="datetime-local" 
+          v-model="selectedDateTime"
+          class="w-full p-3 border-2 border-gray-200 rounded-lg text-sm shadow-sm focus:border-amber-400 focus:ring-2 focus:ring-amber-100 transition-all duration-200 hover:border-gray-300"
+          :min="new Date().toISOString().slice(0, 16)"
+        />
+      </div>
+
+      <!-- Passengers & Luggage - 50/50 on Mobile -->
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <CustomSelect
+            v-model="passengersCount"
+            :options="['1', '2', '3', '4']"
+            label="Passengers"
+          />
+        </div>
+        <div>
+          <CustomSelect
+            v-model="luggageCount"
+            :options="['0', '1', '2', '3']"
+            label="Luggages"
+          />
+        </div>
+      </div>
+
+      <!-- Search Button - Full Width -->
+      <div class="w-full">
+        <button 
+          @click="handleSearch"
+          class="w-full bg-amber-400 hover:bg-amber-500 text-gray-800 p-3 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-amber-300 focus:ring-offset-2 font-medium"
+        >
+          <div class="flex items-center justify-center space-x-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+            </svg>
+            <span>Search & Book</span>
+          </div>
+        </button>
+      </div>
+    </div>
+
+    <!-- Desktop Layout (Horizontal) -->
+    <div class="hidden md:flex flex-col lg:flex-row items-end gap-4">
       <!-- Pickup Location -->
       <div class="flex-1 min-w-0">
         <label class="block text-sm font-medium text-gray-700 mb-2 font-inter">Pick-up Location</label>
@@ -147,10 +233,10 @@ const handleSearch = () => {
       <div class="flex-1 min-w-0">
         <label class="block text-sm font-medium text-gray-700 mb-2">Pickup Date & Time</label>
         <input 
-          type="date" 
-          v-model="selectedDate"
+          type="datetime-local" 
+          v-model="selectedDateTime"
           class="w-full p-3 border-2 border-gray-200 rounded-lg text-sm shadow-sm focus:border-amber-400 focus:ring-2 focus:ring-amber-100 transition-all duration-200 hover:border-gray-300"
-          :min="new Date().toISOString().split('T')[0]"
+          :min="new Date().toISOString().slice(0, 16)"
         />
       </div>
 

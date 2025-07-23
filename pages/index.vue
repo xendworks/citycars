@@ -6,28 +6,30 @@
     <!-- Content -->
     <div class="relative z-10">
       <!-- Hero Section -->
-      <section class="bg-gradient-to-br from-amber-50 via-white to-amber-100 py-16 relative overflow-hidden">
-        <!-- Animated Background Elements -->
-        <div class="absolute inset-0">
-          <div class="absolute top-10 left-10 w-20 h-20 bg-amber-200 rounded-full opacity-20 animate-pulse"></div>
-          <div class="absolute top-32 right-16 w-12 h-12 bg-amber-300 rounded-full opacity-30 animate-bounce" style="animation-delay: 1s;"></div>
-          <div class="absolute bottom-20 left-1/4 w-16 h-16 bg-amber-400 rounded-full opacity-25 animate-ping" style="animation-delay: 2s;"></div>
+      <section class="relative py-8 md:py-16 bg-gradient-to-br from-amber-50 to-yellow-100 overflow-hidden">
+        <!-- Background Pattern -->
+        <div class="absolute inset-0 opacity-20">
+          <div class="absolute inset-0" style="background-image: radial-gradient(circle at 25% 25%, #f59e0b 2px, transparent 2px), radial-gradient(circle at 75% 75%, #f59e0b 2px, transparent 2px); background-size: 50px 50px;"></div>
         </div>
+        
+        <!-- Animated Background Circles -->
+        <div class="absolute top-10 left-10 w-20 h-20 bg-amber-200 rounded-full opacity-30 animate-pulse"></div>
+        <div class="absolute bottom-10 right-10 w-32 h-32 bg-amber-300 rounded-full opacity-20 animate-ping"></div>
+        <div class="absolute top-1/2 left-1/4 w-16 h-16 bg-yellow-200 rounded-full opacity-40 animate-bounce"></div>
         
         <div class="container mx-auto px-4 text-center relative z-10">
           <!-- Animated Heading -->
-          <h1 class="text-3xl md:text-3xl font-bold mb-6 text-gray-900 animate-fade-in-up">
+          <h1 class="text-2xl md:text-3xl lg:text-4xl font-bold mb-4 md:mb-6 text-gray-900 animate-fade-in-up">
             Book Wheel Chair Taxis from and to Gatwick
           </h1>
           
-          <!-- Animated Description -->
-          <p class="max-w-3xl mx-auto text-xl text-gray-600 mb-12 font-inter animate-fade-in-up" style="animation-delay: 0.3s;">
-            Reliable wheelchair taxi service at Gatwick Airport by City Cars. Accessible and comfortable
-            transportation options tailored to your needs, ensuring a smooth journey to and from the airport.
+          <!-- Subtitle -->
+          <p class="text-base md:text-lg text-gray-600 mb-8 md:mb-12 max-w-3xl mx-auto animate-fade-in-up">
+            Reliable, comfortable, and accessible taxi services. Book your journey with confidence and enjoy a stress-free travel experience.
           </p>
-
-          <!-- Animated Booking Form -->
-          <div class="bg-white rounded-2xl shadow-2xl mx-auto max-w-6xl transform hover:scale-105 transition-all duration-500 animate-fade-in-up" style="animation-delay: 0.6s;">
+          
+          <!-- Booking Form -->
+          <div class="max-w-4xl mx-auto animate-fade-in-up">
             <BookingForm />
           </div>
         </div>
@@ -70,183 +72,119 @@
         </div>
       </section>
 
-      <!-- Cab Types Section -->
-      <section class="py-16 bg-gray-50">
+      <!-- Taxi Types Section -->
+      <section class="py-8 md:py-16 bg-white">
         <div class="container mx-auto px-4">
-          <h2 class="text-3xl font-bold text-center mb-12 font-lexend">Our Fleet: Types of Cabs Available</h2>
-          
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <!-- Saloon -->
-            <div class="bg-white rounded-lg p-6 shadow-md">
-              <div class="text-center mb-4">
-                <img src="/assets/images/taxi/2.png" alt="Saloon Car" class="h-32 w-auto mx-auto mb-4" />
-                <h3 class="text-xl font-semibold font-lexend">Saloon</h3>
-              </div>
-              <p class="text-gray-600 font-inter">
-                Our standard saloon cars comfortably seat up to 4 passengers with 2 medium suitcases.
-                Perfect for individuals, couples, or small groups traveling with moderate luggage.
-              </p>
-              <div class="mt-4 text-sm text-gray-500 font-inter">
-                <p>• Up to 4 passengers</p>
-                <p>• 2 medium suitcases</p>
-                <p>• Ideal for city transfers</p>
-              </div>
-            </div>
-            
-            <!-- Estate -->
-            <div class="bg-white rounded-lg p-6 shadow-md">
-              <div class="text-center mb-4">
-                <img src="/assets/images/taxi/3.png" alt="Estate Car" class="h-32 w-auto mx-auto mb-4" />
-                <h3 class="text-xl font-semibold font-lexend">Estate</h3>
-              </div>
-              <p class="text-gray-600 font-inter">
-                Our estate cars offer extra luggage space while still seating up to 4 passengers comfortably.
-                Ideal for airport transfers with additional luggage requirements.
-              </p>
-              <div class="mt-4 text-sm text-gray-500 font-inter">
-                <p>• Up to 4 passengers</p>
-                <p>• 3-4 large suitcases</p>
-                <p>• Perfect for airport transfers</p>
-              </div>
-            </div>
-            
-            <!-- MPV -->
-            <div class="bg-white rounded-lg p-6 shadow-md">
-              <div class="text-center mb-4">
-                <img src="/assets/images/taxi/4.png" alt="MPV" class="h-32 w-auto mx-auto mb-4" />
-                <h3 class="text-xl font-semibold font-lexend">MPV</h3>
-              </div>
-              <p class="text-gray-600 font-inter">
-                Multi-Purpose Vehicles offer more space for both passengers and luggage, seating up to 6 people.
-                Ideal for families or small groups traveling together.
-              </p>
-              <div class="mt-4 text-sm text-gray-500 font-inter">
-                <p>• Up to 6 passengers</p>
-                <p>• 4 large suitcases</p>
-                <p>• Great for family travel</p>
-              </div>
-            </div>
-            
-            <!-- 7 Seater -->
-            <div class="bg-white rounded-lg p-6 shadow-md">
-              <div class="text-center mb-4">
-                <img src="/assets/images/taxi/6.png" alt="7 Seater" class="h-32 w-auto mx-auto mb-4" />
-                <h3 class="text-xl font-semibold font-lexend">7 Seater</h3>
-              </div>
-              <p class="text-gray-600 font-inter">
-                Our 7-seater vehicles provide ample space for larger groups or families with plenty of luggage.
-                Comfortable seating with extra legroom for all passengers.
-              </p>
-              <div class="mt-4 text-sm text-gray-500 font-inter">
-                <p>• Up to 7 passengers</p>
-                <p>• 5 large suitcases</p>
-                <p>• Ideal for larger groups</p>
-              </div>
-            </div>
-            
-            <!-- 9 Seater -->
-            <div class="bg-white rounded-lg p-6 shadow-md">
-              <div class="text-center mb-4">
-                <img src="/assets/images/taxi/8.png" alt="9 Seater" class="h-32 w-auto mx-auto mb-4" />
-                <h3 class="text-xl font-semibold font-lexend">9 Seater</h3>
-              </div>
-              <p class="text-gray-600 font-inter">
-                Our largest passenger vehicles, these minibuses can accommodate up to 9 passengers with luggage.
-                Perfect for large groups, airport transfers, or corporate events.
-              </p>
-              <div class="mt-4 text-sm text-gray-500 font-inter">
-                <p>• Up to 9 passengers</p>
-                <p>• 7 large suitcases</p>
-                <p>• Best for large groups</p>
-              </div>
-            </div>
-            
-            <!-- Wheelchair Accessible Vehicle -->
-            <div class="bg-white rounded-lg p-6 shadow-md">
-              <div class="text-center mb-4">
-                <img src="/assets/images/taxi/8.png" alt="Wheelchair Accessible Vehicle" class="h-32 w-auto mx-auto mb-4" />
-                <h3 class="text-xl font-semibold font-lexend">Wheelchair Accessible</h3>
-              </div>
-              <p class="text-gray-600 font-inter">
-                Specially modified vehicles equipped with ramps or lifts for wheelchair access. Our drivers are
-                trained to provide assistance for comfortable and dignified travel.
-              </p>
-              <div class="mt-4 text-sm text-gray-500 font-inter">
-                <p>• Wheelchair accessibility</p>
-                <p>• Additional passenger seating</p>
-                <p>• Secure wheelchair restraints</p>
-              </div>
-              <div class="mt-4 text-center">
-                <a href="/wheel-chair-taxis" class="text-amber-500 hover:underline font-inter font-medium">Learn more about our wheelchair taxis →</a>
-              </div>
-            </div>
+          <div class="text-center mb-8 md:mb-12">
+            <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-4">Choose Your Perfect Ride</h2>
+            <p class="text-base md:text-lg text-gray-600 max-w-2xl mx-auto">Select from our range of accessible vehicles designed for your comfort and convenience</p>
           </div>
-        </div>
-      </section>
 
-      <!-- Mobile App Section -->
-      <section class="py-16 bg-white">
-        <div class="container mx-auto px-4">
-          <div class="flex flex-col md:flex-row items-center">
-            <!-- App Screenshot -->
-            <div class="md:w-1/2 mb-8 md:mb-0">
-              <img src="assets/images/mobile-app.png" alt="City Cars Mobile App" class="max-w-xs mx-auto" />
+          <!-- Modern Tab Design -->
+          <div class="max-w-6xl mx-auto">
+            <!-- Tab Navigation -->
+            <div class="flex flex-wrap justify-center mb-6 md:mb-8 bg-gray-100 rounded-xl p-1 md:p-2">
+              <button 
+                v-for="(tab, index) in taxiTypes" 
+                :key="tab.id"
+                @click="activeTaxiTab = tab.id"
+                :class="[
+                  'px-3 md:px-6 py-2 md:py-3 rounded-lg md:rounded-xl font-medium transition-all duration-300 flex items-center space-x-1 md:space-x-2 text-sm md:text-base',
+                  activeTaxiTab === tab.id 
+                    ? 'bg-white text-amber-600 shadow-lg transform scale-105' 
+                    : 'text-gray-600 hover:text-amber-600 hover:bg-white/50'
+                ]"
+              >
+                <svg class="w-4 h-4 md:w-5 md:h-5" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                </svg>
+                <span class="hidden sm:inline">{{ tab.name }}</span>
+                <span class="sm:hidden">{{ tab.name.split(' ')[0] }}</span>
+              </button>
             </div>
-            
-            <!-- App Description -->
-            <div class="md:w-1/2">
-              <h2 class="text-3xl font-bold mb-6 font-lexend">Download Our Mobile App</h2>
-              <p class="text-gray-600 mb-6 font-inter">
-                Booking your taxi is now easier than ever with our new mobile app. Get all the convenience of our online
-                booking system right in your pocket, plus exclusive mobile-only features and discounts.
-              </p>
-              
-              <div class="space-y-4 mb-8">
-                <div class="flex items-start">
-                  <div class="bg-amber-100 p-2 rounded-full mr-3 mt-1">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-500" viewBox="0 0 20 20" fill="currentColor">
-                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                    </svg>
+
+            <!-- Tab Content -->
+            <div class="bg-white rounded-xl md:rounded-2xl shadow-lg md:shadow-xl overflow-hidden">
+              <div v-for="tab in taxiTypes" :key="tab.id" v-show="activeTaxiTab === tab.id" class="p-4 md:p-8">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 items-start">
+                  <!-- Vehicle Image & Details -->
+                  <div class="space-y-4 md:space-y-6">
+                    <div class="relative">
+                      <div class="w-full h-48 md:h-64 bg-gradient-to-br from-amber-100 to-amber-200 rounded-lg md:rounded-xl flex items-center justify-center overflow-hidden">
+                        <img :src="tab.image" :alt="tab.name" class="w-full h-full object-cover" />
+                      </div>
+                    </div>
+                    
+                    <!-- Specs Grid -->
+                    <div class="grid grid-cols-2 gap-3 md:gap-4">
+                      <div class="bg-gray-50 p-3 md:p-4 rounded-lg">
+                        <div class="flex items-center space-x-2 mb-2">
+                          <svg class="w-4 h-4 md:w-5 md:h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                          </svg>
+                          <span class="font-medium text-gray-900 text-sm md:text-base">Passengers</span>
+                        </div>
+                        <p class="text-xl md:text-2xl font-bold text-amber-600">{{ tab.passengers }}</p>
+                      </div>
+                      
+                      <div class="bg-gray-50 p-3 md:p-4 rounded-lg">
+                        <div class="flex items-center space-x-2 mb-2">
+                          <svg class="w-4 h-4 md:w-5 md:h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                          </svg>
+                          <span class="font-medium text-gray-900 text-sm md:text-base">Luggage</span>
+                        </div>
+                        <p class="text-lg md:text-2xl font-bold text-amber-600">{{ tab.luggage }}</p>
+                      </div>
+                      
+                      <div class="bg-gray-50 p-3 md:p-4 rounded-lg">
+                        <div class="flex items-center space-x-2 mb-2">
+                          <svg class="w-4 h-4 md:w-5 md:h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                          </svg>
+                          <span class="font-medium text-gray-900 text-sm md:text-base">Speed</span>
+                        </div>
+                        <p class="text-lg md:text-2xl font-bold text-amber-600">{{ tab.speed }}</p>
+                      </div>
+                      
+                      <div class="bg-gray-50 p-3 md:p-4 rounded-lg">
+                        <div class="flex items-center space-x-2 mb-2">
+                          <svg class="w-4 h-4 md:w-5 md:h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                          <span class="font-medium text-gray-900 text-sm md:text-base">Features</span>
+                        </div>
+                        <p class="text-xs md:text-sm text-gray-600">{{ tab.features }}</p>
+                      </div>
+                    </div>
                   </div>
-                  <div>
-                    <h3 class="text-lg font-semibold font-lexend">Quick Booking</h3>
-                    <p class="text-gray-600 font-inter">Book your taxi in seconds with saved addresses and preferences.</p>
+                  
+                  <!-- Description & CTA -->
+                  <div class="space-y-4 md:space-y-6">
+                    <div>
+                      <h3 class="text-xl md:text-2xl font-bold text-gray-900 mb-3 md:mb-4">{{ tab.name }}</h3>
+                      <p class="text-gray-600 leading-relaxed text-sm md:text-base">{{ tab.description }}</p>
+                    </div>
+                    
+                    <!-- Features List -->
+                    <div class="space-y-2 md:space-y-3">
+                      <h4 class="font-semibold text-gray-900 text-sm md:text-base">What's Included:</h4>
+                      <ul class="space-y-1 md:space-y-2">
+                        <li v-for="feature in tab.included" :key="feature" class="flex items-center space-x-2 md:space-x-3">
+                          <svg class="w-4 h-4 md:w-5 md:h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                          </svg>
+                          <span class="text-gray-700 text-sm md:text-base">{{ feature }}</span>
+                        </li>
+                      </ul>
+                    </div>
+                    
+                    <!-- CTA Button -->
+                    <button class="w-full bg-amber-500 hover:bg-amber-600 text-white py-3 md:py-4 px-4 md:px-6 rounded-lg md:rounded-xl font-semibold text-base md:text-lg transition-all duration-300 transform hover:scale-105 shadow-lg">
+                      Book {{ tab.name }} Now
+                    </button>
                   </div>
                 </div>
-                
-                <div class="flex items-start">
-                  <div class="bg-amber-100 p-2 rounded-full mr-3 mt-1">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-500" viewBox="0 0 20 20" fill="currentColor">
-                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                    </svg>
-                  </div>
-                  <div>
-                    <h3 class="text-lg font-semibold font-lexend">Real-Time Tracking</h3>
-                    <p class="text-gray-600 font-inter">Track your driver's arrival in real-time on the map.</p>
-                  </div>
-                </div>
-                
-                <div class="flex items-start">
-                  <div class="bg-amber-100 p-2 rounded-full mr-3 mt-1">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-500" viewBox="0 0 20 20" fill="currentColor">
-                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                    </svg>
-                  </div>
-                  <div>
-                    <h3 class="text-lg font-semibold font-lexend">Exclusive Discounts</h3>
-                    <p class="text-gray-600 font-inter">Access mobile-only promotions and loyalty rewards.</p>
-                  </div>
-                </div>
-              </div>
-              
-              <!-- App Store Buttons -->
-              <div class="flex flex-wrap gap-4">
-                <a href="#" class="inline-block">
-                  <img src="/assets/images/appstore.png" alt="Download on App Store" class="h-12" />
-                </a>
-                <a href="#" class="inline-block">
-                  <img src="/assets/images/playstore.png" alt="Get it on Google Play" class="h-12" />
-                </a>
               </div>
             </div>
           </div>
@@ -254,19 +192,19 @@
       </section>
 
       <!-- Cities We Cover Section -->
-      <section class="py-16 bg-gray-50">
+      <section class="py-8 md:py-16 bg-gray-50">
         <div class="container mx-auto px-4">
-          <h2 class="text-3xl font-bold text-center mb-8 font-lexend">Cities & Towns We Cover from Gatwick</h2>
-          <p class="text-gray-600 text-center max-w-3xl mx-auto mb-12 font-inter">
+          <h2 class="text-2xl md:text-3xl font-bold text-center mb-6 md:mb-8 font-lexend">Cities & Towns We Cover from Gatwick</h2>
+          <p class="text-base md:text-lg text-gray-600 text-center max-w-3xl mx-auto mb-8 md:mb-12 font-inter">
             City Cars provides reliable taxi services to and from all major cities and towns within 100 miles of Gatwick Airport. 
             Our drivers know the best routes to get you to your destination quickly and safely.
           </p>
           
           <!-- Interactive Map and Destinations -->
-          <div class="grid grid-cols-1 lg:grid-cols-10 gap-8 max-w-6xl mx-auto">
+          <div class="grid grid-cols-1 lg:grid-cols-10 gap-6 md:gap-8 max-w-6xl mx-auto">
             <!-- Map (Left Side on Desktop) - 30% width -->
-            <div class="lg:col-span-3 bg-white rounded-lg shadow-md p-4 h-full flex items-center justify-center">
-              <div class="relative w-full h-80 md:h-96 bg-blue-50 rounded-lg overflow-hidden">
+            <div class="lg:col-span-3 bg-white rounded-lg shadow-md p-3 md:p-4 h-full flex items-center justify-center">
+              <div class="relative w-full h-64 md:h-80 lg:h-96 bg-blue-50 rounded-lg overflow-hidden">
                 <!-- Map Image with Pin for Gatwick -->
                 <iframe 
                   src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d79890.36844211896!2d-0.2233267442627485!3d51.15273903123274!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4875efde7d1f391b%3A0x59dda4c5c3c7b4ee!2sGatwick%20Airport!5e0!3m2!1sen!2suk!4v1652345678901!5m2!1sen!2suk" 
@@ -283,38 +221,49 @@
             </div>
             
             <!-- Destinations (Right Side on Desktop) - 70% width -->
-            <div class="lg:col-span-7 bg-white rounded-lg shadow-md p-6">
+            <div class="lg:col-span-7 bg-white rounded-lg shadow-md p-4 md:p-6">
               <!-- Region Tabs -->
-              <el-tabs v-model="activeTab" class="mb-6">
-                <el-tab-pane label="Popular Destinations" name="popular"></el-tab-pane>
-                <el-tab-pane label="London Areas" name="london"></el-tab-pane>
-                <el-tab-pane label="Southern Coast" name="coast"></el-tab-pane>
-                <el-tab-pane label="All Destinations" name="all"></el-tab-pane>
-              </el-tabs>
+              <div class="flex flex-wrap space-x-1 mb-4 md:mb-6 bg-gray-100 rounded-lg p-1">
+                <button 
+                  v-for="tab in ['popular', 'london', 'coast', 'all']" 
+                  :key="tab"
+                  @click="activeTab = tab"
+                  :class="[
+                    'px-3 md:px-4 py-2 rounded-md text-xs md:text-sm font-medium transition-colors',
+                    activeTab === tab 
+                      ? 'bg-white text-amber-600 shadow-sm' 
+                      : 'text-gray-600 hover:text-amber-600'
+                  ]"
+                >
+                  {{ tab === 'popular' ? 'Popular' : 
+                     tab === 'london' ? 'London' : 
+                     tab === 'coast' ? 'Coast' : 'All' }}
+                </button>
+              </div>
               
               <!-- Destinations Grid -->
-              <div class="grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-2">
+              <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 md:gap-4">
                 <!-- Display cities based on active tab -->
                 <div 
                   v-for="city in cityDestinations[activeTab]" 
                   :key="city.name"
-                  class="p-2 flex items-center space-x-2 hover:bg-amber-50 rounded-md transition-colors group"
+                  class="p-2 md:p-3 flex items-center space-x-2 hover:bg-amber-50 rounded-md transition-colors group"
                 >
-                  <div class="w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center text-amber-500 group-hover:bg-amber-200">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                  <div class="w-6 h-6 md:w-8 md:h-8 bg-amber-100 rounded-full flex items-center justify-center text-amber-500 group-hover:bg-amber-200 flex-shrink-0">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 md:h-4 md:w-4" viewBox="0 0 20 20" fill="currentColor">
                       <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
                     </svg>
                   </div>
-                  <span class="font-inter text-gray-700 group-hover:text-amber-700">{{ city.name }}</span>
+                  <span class="font-inter text-gray-700 group-hover:text-amber-700 text-sm md:text-base">{{ city.name }}</span>
                   <span class="text-xs text-gray-400 ml-auto font-inter">{{ city.distance }}</span>
                 </div>
               </div>
               
               <!-- See More Button -->
-              <div class="mt-6 text-center">
-                <button class="inline-flex items-center font-medium text-amber-500 hover:text-amber-600 font-inter">
+              <div class="mt-4 md:mt-6 text-center">
+                <button class="inline-flex items-center font-medium text-amber-500 hover:text-amber-600 font-inter text-sm md:text-base">
                   See all destinations
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-1" viewBox="0 0 20 20" fill="currentColor">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 md:h-5 md:w-5 ml-1" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
                   </svg>
                 </button>
@@ -323,17 +272,17 @@
           </div>
           
           <!-- Call to Action -->
-          <div class="mt-12 bg-gradient-to-r from-amber-500 to-amber-600 rounded-lg shadow-lg p-8 max-w-5xl mx-auto">
+          <div class="mt-8 md:mt-12 bg-gradient-to-r from-amber-500 to-amber-600 rounded-lg shadow-lg p-6 md:p-8 max-w-5xl mx-auto">
             <div class="flex flex-col md:flex-row items-center justify-between">
-              <div class="mb-6 md:mb-0 md:mr-6">
-                <h3 class="text-white text-2xl font-bold mb-2 font-lexend">Need a custom destination?</h3>
-                <p class="text-amber-100 font-inter">
+              <div class="mb-4 md:mb-0 md:mr-6">
+                <h3 class="text-white text-xl md:text-2xl font-bold mb-2 font-lexend">Need a custom destination?</h3>
+                <p class="text-amber-100 font-inter text-sm md:text-base">
                   If you don't see your destination listed, don't worry! We cover many more locations.
                   Contact us for a custom quote to any destination within 100 miles of Gatwick Airport.
                 </p>
               </div>
               <div class="flex-shrink-0">
-                <a href="/contact-us" class="inline-block bg-white text-amber-600 hover:bg-amber-50 px-6 py-3 rounded-md font-semibold font-lexend transition-colors shadow-md">
+                <a href="/contact-us" class="inline-block bg-white text-amber-600 hover:bg-amber-50 px-4 md:px-6 py-2 md:py-3 rounded-md font-semibold font-lexend transition-colors shadow-md text-sm md:text-base">
                   Get Your Quote
                 </a>
               </div>
@@ -626,6 +575,56 @@ const cityDestinations = ref({
     { name: 'Winchester', distance: '54 miles' }
   ]
 })
+
+// New data for Taxi Types section
+const taxiTypes = ref([
+  {
+    id: 'saloon',
+    name: 'Saloon',
+    passengers: '4',
+    luggage: '2 medium suitcases',
+    speed: 'Fast',
+    features: 'Standard saloon car with comfortable seating for up to 4 passengers.',
+    included: ['Comfortable seating', 'Up to 4 passengers', '2 medium suitcases'],
+    description: 'Our standard saloon cars comfortably seat up to 4 passengers with 2 medium suitcases. Perfect for individuals, couples, or small groups traveling with moderate luggage.',
+    image: '/images/2.png'
+  },
+  {
+    id: 'estate',
+    name: 'Estate',
+    passengers: '4',
+    luggage: '3-4 large suitcases',
+    speed: 'Moderate',
+    features: 'Estate cars offer extra luggage space while still seating up to 4 passengers comfortably.',
+    included: ['Extra luggage space', 'Up to 4 passengers', '3-4 large suitcases'],
+    description: 'Our estate cars offer extra luggage space while still seating up to 4 passengers comfortably. Ideal for airport transfers with additional luggage requirements.',
+    image: '/images/3.png'
+  },
+  {
+    id: 'mpv',
+    name: 'MPV',
+    passengers: '6',
+    luggage: '4 large suitcases',
+    speed: 'Fast',
+    features: 'Multi-Purpose Vehicles offer more space for both passengers and luggage, seating up to 6 people.',
+    included: ['More space', 'Up to 6 passengers', '4 large suitcases'],
+    description: 'Multi-Purpose Vehicles offer more space for both passengers and luggage, seating up to 6 people. Ideal for families or small groups traveling together.',
+    image: '/images/4.png'
+  },
+  {
+    id: 'wheelchair',
+    name: 'Wheelchair Accessible',
+    passengers: '4',
+    luggage: '2 medium suitcases',
+    speed: 'Moderate',
+    features: 'Specially modified vehicles equipped with ramps or lifts for wheelchair access.',
+    included: ['Wheelchair accessibility', 'Up to 4 passengers', '2 medium suitcases'],
+    description: 'Specially modified vehicles equipped with ramps or lifts for wheelchair access. Our drivers are trained to provide assistance for comfortable and dignified travel.',
+    image: '/images/8.png'
+  }
+])
+
+const activeTaxiTab = ref('saloon')
 
 definePageMeta({
   title: 'CityCars - Book Wheelchair Taxis at Gatwick Airport'

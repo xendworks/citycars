@@ -156,7 +156,7 @@
                 </svg>
                 <div>
                   <span class="text-sm text-gray-400">Phone</span>
-                  <p><a href="tel:+441293344804" class="hover:text-city-gold transition-colors">+44 1293 344804</a></p>
+                  <p><a href="tel:+441293222710" class="hover:text-city-gold transition-colors">+44 1293 222710</a></p>
                 </div>
               </li>
               <li class="flex items-start">

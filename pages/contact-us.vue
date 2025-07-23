@@ -29,7 +29,7 @@
                 </div>
                 <div>
                   <h3 class="text-lg font-semibold mb-1 font-lexend">Phone</h3>
-                  <p class="text-gray-600 mb-1 font-inter">+44 1293344804</p>
+                  <p class="text-gray-600 mb-1 font-inter">+44 1293 222710</p>
                   <p class="text-gray-500 text-sm font-inter">Available 24/7 for bookings and inquiries</p>
                 </div>
               </div>

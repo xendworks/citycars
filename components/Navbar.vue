@@ -9,7 +9,7 @@
     </div>
 
     <!-- Navigation -->
-    <header class="bg-white shadow sticky top-0 w-full z-10 font-lexend">
+    <header class="bg-white shadow sticky top-0 w-full z-20 font-lexend">
       <div class="container mx-auto px-4 py-4 flex items-center justify-between">
         <div class="flex items-center">
           <NuxtLink to="/">
