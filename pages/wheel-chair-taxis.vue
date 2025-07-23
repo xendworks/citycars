@@ -200,6 +200,8 @@
 </template>
 
 <script setup>
+import { useQueryStore } from '~/stores/queryStore'
+
 definePageMeta({
   title: 'Wheelchair Accessible Taxis - City Cars'
 })

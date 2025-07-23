@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import { useBookingStore } from '~/stores/booking';
 import CustomSelect from './CustomSelect.vue'
+import { useRouter } from 'vue-router'
+import { useQueryStore } from '~/stores/queryStore'
 
 // Add type declarations
 declare global {
@@ -25,13 +27,17 @@ const isGoogleMapsLoading = ref(false)
 
 const API_KEY = 'AIzaSyACZ4JkEhZZAhafla2ePLtmNL7ktaxV8KM'; // Replace with your actual API key
 
-const pickupLocation = ref('');
-const dropoffLocation = ref('');
+const queryStore = useQueryStore();
+const router = useRouter();
+
+const pickupLocation = ref(queryStore.from);
+const dropoffLocation = ref(queryStore.to);
+const selectedDateTime = ref(queryStore.pickupDateTime);
+const passengersCount = ref(queryStore.passengers);
+const luggageCount = ref(queryStore.luggage);
+
 const pickupInput = ref(null);
 const dropoffInput = ref(null);
-const selectedDateTime = ref('');
-const passengersCount = ref(1);
-const luggageCount = ref(0);
 const size = ref('default');
 const disabledDate = (time: Date) => {
   return time.getTime() < Date.now() - 8.64e7;
@@ -44,12 +50,40 @@ const timeSlots = Array.from({ length: 24 * 4 }, (_, i) => {
   return `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
 });
 
+onMounted(() => {
+  pickupLocation.value = queryStore.from;
+  dropoffLocation.value = queryStore.to;
+  selectedDateTime.value = queryStore.pickupDateTime;
+  passengersCount.value = queryStore.passengers;
+  luggageCount.value = queryStore.luggage;
+  initAutocomplete(pickupInput, pickupLocation);
+  initAutocomplete(dropoffInput, dropoffLocation);
+});
+
+watch([pickupLocation, dropoffLocation, selectedDateTime, passengersCount, luggageCount], () => {
+  queryStore.setQueryData({
+    from: pickupLocation.value,
+    to: dropoffLocation.value,
+    passengers: Number(passengersCount.value),
+    luggage: Number(luggageCount.value),
+    pickupDateTime: selectedDateTime.value
+  });
+});
+
 const loadGoogleMaps = () => {
   if (process.server) return Promise.resolve();
   isGoogleMapsLoading.value = true;
   return ($googleMaps as () => Promise<any>)().finally(() => {
     isGoogleMapsLoading.value = false;
   });
+};
+
+const onPickupInput = (e: Event) => {
+  pickupLocation.value = (e.target as HTMLInputElement).value;
+};
+
+const onDropoffInput = (e: Event) => {
+  dropoffLocation.value = (e.target as HTMLInputElement).value;
 };
 
 const initAutocomplete = async (inputRef: any, locationRef: any) => {
@@ -65,15 +99,12 @@ const initAutocomplete = async (inputRef: any, locationRef: any) => {
       const place = autocomplete.getPlace();
       if (place.geometry) {
         locationRef.value = place.formatted_address;
+        // Set the input value directly to match the selected place
+        if (inputRef.value) inputRef.value.value = place.formatted_address;
       }
     });
   }
 };
-
-onMounted(() => {
-  initAutocomplete(pickupInput, pickupLocation);
-  initAutocomplete(dropoffInput, dropoffLocation);
-});
 
 const handlePickupChange = async () => {
   await initAutocomplete(pickupInput, pickupLocation);
@@ -83,26 +114,40 @@ const handleDropoffChange = async () => {
   await initAutocomplete(dropoffInput, dropoffLocation);
 };
 
-const handleSearch = () => {
-  const bookingData = {
-    pickupLocation: pickupLocation.value,
-    dropoffLocation: dropoffLocation.value,
-    pickupDate: selectedDateTime.value,
-    pickupTime: selectedDateTime.value,
-    passengersCount: passengersCount.value,
-    luggageCount: luggageCount.value,
-  };
+function suggestVehicleType(passengers: number, luggages: number): string {
+  if (passengers <= 4 && luggages <= 2) return 'saloon';
+  if (passengers <= 4 && luggages >= 3 && luggages <= 4) return 'estate';
+  if (passengers >= 5 && passengers <= 6 && luggages <= 4) return 'mpv';
+  // Optionally, add a checkbox for wheelchair accessible, for now use this logic:
+  if (passengers <= 4 && luggages <= 2) return 'wheelchair'; // Only if specifically requested
+  return 'saloon'; // fallback
+}
 
+const handleSearch = () => {
+  const vehicleType = suggestVehicleType(Number(passengersCount.value), Number(luggageCount.value));
   // Store in Pinia
-  bookingStore.setBookingData(bookingData);
-  
-  // Emit to parent
-  emit('search', bookingData);
+  queryStore.setQueryData({
+    from: pickupLocation.value,
+    to: dropoffLocation.value,
+    passengers: Number(passengersCount.value),
+    luggage: Number(luggageCount.value),
+    pickupDateTime: selectedDateTime.value,
+    vehicleType
+  });
+  const params = new URLSearchParams({
+    from: pickupLocation.value,
+    to: dropoffLocation.value,
+    passengers: String(passengersCount.value),
+    luggage: String(luggageCount.value),
+    pickupDateTime: selectedDateTime.value,
+    vehicleType
+  });
+  router.push(`/quote?${params.toString()}`);
 };
 </script>
 
 <template>
-  <div class=" mx-auto p-4 md:p-6 bg-white rounded-xl shadow-lg border border-gray-100">
+  <div class=" mx-auto p-4 md:p-6 bg-white rounded-xl shadow-lg border border-gray-100 relative">
     <!-- Mobile Layout (Vertical) -->
     <div class="block md:hidden space-y-4">
       <!-- Pickup Location - Full Width -->
@@ -111,11 +156,14 @@ const handleSearch = () => {
         <div class="relative">
           <input
             ref="pickupInput"
-            v-model="pickupLocation"
+            :value="pickupLocation"
+            @input="onPickupInput"
+            @change="handlePickupChange"
+            autocomplete="off"
+            name="pickup-autocomplete"
             type="text"
             placeholder="Eg: Gatwick Airport"
             class="w-full p-3 border-2 border-gray-200 rounded-lg text-sm shadow-sm focus:border-amber-400 focus:ring-2 focus:ring-amber-100 transition-all duration-200 hover:border-gray-300"
-            @change="handlePickupChange"
             :disabled="isGoogleMapsLoading"
           />
           <div v-if="isGoogleMapsLoading" class="absolute right-3 top-1/2 transform -translate-y-1/2">
@@ -130,11 +178,14 @@ const handleSearch = () => {
         <div class="relative">
           <input
             ref="dropoffInput"
-            v-model="dropoffLocation"
+            :value="dropoffLocation"
+            @input="onDropoffInput"
+            @change="handleDropoffChange"
+            autocomplete="off"
+            name="dropoff-autocomplete"
             type="text"
             placeholder="Eg: SW1 7NL"
             class="w-full p-3 border-2 border-gray-200 rounded-lg text-sm shadow-sm focus:border-amber-400 focus:ring-2 focus:ring-amber-100 transition-all duration-200 hover:border-gray-300"
-            @change="handleDropoffChange"
             :disabled="isGoogleMapsLoading"
           />
           <div v-if="isGoogleMapsLoading" class="absolute right-3 top-1/2 transform -translate-y-1/2">
@@ -159,14 +210,14 @@ const handleSearch = () => {
         <div>
           <CustomSelect
             v-model="passengersCount"
-            :options="['1', '2', '3', '4']"
+            :options="['1', '2', '3', '4', '5', '6', '7', '8']"
             label="Passengers"
           />
         </div>
         <div>
           <CustomSelect
             v-model="luggageCount"
-            :options="['0', '1', '2', '3']"
+            :options="['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10']"
             label="Luggages"
           />
         </div>
@@ -196,11 +247,14 @@ const handleSearch = () => {
         <div class="relative">
           <input
             ref="pickupInput"
-            v-model="pickupLocation"
+            :value="pickupLocation"
+            @input="onPickupInput"
+            @change="handlePickupChange"
+            autocomplete="off"
+            name="pickup-autocomplete"
             type="text"
             placeholder="Eg: Gatwick Airport"
             class="w-full p-3 border-2 border-gray-200 rounded-lg text-sm shadow-sm focus:border-amber-400 focus:ring-2 focus:ring-amber-100 transition-all duration-200 hover:border-gray-300"
-            @change="handlePickupChange"
             :disabled="isGoogleMapsLoading"
           />
           <div v-if="isGoogleMapsLoading" class="absolute right-3 top-1/2 transform -translate-y-1/2">
@@ -215,11 +269,14 @@ const handleSearch = () => {
         <div class="relative">
           <input
             ref="dropoffInput"
-            v-model="dropoffLocation"
+            :value="dropoffLocation"
+            @input="onDropoffInput"
+            @change="handleDropoffChange"
+            autocomplete="off"
+            name="dropoff-autocomplete"
             type="text"
             placeholder="Eg: SW1 7NL"
             class="w-full p-3 border-2 border-gray-200 rounded-lg text-sm shadow-sm focus:border-amber-400 focus:ring-2 focus:ring-amber-100 transition-all duration-200 hover:border-gray-300"
-            @change="handleDropoffChange"
             :disabled="isGoogleMapsLoading"
           />
           <div v-if="isGoogleMapsLoading" class="absolute right-3 top-1/2 transform -translate-y-1/2">
@@ -243,7 +300,7 @@ const handleSearch = () => {
       <div class="flex-1 min-w-0">
         <CustomSelect
           v-model="passengersCount"
-          :options="['1', '2', '3', '4']"
+          :options="['1', '2', '3', '4', '5', '6', '7', '8']"
           label="Passengers"
         />
       </div>
@@ -252,7 +309,7 @@ const handleSearch = () => {
       <div class="flex-1 min-w-0">
         <CustomSelect
           v-model="luggageCount"
-          :options="['0', '1', '2', '3']"
+          :options="['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10']"
           label="Luggages"
         />
       </div>
@@ -272,8 +329,19 @@ const handleSearch = () => {
   </div>
 </template>
 
-<style>
-body {
-  font-family: Arial, sans-serif;
+<style scoped>
+/* Allow dropdowns to extend beyond container */
+.relative {
+  overflow: visible !important;
+}
+
+/* Ensure dropdowns can extend beyond container */
+:deep([role="listbox"]) {
+  overflow: visible !important;
+}
+
+/* Override any overflow hidden on the main container */
+:deep(.bg-white) {
+  overflow: visible !important;
 }
 </style>

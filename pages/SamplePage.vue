@@ -38,6 +38,7 @@
 
 <script setup>
 import BookingForm from '~/components/BookingForm.vue';
+import { useQueryStore } from '~/stores/queryStore'
 </script>
 
 <style scoped>

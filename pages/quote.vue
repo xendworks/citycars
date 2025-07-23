@@ -7,78 +7,14 @@
           Enter your journey details below to find the best available cabs for your trip.
         </p>
 
-        <!-- Search Form -->
-        <div class="bg-white p-6 rounded-lg shadow-md max-w-4xl mx-auto mb-8">
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-            <!-- From Location -->
-            <div class="md:col-span-1 lg:col-span-2">
-              <label class="block text-sm font-medium text-gray-700 mb-1">From Location</label>
-              <input 
-                ref="pickupInput"
-                type="text" 
-                v-model="fromLocation" 
-                placeholder="Eg: Gatwick Airport" 
-                class="w-full p-2 border rounded-md text-sm"
-              >
-            </div>
-            
-            <!-- To Location -->
-            <div class="md:col-span-1 lg:col-span-2">
-              <label class="block text-sm font-medium text-gray-700 mb-1">To Location</label>
-              <input 
-                ref="dropoffInput"
-                type="text" 
-                v-model="toLocation" 
-                placeholder="Eg: SW1 7NL" 
-                class="w-full p-2 border rounded-md text-sm"
-              >
-            </div>
-            
-            <!-- Passengers -->
-            <div class="md:col-span-1 lg:col-span-1">
-              <label class="block text-sm font-medium text-gray-700 mb-1">Passengers</label>
-              <select v-model="passengers" class="w-full p-2 border rounded-md text-sm">
-                <option v-for="n in 9" :key="n" :value="n">{{ n }}</option>
-              </select>
-            </div>
-            
-            <!-- Luggage -->
-            <div class="md:col-span-1 lg:col-span-1">
-              <label class="block text-sm font-medium text-gray-700 mb-1">Luggage</label>
-              <select v-model="luggage" class="w-full p-2 border rounded-md text-sm">
-                <option v-for="n in 6" :key="n" :value="n">{{ n }}</option>
-              </select>
-            </div>
-            
-            <!-- Date & Time -->
-            <div class="md:col-span-1 lg:col-span-2">
-              <label class="block text-sm font-medium text-gray-700 mb-1">Pickup Date & Time</label>
-              <input 
-                type="datetime-local" 
-                v-model="pickupDateTime" 
-                class="w-full p-2 border rounded-md text-sm"
-              >
-            </div>
-            
-            <!-- Search Button -->
-            <div class="md:col-span-2 lg:col-span-2 flex items-end">
-              <button 
-                @click="searchCabs" 
-                class="w-full bg-amber-400 hover:bg-amber-500 text-white py-2 px-4 rounded-md font-medium transition duration-300"
-                :disabled="isLoading"
-              >
-                <span v-if="isLoading">
-                  <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                  Searching...
-                </span>
-                <span v-else>Search Available Cabs</span>
-              </button>
-            </div>
-          </div>
-        </div>
+ <BookingForm
+  :key="fromLocation + toLocation + pickupDateTime + passengers + luggage"
+  :initialPickup="fromLocation"
+  :initialDropoff="toLocation"
+  :initialDateTime="pickupDateTime"
+  :initialPassengers="passengers"
+  :initialLuggage="luggage"
+/>
       </div>
     </section>
 
@@ -129,13 +65,20 @@
                 <div class="flex items-center space-x-4">
                   <div class="flex-shrink-0">
                     <div class="h-16 w-24 bg-amber-100 rounded-lg flex items-center justify-center">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                      </svg>
+                      <img
+                        :src="cab.imageUrl"
+                        alt="Cab"
+                        class="h-16 w-auto object-contain"
+                      />
                     </div>
                   </div>
                   <div class="flex-1">
-                    <h3 class="text-lg font-semibold">{{ cab.name }}</h3>
+                    <h3 class="text-lg font-semibold flex items-center">
+                      {{ cab.name }}
+                      <span v-if="cab.suggested" class="ml-2 px-2 py-1 bg-amber-100 text-amber-700 rounded text-xs font-semibold">
+                        Suggested
+                      </span>
+                    </h3>
                     <div class="text-sm text-gray-600 mt-1">
                       <span class="mr-3">{{ cab.passengerCapacity }} passengers</span>
                       <span>{{ cab.luggageCapacity }} luggage</span>
@@ -160,10 +103,11 @@
           <div class="lg:col-span-1">
             <!-- Map Container -->
             <div class="bg-white rounded-lg shadow-md overflow-hidden mb-6">
-              <h3 class="bg-gray-100 py-2 px-4 font-semibold">Journey Map</h3>
+  
               <div 
-                ref="mapContainer" 
-                class="h-64 w-full"
+                ref="realMapContainer" 
+                id="realMap" 
+                class="h-96 w-full relative"
                 :class="{'bg-gray-200 animate-pulse': isLoading && !mapLoaded}"
               ></div>
             </div>
@@ -235,6 +179,14 @@
 <script setup>
 import { ref, reactive, computed, onMounted, watch } from 'vue'
 import { useGoogleMapsPlaces } from '~/composables/useGoogleMapsPlaces'
+import { useFareCalculator } from '~/composables/useFareCalculator'
+import { useGeocode } from '~/composables/useGeocode'
+import BookingForm from '~/components/BookingForm.vue'
+import { useQueryStore } from '~/stores/queryStore'
+import { useQuoteStore } from '~/stores/queryStore'
+
+// Get fare calculator
+const { calculateFare, formatFare, getVehicleDisplayName, getPeakHourDisplayName, isLoading: fareLoading, error } = useFareCalculator()
 
 // Form state
 const fromLocation = ref('')
@@ -242,6 +194,7 @@ const toLocation = ref('')
 const passengers = ref(2)
 const luggage = ref(1)
 const pickupDateTime = ref(new Date().toISOString().slice(0, 16))
+const vehicleType = ref('saloon')
 
 // Google Maps Places
 const { isLoaded, loadGoogleMapsApi, setupPlacesAutocomplete, attachPlaceChangedListener } = useGoogleMapsPlaces()
@@ -259,12 +212,113 @@ const directionsService = ref(null)
 const directionsRenderer = ref(null)
 const mapLoaded = ref(false)
 
+// Add after mapContainer ref
+const realMapContainer = ref(null)
+
 // Results state
 const isLoading = ref(false)
 const hasSearched = ref(false)
 const cabResults = ref([])
 const selectedCab = ref(null)
 const routeDetails = ref(null)
+
+// Fare calculation results
+const fareResult = ref(null)
+const showBreakdown = ref(false)
+
+// Route query parameters
+const route = useRoute()
+
+// Geocoding state
+const fromCoords = ref(null)
+const toCoords = ref(null)
+const geocodeLoading = ref(false)
+const geocodeError = ref(null)
+
+const { geocodeAddress } = useGeocode()
+
+const queryStore = useQueryStore();
+const quoteStore = useQuoteStore();
+
+// Update form values from route query if available
+onMounted(async () => {
+  // Prefer Pinia store if available
+  if (queryStore.from) fromLocation.value = queryStore.from
+  if (queryStore.to) toLocation.value = queryStore.to
+  if (queryStore.vehicleType) vehicleType.value = queryStore.vehicleType
+  if (queryStore.passengers) passengers.value = queryStore.passengers
+  if (queryStore.luggage) luggage.value = queryStore.luggage
+  if (queryStore.pickupDateTime) pickupDateTime.value = queryStore.pickupDateTime
+
+  // Fallback to query params if Pinia store is empty
+  if (route.query.from) fromLocation.value = route.query.from
+  if (route.query.to) toLocation.value = route.query.to
+  if (route.query.vehicleType) vehicleType.value = route.query.vehicleType
+  if (route.query.passengers) passengers.value = parseInt(route.query.passengers) || 1
+  if (route.query.luggage) luggage.value = parseInt(route.query.luggage) || 0
+  if (route.query.pickupDateTime) pickupDateTime.value = route.query.pickupDateTime
+
+  // Geocode both addresses
+  geocodeLoading.value = true
+  try {
+    const [fromResult, toResult] = await Promise.all([
+      geocodeAddress(fromLocation.value),
+      geocodeAddress(toLocation.value)
+    ])
+    fromCoords.value = fromResult
+    toCoords.value = toResult
+  } catch (e) {
+    geocodeError.value = e.message || 'Failed to geocode addresses.'
+  } finally {
+    geocodeLoading.value = false
+  }
+})
+
+// Calculate fare when component mounts or parameters change
+const calculateFareForRoute = async () => {
+  if (!fromLocation.value || !toLocation.value || !pickupDateTime.value) {
+    return
+  }
+
+  try {
+    // For now, we'll use mock location data
+    // In a real implementation, you'd get coordinates from Google Places API
+    const mockFromLocation = {
+      name: fromLocation.value,
+      lat: 51.1537, // Gatwick Airport coordinates
+      lng: -0.1821
+    }
+    
+    const mockToLocation = {
+      name: toLocation.value,
+      lat: 51.5074, // London coordinates
+      lng: -0.1278
+    }
+
+    const request = {
+      from: mockFromLocation,
+      to: mockToLocation,
+      vehicleType: vehicleType.value,
+      passengers: passengers.value,
+      luggage: luggage.value,
+      pickupDateTime: pickupDateTime.value
+    }
+
+    const result = await calculateFare(request)
+    fareResult.value = result
+  } catch (err) {
+    console.error('Failed to calculate fare:', err)
+  }
+}
+
+// Watch for changes in form values
+watch([fromLocation, toLocation, vehicleType, passengers, luggage, pickupDateTime], () => {
+  calculateFareForRoute()
+}, { deep: true })
+
+definePageMeta({
+  title: 'Get Quote - City Cars'
+})
 
 // Computed properties
 const formatPickupDate = computed(() => {
@@ -355,10 +409,6 @@ const searchCabs = async () => {
 // Initialize with default search on page load
 onMounted(async () => {
   try {
-    // Set default locations
-    fromLocation.value = 'Gatwick Airport'
-    toLocation.value = 'London City'
-    
     // Create a mock map element to simulate map loading
     setTimeout(() => {
       mapLoaded.value = true
@@ -394,15 +444,16 @@ onMounted(async () => {
 
 // Mock cab data generation
 const generateMockCabResults = () => {
-  // Images for cab types - using relative paths to assets
+  // Images for cab types - using the same images as in index.vue
   const cabImages = {
-    'Saloon': '/assets/images/saloon.png',
-    'Estate': '/assets/images/saloon.png', // Reusing saloon image as placeholders
-    'MPV': '/assets/images/saloon.png',
-    '7 Seater': '/assets/images/saloon.png',
-    '9 Seater': '/assets/images/saloon.png',
+    'Saloon': '/images/2.png',
+    'Estate': '/images/3.png',
+    'MPV': '/images/4.png',
+    '7 Seater': '/images/6.png',
+    '9 Seater': '/images/7.png',
+    'Wheelchair': '/images/8.png',
   }
-  
+
   const baseCabs = [
     {
       id: 1,
@@ -455,7 +506,7 @@ const generateMockCabResults = () => {
       imageUrl: cabImages['9 Seater']
     }
   ]
-  
+
   // Estimate distance from route (or use mock value if no route yet)
   let distanceInMiles = 10
   if (routeDetails.value?.distance) {
@@ -463,18 +514,30 @@ const generateMockCabResults = () => {
     const distanceValue = parseFloat(distanceStr.replace(/[^0-9.]/g, ''))
     distanceInMiles = distanceStr.includes('km') ? distanceValue * 0.621371 : distanceValue
   }
-  
-  // Filter cabs based on passenger and luggage requirements
+
+  // Show all cabs that can accommodate the request
   const availableCabs = baseCabs
     .filter(cab => cab.passengerCapacity >= passengers.value && cab.luggageCapacity >= luggage.value)
     .map(cab => ({
       ...cab,
-      // Calculate price based on distance and base price
       price: cab.basePrice + (cab.pricePerMile * distanceInMiles)
     }))
-    .sort((a, b) => a.price - b.price)
-  
-  cabResults.value = availableCabs
+    .sort((a, b) => a.passengerCapacity - b.passengerCapacity || a.luggageCapacity - b.luggageCapacity)
+
+  // Find the best fit (smallest cab that fits)
+  let suggestedId = null
+  for (const cab of availableCabs) {
+    if (cab.passengerCapacity >= passengers.value && cab.luggageCapacity >= luggage.value) {
+      suggestedId = cab.id
+      break
+    }
+  }
+
+  // Attach suggested flag
+  cabResults.value = availableCabs.map(cab => ({
+    ...cab,
+    suggested: cab.id === suggestedId
+  }))
 }
 
 // Select a cab
@@ -484,7 +547,176 @@ const selectCab = (cab) => {
 
 // Book the selected cab
 const bookCab = (cab) => {
-  alert(`Booking ${cab.name} for your journey from ${fromLocation.value} to ${toLocation.value}.`)
-  // In a real app, this would navigate to a checkout page or submit the booking
+  // Generate a unique quoteId (timestamp + random)
+  const quoteId = `q${Date.now()}${Math.floor(Math.random()*10000)}`;
+  // Prepare quote details
+  const details = {
+    from: fromLocation.value,
+    to: toLocation.value,
+    passengers: passengers.value,
+    luggage: luggage.value,
+    distance: routeDetails.value?.distance || '',
+    duration: routeDetails.value?.duration || '',
+    bookingSource: 'online',
+    arrivalTime: routeDetails.value?.eta || '',
+    cabType: cab.name,
+    fare: cab.price,
+    vehicleType: cab.name,
+    pickupDateTime: pickupDateTime.value,
+    quoteId,
+  };
+  quoteStore.saveQuote(quoteId, details);
+  // Redirect to /{quoteId}/book
+  window.location.href = `/${quoteId}/book`;
 }
+
+// Uber-style map theme JSON
+const uberMapStyle = [
+  {"featureType":"all","elementType":"labels.text.fill","stylers":[{"color":"#7c93a3"},{"lightness":"-10"}]},
+  {"featureType":"administrative.country","elementType":"geometry","stylers":[{"visibility":"on"}]},
+  {"featureType":"administrative.country","elementType":"geometry.stroke","stylers":[{"color":"#a0a4a5"}]},
+  {"featureType":"administrative.province","elementType":"geometry.stroke","stylers":[{"color":"#62838e"}]},
+  {"featureType":"landscape","elementType":"geometry.fill","stylers":[{"color":"#dde3e3"}]},
+  {"featureType":"landscape.man_made","elementType":"geometry.stroke","stylers":[{"color":"#3f4a51"},{"weight":"0.30"}]},
+  {"featureType":"poi","elementType":"all","stylers":[{"visibility":"simplified"}]},
+  {"featureType":"poi.attraction","elementType":"all","stylers":[{"visibility":"on"}]},
+  {"featureType":"poi.business","elementType":"all","stylers":[{"visibility":"on"}]},
+  {"featureType":"poi.government","elementType":"all","stylers":[{"visibility":"on"}]},
+  {"featureType":"poi.medical","elementType":"all","stylers":[{"visibility":"on"}]},
+  {"featureType":"poi.park","elementType":"geometry.fill","stylers":[{"color":"#a8dba8"}]},
+  {"featureType":"poi.place_of_worship","elementType":"all","stylers":[{"visibility":"on"}]},
+  {"featureType":"poi.school","elementType":"all","stylers":[{"visibility":"on"}]},
+  {"featureType":"poi.sports_complex","elementType":"all","stylers":[{"visibility":"on"}]},
+  {"featureType":"road","elementType":"all","stylers":[{"saturation":"-100"},{"lightness":"45"}]},
+  {"featureType":"road","elementType":"geometry.stroke","stylers":[{"color":"#bbcacf"}]},
+  {"featureType":"road.highway","elementType":"geometry.fill","stylers":[{"color":"#bbcacf"}]},
+  {"featureType":"road.highway","elementType":"geometry.stroke","stylers":[{"color":"#bbcacf"}]},
+  {"featureType":"road.arterial","elementType":"geometry.fill","stylers":[{"color":"#bbcacf"}]},
+  {"featureType":"road.arterial","elementType":"geometry.stroke","stylers":[{"color":"#bbcacf"}]},
+  {"featureType":"road.local","elementType":"geometry.fill","stylers":[{"color":"#bbcacf"}]},
+  {"featureType":"road.local","elementType":"geometry.stroke","stylers":[{"color":"#bbcacf"}]},
+  {"featureType":"transit","elementType":"all","stylers":[{"visibility":"on"}]},
+  {"featureType":"transit.line","elementType":"geometry.fill","stylers":[{"color":"#b4cbd4"}]},
+  {"featureType":"transit.station","elementType":"all","stylers":[{"visibility":"on"}]},
+  {"featureType":"water","elementType":"geometry.fill","stylers":[{"color":"#a6cbe3"}]}
+];
+
+// Render real Google Map with route and custom markers/labels
+async function renderRealMap() {
+  if (!window.google || !fromCoords.value || !toCoords.value) return;
+  const map = new window.google.maps.Map(realMapContainer.value, {
+    center: { lat: fromCoords.value.lat, lng: fromCoords.value.lng },
+    zoom: 10,
+    mapTypeId: 'roadmap',
+    styles: uberMapStyle,
+    disableDefaultUI: true,
+    zoomControl: false,
+    mapTypeControl: false,
+    streetViewControl: false,
+    fullscreenControl: false,
+    clickableIcons: false,
+  });
+  const directionsService = new window.google.maps.DirectionsService();
+  const directionsRenderer = new window.google.maps.DirectionsRenderer({ map, suppressMarkers: true });
+  directionsService.route({
+    origin: { lat: fromCoords.value.lat, lng: fromCoords.value.lng },
+    destination: { lat: toCoords.value.lat, lng: toCoords.value.lng },
+    travelMode: 'DRIVING',
+    drivingOptions: {
+      departureTime: new Date(pickupDateTime.value || Date.now()),
+      trafficModel: 'bestguess',
+    },
+    region: 'uk',
+    provideRouteAlternatives: false,
+  }, (result, status) => {
+    if (status === 'OK') {
+      directionsRenderer.setDirections(result);
+      // Custom markers for from/to
+      const leg = result.routes[0].legs[0];
+      // From marker (A)
+      const fromMarker = new window.google.maps.Marker({
+        position: leg.start_location,
+        map,
+        label: {
+          text: "A",
+          color: "white",
+          fontWeight: "bold",
+          fontSize: "14px"
+        },
+        icon: {
+          path: window.google.maps.SymbolPath.CIRCLE,
+          scale: 10,
+          fillColor: "#1976D2",
+          fillOpacity: 1,
+          strokeWeight: 2,
+          strokeColor: "#fff"
+        }
+      });
+      // To marker (B)
+      const toMarker = new window.google.maps.Marker({
+        position: leg.end_location,
+        map,
+        label: {
+          text: "B",
+          color: "white",
+          fontWeight: "bold",
+          fontSize: "14px"
+        },
+        icon: {
+          path: window.google.maps.SymbolPath.CIRCLE,
+          scale: 10,
+          fillColor: "#D32F2F",
+          fillOpacity: 1,
+          strokeWeight: 2,
+          strokeColor: "#fff"
+        }
+      });
+      // Add tiny custom popovers for A and B
+      function addCustomPopover(map, position, text) {
+        const overlay = new window.google.maps.OverlayView();
+        overlay.onAdd = function() {
+          const div = document.createElement('div');
+          div.style.position = 'absolute';
+          div.style.background = 'rgba(255,255,255,0.95)';
+          div.style.borderRadius = '4px';
+          div.style.padding = '2px 6px';
+          div.style.fontSize = '10px';
+          div.style.fontWeight = '500';
+          div.style.boxShadow = '0 1px 4px rgba(0,0,0,0.08)';
+          div.style.pointerEvents = 'none';
+          div.innerText = text;
+          this.div = div;
+          const panes = this.getPanes();
+          panes.overlayMouseTarget.appendChild(div);
+        };
+        overlay.draw = function() {
+          const projection = this.getProjection();
+          const pos = projection.fromLatLngToDivPixel(position);
+          if (pos && this.div) {
+            this.div.style.left = pos.x + 12 + 'px'; // offset to the right of marker
+            this.div.style.top = pos.y - 18 + 'px'; // offset above marker
+          }
+        };
+        overlay.onRemove = function() {
+          if (this.div) this.div.parentNode.removeChild(this.div);
+          this.div = null;
+        };
+        overlay.setMap(map);
+      }
+      // Show only the first part of the address (place name)
+      addCustomPopover(map, leg.start_location, leg.start_address.split(',')[0]);
+      addCustomPopover(map, leg.end_location, leg.end_address.split(',')[0]);
+    }
+  });
+  // Add traffic layer
+  const trafficLayer = new window.google.maps.TrafficLayer();
+  trafficLayer.setMap(map);
+}
+
+// Watch for coords and render map
+watch([fromCoords, toCoords], () => {
+  if (fromCoords.value && toCoords.value && realMapContainer.value) {
+    renderRealMap();
+  }
+});
 </script> 

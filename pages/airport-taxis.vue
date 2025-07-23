@@ -177,6 +177,8 @@
 </template>
 
 <script setup>
+import { useQueryStore } from '~/stores/queryStore'
+
 definePageMeta({
   title: 'Airport Taxis - City Cars'
 })

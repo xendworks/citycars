@@ -6,7 +6,7 @@
     <!-- Content -->
     <div class="relative z-10">
       <!-- Hero Section -->
-      <section class="relative py-8 md:py-16 bg-gradient-to-br from-amber-50 to-yellow-100 overflow-hidden">
+      <section class="relative py-8 md:py-16 bg-gradient-to-br from-amber-50 to-yellow-100">
         <!-- Background Pattern -->
         <div class="absolute inset-0 opacity-20">
           <div class="absolute inset-0" style="background-image: radial-gradient(circle at 25% 25%, #f59e0b 2px, transparent 2px), radial-gradient(circle at 75% 75%, #f59e0b 2px, transparent 2px); background-size: 50px 50px;"></div>

@@ -10,11 +10,8 @@ export default defineNuxtPlugin((nuxtApp) => {
   let isLoaded = false
   let loadPromise = null
   
-  // Create a promise to track Google Maps API loading
   const loadGoogleMaps = () => {
-    // If already loaded, return immediately
     if (isLoaded && window.google && window.google.maps && window.google.maps.places) {
-      console.log('Google Maps already loaded')
       return Promise.resolve(window.google.maps)
     }
     

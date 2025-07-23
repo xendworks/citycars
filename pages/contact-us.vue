@@ -140,13 +140,17 @@
       <div class="container mx-auto px-4">
         <h2 class="text-2xl font-bold text-center mb-8 font-lexend">Find Us</h2>
         <div class="bg-white p-4 rounded-lg shadow-md">
-          <!-- Replace with actual map embed code in production -->
-          <div class="w-full h-96 bg-gray-200 rounded-md flex items-center justify-center">
-            <p class="text-gray-600 font-inter">Map will be displayed here</p>
-            <!-- In production, replace with:
-            <iframe src="https://www.google.com/maps/embed?..." width="100%" height="100%" frameborder="0" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
-            -->
-          </div>
+          <iframe 
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2500.0000000000005!2d-0.2082155!3d51.1268316!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4875ee39ded8fab5%3A0x80788f4a0b177445!2s55%20Fitchet%20Cl%2C%20Crawley%20RH11%207PY%2C%20UK!5e0!3m2!1sen!2suk!4v1652345678901!5m2!1sen!2suk" 
+            width="100%" 
+            height="400" 
+            style="border:0;" 
+            allowfullscreen="" 
+            loading="lazy" 
+            referrerpolicy="no-referrer-when-downgrade"
+            class="w-full h-96 rounded-md"
+            title="City Cars Location - 55 Fitchet Cl, Crawley RH11 7PY, UK">
+          </iframe>
         </div>
       </div>
     </section>
@@ -199,6 +203,8 @@
 </template>
 
 <script setup>
+import { useQueryStore } from '~/stores/queryStore'
+
 definePageMeta({
   title: 'Contact Us - City Cars'
 })

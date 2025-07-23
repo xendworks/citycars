@@ -4,10 +4,10 @@ import { Server } from 'node:http';
 import { resolve, dirname, join } from 'node:path';
 import nodeCrypto from 'node:crypto';
 import { parentPort, threadId } from 'node:worker_threads';
-import { escapeHtml } from 'file:///Users/saicharan/Documents/GitHub/citycars/node_modules/.pnpm/@vue+shared@3.5.17/node_modules/@vue/shared/dist/shared.cjs.js';
+import { escapeHtml } from 'file:///Users/saicharan/Documents/GitHub/citycars/node_modules/.pnpm/@vue+shared@3.5.18/node_modules/@vue/shared/dist/shared.cjs.js';
 import { createRenderer, getRequestDependencies, getPreloadLinks, getPrefetchLinks } from 'file:///Users/saicharan/Documents/GitHub/citycars/node_modules/.pnpm/vue-bundle-renderer@2.1.1/node_modules/vue-bundle-renderer/dist/runtime.mjs';
 import { parseURL, withoutBase, joinURL, getQuery, withQuery, withTrailingSlash, decodePath, withLeadingSlash, withoutTrailingSlash, joinRelativeURL } from 'file:///Users/saicharan/Documents/GitHub/citycars/node_modules/.pnpm/ufo@1.6.1/node_modules/ufo/dist/index.mjs';
-import { renderToString } from 'file:///Users/saicharan/Documents/GitHub/citycars/node_modules/.pnpm/vue@3.5.17_typescript@5.8.3/node_modules/vue/server-renderer/index.mjs';
+import { renderToString } from 'file:///Users/saicharan/Documents/GitHub/citycars/node_modules/.pnpm/vue@3.5.18_typescript@5.8.3/node_modules/vue/server-renderer/index.mjs';
 import destr, { destr as destr$1 } from 'file:///Users/saicharan/Documents/GitHub/citycars/node_modules/.pnpm/destr@2.0.5/node_modules/destr/dist/index.mjs';
 import { createHooks } from 'file:///Users/saicharan/Documents/GitHub/citycars/node_modules/.pnpm/hookable@5.5.3/node_modules/hookable/dist/index.mjs';
 import { createFetch, Headers as Headers$1 } from 'file:///Users/saicharan/Documents/GitHub/citycars/node_modules/.pnpm/ofetch@1.4.1/node_modules/ofetch/dist/node.mjs';
@@ -28,7 +28,7 @@ import { SourceMapConsumer } from 'file:///Users/saicharan/Documents/GitHub/city
 import { AsyncLocalStorage } from 'node:async_hooks';
 import { stringify, uneval } from 'file:///Users/saicharan/Documents/GitHub/citycars/node_modules/.pnpm/devalue@5.1.1/node_modules/devalue/index.js';
 import { captureRawStackTrace, parseRawStackTrace } from 'file:///Users/saicharan/Documents/GitHub/citycars/node_modules/.pnpm/errx@0.1.0/node_modules/errx/dist/index.js';
-import { isVNode, toValue, isRef } from 'file:///Users/saicharan/Documents/GitHub/citycars/node_modules/.pnpm/vue@3.5.17_typescript@5.8.3/node_modules/vue/index.mjs';
+import { isVNode, toValue, isRef } from 'file:///Users/saicharan/Documents/GitHub/citycars/node_modules/.pnpm/vue@3.5.18_typescript@5.8.3/node_modules/vue/index.mjs';
 import { promises } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname as dirname$1, resolve as resolve$1 } from 'file:///Users/saicharan/Documents/GitHub/citycars/node_modules/.pnpm/pathe@2.0.3/node_modules/pathe/dist/index.mjs';
@@ -648,7 +648,8 @@ const _inlineRuntimeConfig = {
     }
   },
   "public": {
-    "googleMapsApiKey": ""
+    "googleMapsApiKey": "",
+    "piniaPluginPersistedstate": {}
   }
 };
 const envOptions = {
@@ -1019,7 +1020,7 @@ if (!window.__NUXT_DEVTOOLS_TIME_METRIC__) {
 window.__NUXT_DEVTOOLS_TIME_METRIC__.appInit = Date.now()
 `;
 
-const _Y6pEXm7I161JnkH0hm3KoYxDzRhn0SoQ90fbPFFld0 = (function(nitro) {
+const _wJ2CysLyxY3mQdVAcnQN9oKUlLgG_TDC8mffYpthuM = (function(nitro) {
   nitro.hooks.hook("render:html", (htmlContext) => {
     htmlContext.head.push(`<script>${script}<\/script>`);
   });
@@ -1044,7 +1045,7 @@ const devReducers = {
   URL: (data) => data instanceof URL ? data.toString() : void 0
 };
 const asyncContext = getContext("nuxt-dev", { asyncContext: true, AsyncLocalStorage });
-const _vkOY6gyVYvfEP8JXsyd72_b2CYbrwiTpNp96aj9JBBo = (nitroApp) => {
+const _7Bc6cVNVRnLO3fMC3KA4EDHvfOE2qXrtyXM_2AGNu4g = (nitroApp) => {
   const handler = nitroApp.h3App.handler;
   nitroApp.h3App.handler = (event) => {
     return asyncContext.callAsync({ logs: [], event }, () => handler(event));
@@ -1114,8 +1115,8 @@ function onConsoleLog(callback) {
 }
 
 const plugins = [
-  _Y6pEXm7I161JnkH0hm3KoYxDzRhn0SoQ90fbPFFld0,
-_vkOY6gyVYvfEP8JXsyd72_b2CYbrwiTpNp96aj9JBBo
+  _wJ2CysLyxY3mQdVAcnQN9oKUlLgG_TDC8mffYpthuM,
+_7Bc6cVNVRnLO3fMC3KA4EDHvfOE2qXrtyXM_2AGNu4g
 ];
 
 const assets = {};
@@ -1525,13 +1526,13 @@ async function getIslandContext(event) {
   return ctx;
 }
 
-const _lazy_zaRmmQ = () => Promise.resolve().then(function () { return renderer$1; });
+const _lazy_quZUEm = () => Promise.resolve().then(function () { return renderer$1; });
 
 const handlers = [
   { route: '', handler: _eHEUwT, lazy: false, middleware: true, method: undefined },
-  { route: '/__nuxt_error', handler: _lazy_zaRmmQ, lazy: true, middleware: false, method: undefined },
+  { route: '/__nuxt_error', handler: _lazy_quZUEm, lazy: true, middleware: false, method: undefined },
   { route: '/__nuxt_island/**', handler: _SxA8c9, lazy: false, middleware: false, method: undefined },
-  { route: '/**', handler: _lazy_zaRmmQ, lazy: true, middleware: false, method: undefined }
+  { route: '/**', handler: _lazy_quZUEm, lazy: true, middleware: false, method: undefined }
 ];
 
 function createNitroApp() {

@@ -10,6 +10,7 @@
 import Navbar from "@/components/Navbar.vue";
 import Footer from "@/components/Footer.vue";
 import { useThemeStore } from '@/piniaStore/theme';
+import { useQueryStore } from '~/stores/queryStore'
 
 export default {
   components: { Navbar, Footer },
