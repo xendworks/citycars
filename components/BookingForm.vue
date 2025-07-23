@@ -3,7 +3,7 @@ import { ref, onMounted, watch } from 'vue';
 import { useBookingStore } from '~/stores/booking';
 import CustomSelect from './CustomSelect.vue'
 import { useRouter } from 'vue-router'
-import { useQueryStore } from '~/stores/queryStore'
+import { useQueryStore, useQuoteStore } from '~/stores/queryStore'
 
 // Add type declarations
 declare global {
@@ -28,6 +28,7 @@ const isGoogleMapsLoading = ref(false)
 const API_KEY = 'AIzaSyACZ4JkEhZZAhafla2ePLtmNL7ktaxV8KM'; // Replace with your actual API key
 
 const queryStore = useQueryStore();
+const quoteStore = useQuoteStore();
 const router = useRouter();
 
 const pickupLocation = ref(queryStore.from);
@@ -125,7 +126,11 @@ function suggestVehicleType(passengers: number, luggages: number): string {
 
 const handleSearch = () => {
   const vehicleType = suggestVehicleType(Number(passengersCount.value), Number(luggageCount.value));
-  // Store in Pinia
+  
+  // Create a unique booking ID
+  const bookingId = Date.now().toString();
+  
+  // Store in Pinia with booking ID
   queryStore.setQueryData({
     from: pickupLocation.value,
     to: dropoffLocation.value,
@@ -134,15 +139,20 @@ const handleSearch = () => {
     pickupDateTime: selectedDateTime.value,
     vehicleType
   });
-  const params = new URLSearchParams({
+  
+  // Save quote details with booking ID
+  quoteStore.saveQuote(bookingId, {
     from: pickupLocation.value,
     to: dropoffLocation.value,
-    passengers: String(passengersCount.value),
-    luggage: String(luggageCount.value),
+    passengers: Number(passengersCount.value),
+    luggage: Number(luggageCount.value),
     pickupDateTime: selectedDateTime.value,
-    vehicleType
+    cabType: vehicleType, // Changed from vehicleType to cabType to match booking page
+    fare: 50 // Default fare, you can calculate this based on distance
   });
-  router.push(`/quote?${params.toString()}`);
+  
+  // Navigate directly to booking page with booking ID
+  router.push(`/${bookingId}/book`);
 };
 </script>
 
