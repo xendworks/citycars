@@ -47,10 +47,48 @@
               <p class="text-sm text-gray-500 mt-2">Try adjusting your passenger count, luggage, or locations.</p>
             </div>
             
-            <!-- Initial State -->
-            <div v-else-if="!hasSearched" class="bg-white rounded-lg p-6 shadow-md text-center">
-              <p class="text-lg text-gray-700">Enter your journey details above to see available cabs.</p>
-              <p class="text-sm text-gray-500 mt-2">We'll show you the best options for your trip.</p>
+            <!-- Initial State with Loader -->
+            <div v-else-if="!hasSearched" class="bg-white rounded-lg p-8 shadow-md text-center">
+              <div class="flex flex-col items-center space-y-6">
+                <!-- Animated Logo -->
+                <div class="relative">
+                  <div class="w-16 h-16 bg-gradient-to-r from-amber-400 to-yellow-500 rounded-full flex items-center justify-center animate-pulse">
+                    <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                    </svg>
+                  </div>
+                  <div class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full animate-ping"></div>
+                </div>
+                
+                <!-- Loading Text -->
+                <div class="space-y-2">
+                  <h3 class="text-xl font-semibold text-gray-800">Welcome to City Cars</h3>
+                  <p class="text-gray-600">Ready to find your perfect ride?</p>
+                </div>
+                
+                <!-- Animated Dots -->
+                <div class="flex space-x-2">
+                  <div class="w-3 h-3 bg-amber-400 rounded-full animate-bounce"></div>
+                  <div class="w-3 h-3 bg-amber-400 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
+                  <div class="w-3 h-3 bg-amber-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+                </div>
+                
+                <!-- Features -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6 text-sm">
+                  <div class="flex items-center space-x-2">
+                    <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                    <span class="text-gray-600">Instant Quotes</span>
+                  </div>
+                  <div class="flex items-center space-x-2">
+                    <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                    <span class="text-gray-600">Best Prices</span>
+                  </div>
+                  <div class="flex items-center space-x-2">
+                    <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                    <span class="text-gray-600">24/7 Support</span>
+                  </div>
+                </div>
+              </div>
             </div>
             
             <!-- Results List -->
@@ -178,6 +216,7 @@
 
 <script setup>
 import { ref, reactive, computed, onMounted, watch } from 'vue'
+import { useRouter } from 'vue-router'
 import { useGoogleMapsPlaces } from '~/composables/useGoogleMapsPlaces'
 import { useFareCalculator } from '~/composables/useFareCalculator'
 import { useGeocode } from '~/composables/useGeocode'
@@ -239,6 +278,10 @@ const { geocodeAddress } = useGeocode()
 
 const queryStore = useQueryStore();
 const quoteStore = useQuoteStore();
+const router = useRouter();
+
+// Get booking ID from URL
+const bookingId = computed(() => route.query.bookingId || '')
 
 // Update form values from route query if available
 onMounted(async () => {
@@ -547,8 +590,9 @@ const selectCab = (cab) => {
 
 // Book the selected cab
 const bookCab = (cab) => {
-  // Generate a unique quoteId (timestamp + random)
-  const quoteId = `q${Date.now()}${Math.floor(Math.random()*10000)}`;
+  // Use existing booking ID if available, otherwise generate new one
+  const quoteId = bookingId.value || `q${Date.now()}${Math.floor(Math.random()*10000)}`;
+  
   // Prepare quote details
   const details = {
     from: fromLocation.value,
@@ -565,9 +609,16 @@ const bookCab = (cab) => {
     pickupDateTime: pickupDateTime.value,
     quoteId,
   };
+  
+  // Save quote details
   quoteStore.saveQuote(quoteId, details);
-  // Redirect to /{quoteId}/book
-  window.location.href = `/${quoteId}/book`;
+  
+  // Log what we're saving
+  console.log('Saving quote with ID:', quoteId)
+  console.log('Quote details:', details)
+  
+  // Redirect to booking page using router
+  router.push(`/${quoteId}/book`);
 }
 
 // Uber-style map theme JSON

@@ -139,12 +139,42 @@
 <script setup>
 import { useRoute } from 'vue-router'
 import { useQuoteStore } from '~/stores/queryStore'
-import { computed, ref, watchEffect } from 'vue'
+import { computed, ref, watchEffect, onMounted } from 'vue'
 
 const route = useRoute()
 const quoteStore = useQuoteStore()
+const queryStore = useQueryStore()
+
+// Get quote ID from URL
 const quoteId = route.params.quoteid || route.params.id || route.path.split('/')[1]
-const quote = computed(() => quoteStore.getQuote(quoteId))
+
+// Try to get quote from store, fallback to queryStore data
+const quote = computed(() => {
+  console.log('Looking for quote ID:', quoteId)
+  console.log('All quotes in store:', quoteStore.quotes)
+  
+  const storedQuote = quoteStore.getQuote(quoteId)
+  console.log('Stored quote found:', storedQuote)
+  
+  if (storedQuote && storedQuote.from && storedQuote.to) {
+    console.log('Using stored quote:', storedQuote)
+    return storedQuote
+  }
+  
+  // Fallback to queryStore data
+  const fallbackQuote = {
+    from: queryStore.from || '',
+    to: queryStore.to || '',
+    passengers: queryStore.passengers || 1,
+    luggage: queryStore.luggage || 0,
+    pickupDateTime: queryStore.pickupDateTime || '',
+    cabType: queryStore.vehicleType || 'saloon',
+    fare: 50 // Default fare
+  }
+  
+  console.log('Using fallback quote:', fallbackQuote)
+  return fallbackQuote
+})
 
 const form = ref({
   name: '',
@@ -162,6 +192,26 @@ const form = ref({
 })
 
 watchEffect(() => {
+  console.log('Quote ID:', quoteId)
+  console.log('Stored Quote:', quoteStore.getQuote(quoteId))
+  console.log('Query Store Data:', {
+    from: queryStore.from,
+    to: queryStore.to,
+    passengers: queryStore.passengers,
+    luggage: queryStore.luggage,
+    pickupDateTime: queryStore.pickupDateTime,
+    vehicleType: queryStore.vehicleType
+  })
+  console.log('Computed Quote:', quote.value)
+  
+  if (quote.value) {
+    form.value.pickupAddress = quote.value.from || ''
+    form.value.dropoffAddress = quote.value.to || ''
+  }
+})
+
+// Also populate form on mount
+onMounted(() => {
   if (quote.value) {
     form.value.pickupAddress = quote.value.from || ''
     form.value.dropoffAddress = quote.value.to || ''

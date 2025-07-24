@@ -151,8 +151,8 @@ const handleSearch = () => {
     fare: 50 // Default fare, you can calculate this based on distance
   });
   
-  // Navigate directly to booking page with booking ID
-  router.push(`/${bookingId}/book`);
+  // Navigate to quote page with booking ID
+  router.push(`/quote?bookingId=${bookingId}`);
 };
 </script>
 
