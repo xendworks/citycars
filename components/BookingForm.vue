@@ -173,7 +173,7 @@ const handleSearch = () => {
             name="pickup-autocomplete"
             type="text"
             placeholder="Eg: Gatwick Airport"
-            class="w-full p-3 border-2 border-gray-200 rounded-lg text-sm shadow-sm focus:border-amber-400 focus:ring-2 focus:ring-amber-100 transition-all duration-200 hover:border-gray-300"
+            class="w-full p-3 border border-gray-200 rounded-lg text-sm shadow-sm focus:border-amber-400 focus:ring-2 focus:ring-amber-100 transition-all duration-200 hover:border-gray-300"
             :disabled="isGoogleMapsLoading"
           />
           <div v-if="isGoogleMapsLoading" class="absolute right-3 top-1/2 transform -translate-y-1/2">
@@ -195,7 +195,7 @@ const handleSearch = () => {
             name="dropoff-autocomplete"
             type="text"
             placeholder="Eg: SW1 7NL"
-            class="w-full p-3 border-2 border-gray-200 rounded-lg text-sm shadow-sm focus:border-amber-400 focus:ring-2 focus:ring-amber-100 transition-all duration-200 hover:border-gray-300"
+            class="w-full p-3 border border-gray-200 rounded-lg text-sm shadow-sm focus:border-amber-400 focus:ring-2 focus:ring-amber-100 transition-all duration-200 hover:border-gray-300"
             :disabled="isGoogleMapsLoading"
           />
           <div v-if="isGoogleMapsLoading" class="absolute right-3 top-1/2 transform -translate-y-1/2">
@@ -210,7 +210,7 @@ const handleSearch = () => {
         <input 
           type="datetime-local" 
           v-model="selectedDateTime"
-          class="w-full p-3 border-2 border-gray-200 rounded-lg text-sm shadow-sm focus:border-amber-400 focus:ring-2 focus:ring-amber-100 transition-all duration-200 hover:border-gray-300"
+          class="w-full p-3 border border-gray-200 rounded-lg text-sm shadow-sm focus:border-amber-400 focus:ring-2 focus:ring-amber-100 transition-all duration-200 hover:border-gray-300"
           :min="new Date().toISOString().slice(0, 16)"
         />
       </div>
@@ -264,7 +264,7 @@ const handleSearch = () => {
             name="pickup-autocomplete"
             type="text"
             placeholder="Eg: Gatwick Airport"
-            class="w-full p-3 border-2 border-gray-200 rounded-lg text-sm shadow-sm focus:border-amber-400 focus:ring-2 focus:ring-amber-100 transition-all duration-200 hover:border-gray-300"
+            class="w-full p-3 border border-gray-300 rounded-lg text-sm shadow-sm focus:border-amber-400 focus:ring-2 focus:ring-amber-100 transition-all duration-200 hover:border-gray-300"
             :disabled="isGoogleMapsLoading"
           />
           <div v-if="isGoogleMapsLoading" class="absolute right-3 top-1/2 transform -translate-y-1/2">
@@ -286,7 +286,7 @@ const handleSearch = () => {
             name="dropoff-autocomplete"
             type="text"
             placeholder="Eg: SW1 7NL"
-            class="w-full p-3 border-2 border-gray-200 rounded-lg text-sm shadow-sm focus:border-amber-400 focus:ring-2 focus:ring-amber-100 transition-all duration-200 hover:border-gray-300"
+            class="w-full p-3 border border-gray-300 rounded-lg text-sm shadow-sm focus:border-amber-400 focus:ring-2 focus:ring-amber-100 transition-all duration-200 hover:border-gray-300"
             :disabled="isGoogleMapsLoading"
           />
           <div v-if="isGoogleMapsLoading" class="absolute right-3 top-1/2 transform -translate-y-1/2">
@@ -301,7 +301,7 @@ const handleSearch = () => {
         <input 
           type="datetime-local" 
           v-model="selectedDateTime"
-          class="w-full p-3 border-2 border-gray-200 rounded-lg text-sm shadow-sm focus:border-amber-400 focus:ring-2 focus:ring-amber-100 transition-all duration-200 hover:border-gray-300"
+          class="w-full p-3 border border-gray-300 rounded-lg text-sm shadow-sm focus:border-amber-400 focus:ring-2 focus:ring-amber-100 transition-all duration-200 hover:border-gray-300"
           :min="new Date().toISOString().slice(0, 16)"
         />
       </div>

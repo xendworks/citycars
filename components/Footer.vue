@@ -203,8 +203,8 @@
         <!-- Navigation Links -->
         <div class="flex flex-wrap justify-center mb-6 md:mb-0">
           <a href="#" class="mx-2 my-1 text-sm hover:text-city-gold transition-colors">About Us</a>
-          <a href="#" class="mx-2 my-1 text-sm hover:text-city-gold transition-colors">Terms & Conditions</a>
-          <a href="#" class="mx-2 my-1 text-sm hover:text-city-gold transition-colors">Privacy Policy</a>
+          <a href="/contractor-agreement" class="mx-2 my-1 text-sm hover:text-city-gold transition-colors">Terms & Conditions</a>
+          <a href="/privacy-policy" class="mx-2 my-1 text-sm hover:text-city-gold transition-colors">Privacy Policy</a>
           <a href="#" class="mx-2 my-1 text-sm hover:text-city-gold transition-colors">FAQs</a>
           <a href="#" class="mx-2 my-1 text-sm hover:text-city-gold transition-colors">Blog</a>
         </div>
