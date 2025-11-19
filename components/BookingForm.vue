@@ -1,20 +1,29 @@
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted, watch, nextTick } from 'vue';
 import { useBookingStore } from '~/stores/booking';
 import CustomSelect from './CustomSelect.vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { useQueryStore, useQuoteStore } from '~/stores/queryStore'
 
-// Add type declarations
+// Add type declarations for NEW PlaceAutocompleteElement API
 declare global {
   interface Window {
     google: {
       maps: {
+        Map: any
+        DirectionsService: any
+        DirectionsRenderer: any
+        Marker: any
+        SymbolPath: any
+        OverlayView: any
+        TrafficLayer: any
+        importLibrary: (library: string) => Promise<any>
         places: {
-          Autocomplete: any;
-        };
-      };
-    };
+          Autocomplete: any
+          PlaceAutocompleteElement: any
+        }
+      }
+    }
   }
 }
 
@@ -30,6 +39,7 @@ const API_KEY = 'AIzaSyACZ4JkEhZZAhafla2ePLtmNL7ktaxV8KM'; // Replace with your 
 const queryStore = useQueryStore();
 const quoteStore = useQuoteStore();
 const router = useRouter();
+const route = useRoute();
 
 const pickupLocation = ref(queryStore.from);
 const dropoffLocation = ref(queryStore.to);
@@ -39,6 +49,10 @@ const luggageCount = ref(queryStore.luggage);
 
 const pickupInput = ref(null);
 const dropoffInput = ref(null);
+const pickupAutocomplete = ref<any>(null);
+const dropoffAutocomplete = ref<any>(null);
+const pickupContainer = ref<HTMLElement | null>(null);
+const dropoffContainer = ref<HTMLElement | null>(null);
 const size = ref('default');
 const disabledDate = (time: Date) => {
   return time.getTime() < Date.now() - 8.64e7;
@@ -51,14 +65,29 @@ const timeSlots = Array.from({ length: 24 * 4 }, (_, i) => {
   return `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
 });
 
-onMounted(() => {
+onMounted(async () => {
   pickupLocation.value = queryStore.from;
   dropoffLocation.value = queryStore.to;
   selectedDateTime.value = queryStore.pickupDateTime;
   passengersCount.value = queryStore.passengers;
   luggageCount.value = queryStore.luggage;
-  initAutocomplete(pickupInput, pickupLocation);
-  initAutocomplete(dropoffInput, dropoffLocation);
+  
+  // Wait for next tick to ensure DOM is ready
+  await nextTick();
+  
+  // Load Google Maps first, then initialize autocomplete
+  try {
+    await loadGoogleMaps();
+    console.log('Google Maps loaded successfully');
+    
+    // Wait a bit more to ensure the API is fully ready
+    setTimeout(async () => {
+      await initAutocomplete(pickupInput, pickupLocation, true);
+      await initAutocomplete(dropoffInput, dropoffLocation, false);
+    }, 500);
+  } catch (error) {
+    console.error('Failed to load Google Maps:', error);
+  }
 });
 
 watch([pickupLocation, dropoffLocation, selectedDateTime, passengersCount, luggageCount], () => {
@@ -79,40 +108,93 @@ const loadGoogleMaps = () => {
   });
 };
 
-const onPickupInput = (e: Event) => {
-  pickupLocation.value = (e.target as HTMLInputElement).value;
-};
+// Removed onPickupInput and onDropoffInput - using v-model instead
 
-const onDropoffInput = (e: Event) => {
-  dropoffLocation.value = (e.target as HTMLInputElement).value;
-};
-
-const initAutocomplete = async (inputRef: any, locationRef: any) => {
+const initAutocomplete = async (inputRef: any, locationRef: any, isPickup: boolean) => {
   if (process.server) return;
-  await loadGoogleMaps();
-  if (inputRef.value) {
+  
+  try {
+    console.log(`✨ Initializing CLASSIC Autocomplete for ${isPickup ? 'pickup' : 'dropoff'}...`);
+    
+    // Don't re-initialize if already exists
+    if (isPickup && pickupAutocomplete.value) {
+      console.log('Pickup autocomplete already initialized');
+      return;
+    }
+    if (!isPickup && dropoffAutocomplete.value) {
+      console.log('Dropoff autocomplete already initialized');
+      return;
+    }
+    
+    // Wait for input element to be available
+    if (!inputRef.value) {
+      console.warn(`Input ref not available for ${isPickup ? 'pickup' : 'dropoff'}`);
+      setTimeout(() => {
+        if (inputRef.value) {
+          initAutocomplete(inputRef, locationRef, isPickup);
+        }
+      }, 300);
+      return;
+    }
+    
+    // Create the CLASSIC Autocomplete (yes it's "deprecated" but it WORKS!)
+    //@ts-ignore
     const autocomplete = new window.google.maps.places.Autocomplete(inputRef.value, {
-      types: ['establishment', 'geocode'],
-      componentRestrictions: { country: 'uk' }
+      componentRestrictions: { country: 'gb' },
+      fields: ['formatted_address', 'geometry', 'name', 'address_components']
     });
     
+    // Store the autocomplete instance
+    if (isPickup) {
+      pickupAutocomplete.value = autocomplete;
+    } else {
+      dropoffAutocomplete.value = autocomplete;
+    }
+    
+    // Listen for place selection
     autocomplete.addListener('place_changed', () => {
       const place = autocomplete.getPlace();
-      if (place.geometry) {
-        locationRef.value = place.formatted_address;
-        // Set the input value directly to match the selected place
-        if (inputRef.value) inputRef.value.value = place.formatted_address;
+      
+      if (!place.geometry || !place.geometry.location) {
+        console.warn('No geometry found for place');
+        return;
       }
+      
+      // Google automatically fills the input with the place name
+      // We just need to sync it with our v-model by reading the input value
+      // This ensures the input shows EXACTLY what the user clicked in the dropdown
+      locationRef.value = inputRef.value.value;
+      
+      console.log(`✓ Selected ${isPickup ? 'pickup' : 'dropoff'} location:`, locationRef.value);
+      console.log('Place details:', {
+        name: place.name,
+        address: place.formatted_address,
+        lat: place.geometry.location.lat(),
+        lng: place.geometry.location.lng()
+      });
     });
+    
+    console.log(`✅ CLASSIC Autocomplete successfully initialized for ${isPickup ? 'pickup' : 'dropoff'}`);
+    
+  } catch (error) {
+    console.error(`❌ Error initializing Autocomplete for ${isPickup ? 'pickup' : 'dropoff'}:`, error);
   }
 };
 
 const handlePickupChange = async () => {
-  await initAutocomplete(pickupInput, pickupLocation);
+  // Re-initialize if autocomplete doesn't exist or if input is empty
+  if (!pickupAutocomplete.value && pickupInput.value) {
+    await nextTick();
+    await initAutocomplete(pickupInput, pickupLocation, true);
+  }
 };
 
 const handleDropoffChange = async () => {
-  await initAutocomplete(dropoffInput, dropoffLocation);
+  // Re-initialize if autocomplete doesn't exist or if input is empty
+  if (!dropoffAutocomplete.value && dropoffInput.value) {
+    await nextTick();
+    await initAutocomplete(dropoffInput, dropoffLocation, false);
+  }
 };
 
 function suggestVehicleType(passengers: number, luggages: number): string {
@@ -151,8 +233,24 @@ const handleSearch = () => {
     fare: 50 // Default fare, you can calculate this based on distance
   });
   
-  // Navigate to quote page with booking ID
-  router.push(`/quote?bookingId=${bookingId}`);
+  // Check if we're already on the quote page
+  if (route.path === '/quote') {
+    console.log('🔍 Already on quote page, emitting search event');
+    // Emit event to parent to trigger search
+    emit('search', {
+      from: pickupLocation.value,
+      to: dropoffLocation.value,
+      passengers: Number(passengersCount.value),
+      luggage: Number(luggageCount.value),
+      pickupDateTime: selectedDateTime.value,
+      vehicleType,
+      bookingId
+    });
+  } else {
+    console.log('🚀 Navigating to quote page');
+    // Navigate to quote page with booking ID
+    router.push(`/quote?bookingId=${bookingId}`);
+  }
 };
 </script>
 
@@ -166,19 +264,16 @@ const handleSearch = () => {
         <div class="relative">
           <input
             ref="pickupInput"
-            :value="pickupLocation"
-            @input="onPickupInput"
+            v-model="pickupLocation"
+            @focus="handlePickupChange"
             @change="handlePickupChange"
             autocomplete="off"
             name="pickup-autocomplete"
             type="text"
             placeholder="Eg: Gatwick Airport"
-            class="w-full p-3 border border-gray-200 rounded-lg text-sm shadow-sm focus:border-amber-400 focus:ring-2 focus:ring-amber-100 transition-all duration-200 hover:border-gray-300"
+            class="w-full p-3  border border-gray-200 rounded-lg text-base shadow-sm focus:border-amber-400 focus:ring-2 focus:ring-amber-100 transition-all duration-200 hover:border-gray-300"
             :disabled="isGoogleMapsLoading"
           />
-          <div v-if="isGoogleMapsLoading" class="absolute right-3 top-1/2 transform -translate-y-1/2">
-            <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-amber-400"></div>
-          </div>
         </div>
       </div>
 
@@ -188,19 +283,16 @@ const handleSearch = () => {
         <div class="relative">
           <input
             ref="dropoffInput"
-            :value="dropoffLocation"
-            @input="onDropoffInput"
+            v-model="dropoffLocation"
+            @focus="handleDropoffChange"
             @change="handleDropoffChange"
             autocomplete="off"
             name="dropoff-autocomplete"
             type="text"
             placeholder="Eg: SW1 7NL"
-            class="w-full p-3 border border-gray-200 rounded-lg text-sm shadow-sm focus:border-amber-400 focus:ring-2 focus:ring-amber-100 transition-all duration-200 hover:border-gray-300"
+            class="w-full p-3 border border-gray-200 rounded-lg text-base shadow-sm focus:border-amber-400 focus:ring-2 focus:ring-amber-100 transition-all duration-200 hover:border-gray-300"
             :disabled="isGoogleMapsLoading"
           />
-          <div v-if="isGoogleMapsLoading" class="absolute right-3 top-1/2 transform -translate-y-1/2">
-            <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-amber-400"></div>
-          </div>
         </div>
       </div>
 
@@ -257,14 +349,14 @@ const handleSearch = () => {
         <div class="relative">
           <input
             ref="pickupInput"
-            :value="pickupLocation"
-            @input="onPickupInput"
+            v-model="pickupLocation"
+            @focus="handlePickupChange"
             @change="handlePickupChange"
             autocomplete="off"
             name="pickup-autocomplete"
             type="text"
             placeholder="Eg: Gatwick Airport"
-            class="w-full p-3 border border-gray-300 rounded-lg text-sm shadow-sm focus:border-amber-400 focus:ring-2 focus:ring-amber-100 transition-all duration-200 hover:border-gray-300"
+            class="w-full p-3  border border-gray-300 rounded-lg text-sm shadow-sm focus:border-amber-400 focus:ring-2 focus:ring-amber-100 transition-all duration-200 hover:border-gray-300"
             :disabled="isGoogleMapsLoading"
           />
           <div v-if="isGoogleMapsLoading" class="absolute right-3 top-1/2 transform -translate-y-1/2">
@@ -279,8 +371,8 @@ const handleSearch = () => {
         <div class="relative">
           <input
             ref="dropoffInput"
-            :value="dropoffLocation"
-            @input="onDropoffInput"
+            v-model="dropoffLocation"
+            @focus="handleDropoffChange"
             @change="handleDropoffChange"
             autocomplete="off"
             name="dropoff-autocomplete"
@@ -301,7 +393,7 @@ const handleSearch = () => {
         <input 
           type="datetime-local" 
           v-model="selectedDateTime"
-          class="w-full p-3 border border-gray-300 rounded-lg text-sm shadow-sm focus:border-amber-400 focus:ring-2 focus:ring-amber-100 transition-all duration-200 hover:border-gray-300"
+          class="w-full p-3  border border-gray-300 rounded-lg text-sm shadow-sm focus:border-amber-400 focus:ring-2 focus:ring-amber-100 transition-all duration-200 hover:border-gray-300"
           :min="new Date().toISOString().slice(0, 16)"
         />
       </div>
@@ -353,5 +445,52 @@ const handleSearch = () => {
 /* Override any overflow hidden on the main container */
 :deep(.bg-white) {
   overflow: visible !important;
+}
+</style>
+
+<style>
+/* Custom styling for Google Places Autocomplete dropdown */
+/* (Google renders these outside the component, so we can style them normally) */
+.pac-container {
+  border-radius: 0.5rem !important;
+  border: 1px solid #d1d5db !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+  margin-top: 8px !important;
+  padding: 4px 0 !important;
+  background: #ffffff !important;
+  overflow: hidden !important;
+  z-index: 9999 !important;
+}
+
+.pac-item {
+  padding: 6px 10px !important;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
+  font-size: 12px !important;
+  color: #111827 !important;
+  border: none !important;
+  border-top: 1px solid #f3f4f6 !important;
+  cursor: pointer !important;
+  transition: background-color 0.15s ease !important;
+  line-height: 1.5 !important;
+}
+
+.pac-item:first-child {
+  border-top: none !important;
+}
+
+.pac-item:hover,
+.pac-item-selected {
+  background-color: #fef3c7 !important;
+}
+
+.pac-item-query {
+  font-size: 12px !important;
+  color: #111827 !important;
+  font-weight: 500 !important;
+}
+
+.pac-matched {
+  font-weight: 600 !important;
+  color: #f59e0b !important;
 }
 </style>

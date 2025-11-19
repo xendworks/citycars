@@ -14,6 +14,7 @@
   :initialDateTime="pickupDateTime"
   :initialPassengers="passengers"
   :initialLuggage="luggage"
+  @search="handleSearchFromForm"
 />
       </div>
     </section>
@@ -214,7 +215,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, reactive, computed, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useGoogleMapsPlaces } from '~/composables/useGoogleMapsPlaces'
@@ -223,9 +224,36 @@ import { useGeocode } from '~/composables/useGeocode'
 import BookingForm from '~/components/BookingForm.vue'
 import { useQueryStore } from '~/stores/queryStore'
 import { useQuoteStore } from '~/stores/queryStore'
+import { calculateFare } from '~/utils/pricing'
+
+// TypeScript interfaces
+interface Cab {
+  id: number
+  name: string
+  passengerCapacity: number
+  luggageCapacity: number
+  basePrice: number
+  pricePerMile: number
+  description: string
+  imageUrl: string
+  price: number
+  suggested?: boolean
+}
+
+interface RouteDetails {
+  distance: string
+  duration: string
+  eta: string
+}
+
+interface Coordinates {
+  lat: number
+  lng: number
+  formatted_address?: string
+}
 
 // Get fare calculator
-const { calculateFare, formatFare, getVehicleDisplayName, getPeakHourDisplayName, isLoading: fareLoading, error } = useFareCalculator()
+const { formatFare, getVehicleDisplayName, getPeakHourDisplayName, isLoading: fareLoading, error } = useFareCalculator()
 
 // Form state
 const fromLocation = ref('')
@@ -233,7 +261,7 @@ const toLocation = ref('')
 const passengers = ref(2)
 const luggage = ref(1)
 const pickupDateTime = ref(new Date().toISOString().slice(0, 16))
-const vehicleType = ref('saloon')
+const vehicleType = ref<'saloon' | 'estate' | 'mpv' | 'wheelchair'>('saloon')
 
 // Google Maps Places
 const { isLoaded, loadGoogleMapsApi, setupPlacesAutocomplete, attachPlaceChangedListener } = useGoogleMapsPlaces()
@@ -245,34 +273,31 @@ const pickupPlace = ref(null)
 const dropoffPlace = ref(null)
 
 // Map state
-const mapContainer = ref(null)
-const map = ref(null)
-const directionsService = ref(null)
-const directionsRenderer = ref(null)
+const map = ref<any>(null)
+const directionsService = ref<any>(null)
+const directionsRenderer = ref<any>(null)
 const mapLoaded = ref(false)
-
-// Add after mapContainer ref
-const realMapContainer = ref(null)
+const realMapContainer = ref<HTMLElement | null>(null)
 
 // Results state
 const isLoading = ref(false)
 const hasSearched = ref(false)
-const cabResults = ref([])
-const selectedCab = ref(null)
-const routeDetails = ref(null)
+const cabResults = ref<Cab[]>([])
+const selectedCab = ref<Cab | null>(null)
+const routeDetails = ref<RouteDetails | null>(null)
 
 // Fare calculation results
-const fareResult = ref(null)
+const fareResult = ref<any>(null)
 const showBreakdown = ref(false)
 
 // Route query parameters
 const route = useRoute()
 
 // Geocoding state
-const fromCoords = ref(null)
-const toCoords = ref(null)
+const fromCoords = ref<Coordinates | null>(null)
+const toCoords = ref<Coordinates | null>(null)
 const geocodeLoading = ref(false)
-const geocodeError = ref(null)
+const geocodeError = ref<string | null>(null)
 
 const { geocodeAddress } = useGeocode()
 
@@ -281,39 +306,94 @@ const quoteStore = useQuoteStore();
 const router = useRouter();
 
 // Get booking ID from URL
-const bookingId = computed(() => route.query.bookingId || '')
+const bookingId = computed(() => {
+  const id = route.query.bookingId
+  return Array.isArray(id) ? id[0] || '' : id || ''
+})
 
 // Update form values from route query if available
 onMounted(async () => {
+  // Load Google Maps API first
+  await loadGoogleMapsApi()
+  
   // Prefer Pinia store if available
   if (queryStore.from) fromLocation.value = queryStore.from
   if (queryStore.to) toLocation.value = queryStore.to
-  if (queryStore.vehicleType) vehicleType.value = queryStore.vehicleType
+  if (queryStore.vehicleType) {
+    const type = queryStore.vehicleType
+    if (type === 'saloon' || type === 'estate' || type === 'mpv' || type === 'wheelchair') {
+      vehicleType.value = type
+    }
+  }
   if (queryStore.passengers) passengers.value = queryStore.passengers
   if (queryStore.luggage) luggage.value = queryStore.luggage
   if (queryStore.pickupDateTime) pickupDateTime.value = queryStore.pickupDateTime
 
   // Fallback to query params if Pinia store is empty
-  if (route.query.from) fromLocation.value = route.query.from
-  if (route.query.to) toLocation.value = route.query.to
-  if (route.query.vehicleType) vehicleType.value = route.query.vehicleType
-  if (route.query.passengers) passengers.value = parseInt(route.query.passengers) || 1
-  if (route.query.luggage) luggage.value = parseInt(route.query.luggage) || 0
-  if (route.query.pickupDateTime) pickupDateTime.value = route.query.pickupDateTime
+  if (!fromLocation.value && route.query.from) fromLocation.value = String(route.query.from)
+  if (!toLocation.value && route.query.to) toLocation.value = String(route.query.to)
+  if (route.query.vehicleType) {
+    const type = String(route.query.vehicleType)
+    if (type === 'saloon' || type === 'estate' || type === 'mpv' || type === 'wheelchair') {
+      vehicleType.value = type
+    }
+  }
+  if (route.query.passengers) passengers.value = parseInt(String(route.query.passengers)) || 1
+  if (route.query.luggage) luggage.value = parseInt(String(route.query.luggage)) || 0
+  if (route.query.pickupDateTime) pickupDateTime.value = String(route.query.pickupDateTime)
 
-  // Geocode both addresses
-  geocodeLoading.value = true
-  try {
-    const [fromResult, toResult] = await Promise.all([
-      geocodeAddress(fromLocation.value),
-      geocodeAddress(toLocation.value)
-    ])
-    fromCoords.value = fromResult
-    toCoords.value = toResult
-  } catch (e) {
-    geocodeError.value = e.message || 'Failed to geocode addresses.'
-  } finally {
-    geocodeLoading.value = false
+  // Also check quote store if bookingId is present
+  if (bookingId.value) {
+    const quoteData = quoteStore.getQuote(bookingId.value)
+    if (quoteData) {
+      if (quoteData.from) fromLocation.value = quoteData.from
+      if (quoteData.to) toLocation.value = quoteData.to
+      if (quoteData.passengers) passengers.value = quoteData.passengers
+      if (quoteData.luggage) luggage.value = quoteData.luggage
+      if (quoteData.pickupDateTime) pickupDateTime.value = quoteData.pickupDateTime
+    }
+  }
+
+  // Set default pickup date/time if not set
+  if (!pickupDateTime.value) {
+    const now = new Date()
+    now.setHours(now.getHours() + 1) // Default to 1 hour from now
+    pickupDateTime.value = now.toISOString().slice(0, 16)
+  }
+
+  // Set default passengers/luggage if not set
+  if (!passengers.value) passengers.value = 1
+  if (luggage.value === undefined || luggage.value === null) luggage.value = 0
+
+  // Create a loading map placeholder initially
+  setTimeout(() => {
+    mapLoaded.value = true
+    if (realMapContainer.value && !fromCoords.value && !toCoords.value) {
+      const mockMap = document.createElement('div');
+      mockMap.className = 'bg-gray-200 w-full h-full flex items-center justify-center';
+      mockMap.innerHTML = `
+        <div class="text-center p-4">
+          <div class="text-amber-500 text-5xl mb-2">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-12 h-12 mx-auto">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+            </svg>
+          </div>
+          <p class="text-gray-600">Journey Map View</p>
+          <p class="text-gray-500 text-sm">Enter locations to see route</p>
+        </div>
+      `;
+      realMapContainer.value.innerHTML = '';
+      realMapContainer.value.appendChild(mockMap);
+    }
+  }, 500);
+  
+  // Perform initial search immediately if we have locations
+  if (fromLocation.value && toLocation.value) {
+    // Don't wait - search immediately
+    searchCabs()
+  } else {
+    // If no locations, show the welcome screen (hasSearched stays false)
+    console.log('No locations found, showing welcome screen')
   }
 })
 
@@ -376,10 +456,16 @@ const formatPickupTime = computed(() => {
   return date.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })
 })
 
-// Mock function to simulate route calculation
+// Mock function to simulate route calculation (only used as fallback)
 const calculateAndDisplayRoute = async () => {
+  // Only use mock if we don't have real coordinates
+  if (fromCoords.value && toCoords.value) {
+    console.log('Skipping mock map - using real Google Maps');
+    return true;
+  }
+  
   // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 1000));
+  await new Promise(resolve => setTimeout(resolve, 500));
   
   // Mock route details calculation
   const randomDistance = Math.floor(5 + Math.random() * 20);
@@ -395,8 +481,8 @@ const calculateAndDisplayRoute = async () => {
     eta: arrivalTime.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })
   };
   
-  // Update map with mock route display
-  if (mapContainer.value) {
+  // Update map with mock route display ONLY if no real coords
+  if (realMapContainer.value && !fromCoords.value && !toCoords.value) {
     const mockMapContent = `
       <div class="bg-gray-100 w-full h-full p-2">
         <div class="bg-white w-full h-full rounded shadow-inner p-3 flex flex-col justify-between">
@@ -416,16 +502,33 @@ const calculateAndDisplayRoute = async () => {
         </div>
       </div>
     `;
-    mapContainer.value.innerHTML = mockMapContent;
+    realMapContainer.value.innerHTML = mockMapContent;
   }
   
   return true;
 }
 
+// Handle search event from BookingForm component
+const handleSearchFromForm = (searchData: any) => {
+  console.log('📥 Received search event from BookingForm:', searchData);
+  
+  // Update form values with search data
+  fromLocation.value = searchData.from;
+  toLocation.value = searchData.to;
+  passengers.value = searchData.passengers;
+  luggage.value = searchData.luggage;
+  pickupDateTime.value = searchData.pickupDateTime;
+  vehicleType.value = searchData.vehicleType;
+  
+  // Trigger the search
+  searchCabs();
+};
+
 // Mock cab searching functionality
 const searchCabs = async () => {
   if (!fromLocation.value || !toLocation.value) {
-    alert('Please enter both pickup and drop-off locations')
+    console.warn('Missing locations:', { from: fromLocation.value, to: toLocation.value })
+    // Don't show alert, just return - the welcome screen will show
     return
   }
   
@@ -434,8 +537,25 @@ const searchCabs = async () => {
   selectedCab.value = null
   
   try {
-    // Simulate API loading delay
-    await new Promise(resolve => setTimeout(resolve, 2000))
+    // Try to geocode addresses in background (non-blocking)
+    if (fromLocation.value && toLocation.value) {
+      geocodeLoading.value = true
+      Promise.all([
+        geocodeAddress(fromLocation.value).catch(() => null),
+        geocodeAddress(toLocation.value).catch(() => null)
+      ]).then(([fromResult, toResult]) => {
+        if (fromResult) fromCoords.value = fromResult
+        if (toResult) toCoords.value = toResult
+        geocodeLoading.value = false
+      }).catch((e) => {
+        console.warn('Geocoding failed, continuing without coordinates:', e)
+        geocodeError.value = e?.message || 'Failed to geocode addresses.'
+        geocodeLoading.value = false
+      })
+    }
+    
+    // Simulate API loading delay (reduced for better UX)
+    await new Promise(resolve => setTimeout(resolve, 1000))
     
     // Generate mock route details
     await calculateAndDisplayRoute()
@@ -444,46 +564,13 @@ const searchCabs = async () => {
     generateMockCabResults()
   } catch (error) {
     console.error('Error in mock search:', error)
+    // Don't block the UI on error
   } finally {
     isLoading.value = false
   }
 }
 
-// Initialize with default search on page load
-onMounted(async () => {
-  try {
-    // Create a mock map element to simulate map loading
-    setTimeout(() => {
-      mapLoaded.value = true
-      // Create a placeholder for the map area
-      if (mapContainer.value) {
-        const mockMap = document.createElement('div');
-        mockMap.className = 'bg-gray-200 w-full h-full flex items-center justify-center';
-        mockMap.innerHTML = `
-          <div class="text-center p-4">
-            <div class="text-amber-500 text-5xl mb-2">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-12 h-12 mx-auto">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
-              </svg>
-            </div>
-            <p class="text-gray-600">Journey Map View</p>
-            <p class="text-gray-500 text-sm">Real map will appear here after searching</p>
-          </div>
-        `;
-        mapContainer.value.innerHTML = '';
-        mapContainer.value.appendChild(mockMap);
-      }
-    }, 500);
-    
-    // Perform initial search after a short delay
-    setTimeout(() => {
-      searchCabs()
-    }, 1000)
-    
-  } catch (error) {
-    console.error('Failed to initialize mock map:', error)
-  }
-})
+// Removed duplicate onMounted - merged into the one above
 
 // Mock cab data generation
 const generateMockCabResults = () => {
@@ -558,13 +645,32 @@ const generateMockCabResults = () => {
     distanceInMiles = distanceStr.includes('km') ? distanceValue * 0.621371 : distanceValue
   }
 
-  // Show all cabs that can accommodate the request
+  // Map cab names to vehicle types for pricing calculation
+  const vehicleTypeMap: Record<string, 'saloon' | 'estate' | 'mpv' | 'wheelchair'> = {
+    'Saloon': 'saloon',
+    'Estate': 'estate',
+    'MPV': 'mpv',
+    '7 Seater': 'mpv', // Use MPV pricing for 7 seater (15% extra)
+    '9 Seater': 'mpv', // Use MPV pricing for 9 seater (15% extra)
+    'Wheelchair': 'wheelchair'
+  }
+
+  console.log('💰 Calculating fares for', distanceInMiles.toFixed(2), 'miles');
+
   const availableCabs = baseCabs
     .filter(cab => cab.passengerCapacity >= passengers.value && cab.luggageCapacity >= luggage.value)
-    .map(cab => ({
-      ...cab,
-      price: cab.basePrice + (cab.pricePerMile * distanceInMiles)
-    }))
+    .map(cab => {
+      // Calculate fare using new pricing utility
+      const vehicleType = vehicleTypeMap[cab.name] || 'saloon'
+      const fareForVehicle = calculateFare(distanceInMiles, vehicleType)
+      
+      console.log(`${cab.name}: £${fareForVehicle.toFixed(2)} (${vehicleType})`);
+      
+      return {
+        ...cab,
+        price: fareForVehicle
+      }
+    })
     .sort((a, b) => a.passengerCapacity - b.passengerCapacity || a.luggageCapacity - b.luggageCapacity)
 
   // Find the best fit (smallest cab that fits)
@@ -584,12 +690,12 @@ const generateMockCabResults = () => {
 }
 
 // Select a cab
-const selectCab = (cab) => {
+const selectCab = (cab: Cab) => {
   selectedCab.value = cab
 }
 
 // Book the selected cab
-const bookCab = (cab) => {
+const bookCab = (cab: Cab) => {
   // Use existing booking ID if available, otherwise generate new one
   const quoteId = bookingId.value || `q${Date.now()}${Math.floor(Math.random()*10000)}`;
   
@@ -654,120 +760,260 @@ const uberMapStyle = [
 
 // Render real Google Map with route and custom markers/labels
 async function renderRealMap() {
-  if (!window.google || !fromCoords.value || !toCoords.value) return;
-  const map = new window.google.maps.Map(realMapContainer.value, {
-    center: { lat: fromCoords.value.lat, lng: fromCoords.value.lng },
-    zoom: 10,
-    mapTypeId: 'roadmap',
-    styles: uberMapStyle,
-    disableDefaultUI: true,
-    zoomControl: false,
-    mapTypeControl: false,
-    streetViewControl: false,
-    fullscreenControl: false,
-    clickableIcons: false,
+  console.log('renderRealMap called', {
+    hasGoogle: !!window.google,
+    hasFromCoords: !!fromCoords.value,
+    hasToCoords: !!toCoords.value,
+    hasContainer: !!realMapContainer.value
   });
-  const directionsService = new window.google.maps.DirectionsService();
-  const directionsRenderer = new window.google.maps.DirectionsRenderer({ map, suppressMarkers: true });
-  directionsService.route({
-    origin: { lat: fromCoords.value.lat, lng: fromCoords.value.lng },
-    destination: { lat: toCoords.value.lat, lng: toCoords.value.lng },
-    travelMode: 'DRIVING',
-    drivingOptions: {
-      departureTime: new Date(pickupDateTime.value || Date.now()),
-      trafficModel: 'bestguess',
-    },
-    region: 'uk',
-    provideRouteAlternatives: false,
-  }, (result, status) => {
-    if (status === 'OK') {
-      directionsRenderer.setDirections(result);
-      // Custom markers for from/to
-      const leg = result.routes[0].legs[0];
-      // From marker (A)
-      const fromMarker = new window.google.maps.Marker({
-        position: leg.start_location,
-        map,
-        label: {
-          text: "A",
-          color: "white",
-          fontWeight: "bold",
-          fontSize: "14px"
-        },
-        icon: {
-          path: window.google.maps.SymbolPath.CIRCLE,
-          scale: 10,
-          fillColor: "#1976D2",
-          fillOpacity: 1,
-          strokeWeight: 2,
-          strokeColor: "#fff"
-        }
-      });
-      // To marker (B)
-      const toMarker = new window.google.maps.Marker({
-        position: leg.end_location,
-        map,
-        label: {
-          text: "B",
-          color: "white",
-          fontWeight: "bold",
-          fontSize: "14px"
-        },
-        icon: {
-          path: window.google.maps.SymbolPath.CIRCLE,
-          scale: 10,
-          fillColor: "#D32F2F",
-          fillOpacity: 1,
-          strokeWeight: 2,
-          strokeColor: "#fff"
-        }
-      });
-      // Add tiny custom popovers for A and B
-      function addCustomPopover(map, position, text) {
-        const overlay = new window.google.maps.OverlayView();
-        overlay.onAdd = function() {
-          const div = document.createElement('div');
-          div.style.position = 'absolute';
-          div.style.background = 'rgba(255,255,255,0.95)';
-          div.style.borderRadius = '4px';
-          div.style.padding = '2px 6px';
-          div.style.fontSize = '10px';
-          div.style.fontWeight = '500';
-          div.style.boxShadow = '0 1px 4px rgba(0,0,0,0.08)';
-          div.style.pointerEvents = 'none';
-          div.innerText = text;
-          this.div = div;
-          const panes = this.getPanes();
-          panes.overlayMouseTarget.appendChild(div);
-        };
-        overlay.draw = function() {
-          const projection = this.getProjection();
-          const pos = projection.fromLatLngToDivPixel(position);
-          if (pos && this.div) {
-            this.div.style.left = pos.x + 12 + 'px'; // offset to the right of marker
-            this.div.style.top = pos.y - 18 + 'px'; // offset above marker
-          }
-        };
-        overlay.onRemove = function() {
-          if (this.div) this.div.parentNode.removeChild(this.div);
-          this.div = null;
-        };
-        overlay.setMap(map);
+  
+  if (!window.google || !window.google.maps) {
+    console.warn('Google Maps not loaded yet');
+    return;
+  }
+  
+  if (!fromCoords.value || !toCoords.value) {
+    console.warn('Missing coordinates');
+    return;
+  }
+  
+  if (!realMapContainer.value) {
+    console.warn('Map container not ready');
+    return;
+  }
+  
+  try {
+    console.log('Creating Google Map...');
+    const map = new window.google.maps.Map(realMapContainer.value, {
+      center: { lat: fromCoords.value.lat, lng: fromCoords.value.lng },
+      zoom: 10,
+      mapTypeId: 'roadmap',
+      styles: uberMapStyle,
+      disableDefaultUI: true,
+      zoomControl: false,
+      mapTypeControl: false,
+      streetViewControl: false,
+      fullscreenControl: false,
+      clickableIcons: false,
+    });
+    
+    console.log('Map created, setting up directions...');
+    const directionsService = new window.google.maps.DirectionsService();
+    const directionsRenderer = new window.google.maps.DirectionsRenderer({ 
+      map, 
+      suppressMarkers: true,
+      polylineOptions: {
+        strokeColor: '#FFC107',
+        strokeWeight: 5,
+        strokeOpacity: 0.8
       }
-      // Show only the first part of the address (place name)
-      addCustomPopover(map, leg.start_location, leg.start_address.split(',')[0]);
-      addCustomPopover(map, leg.end_location, leg.end_address.split(',')[0]);
-    }
-  });
-  // Add traffic layer
-  const trafficLayer = new window.google.maps.TrafficLayer();
-  trafficLayer.setMap(map);
+    });
+    
+    directionsService.route({
+      origin: { lat: fromCoords.value.lat, lng: fromCoords.value.lng },
+      destination: { lat: toCoords.value.lat, lng: toCoords.value.lng },
+      travelMode: 'DRIVING',
+      drivingOptions: {
+        departureTime: new Date(pickupDateTime.value || Date.now()),
+        trafficModel: 'bestguess',
+      },
+      region: 'uk',
+      provideRouteAlternatives: false,
+    }, (result: any, status: any) => {
+      console.log('Directions result:', status);
+      if (status === 'OK') {
+        directionsRenderer.setDirections(result);
+        
+        // Update route details with real data
+        const leg = result.routes[0].legs[0];
+        routeDetails.value = {
+          distance: leg.distance.text,
+          duration: leg.duration.text,
+          eta: new Date(Date.now() + leg.duration.value * 1000).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })
+        };
+        
+        // Custom markers for from/to
+        const fromMarker = new window.google.maps.Marker({
+          position: leg.start_location,
+          map,
+          label: {
+            text: "A",
+            color: "white",
+            fontWeight: "bold",
+            fontSize: "14px"
+          },
+          icon: {
+            path: window.google.maps.SymbolPath.CIRCLE,
+            scale: 10,
+            fillColor: "#1976D2",
+            fillOpacity: 1,
+            strokeWeight: 2,
+            strokeColor: "#fff"
+          }
+        });
+        
+        const toMarker = new window.google.maps.Marker({
+          position: leg.end_location,
+          map,
+          label: {
+            text: "B",
+            color: "white",
+            fontWeight: "bold",
+            fontSize: "14px"
+          },
+          icon: {
+            path: window.google.maps.SymbolPath.CIRCLE,
+            scale: 10,
+            fillColor: "#D32F2F",
+            fillOpacity: 1,
+            strokeWeight: 2,
+            strokeColor: "#fff"
+          }
+        });
+        
+        // Add tiny custom popovers for A and B
+        function addCustomPopover(map: any, position: any, text: string) {
+          const overlay = new window.google.maps.OverlayView();
+          overlay.onAdd = function() {
+            const div = document.createElement('div');
+            div.style.position = 'absolute';
+            div.style.background = 'rgba(255,255,255,0.95)';
+            div.style.borderRadius = '4px';
+            div.style.padding = '2px 6px';
+            div.style.fontSize = '10px';
+            div.style.fontWeight = '500';
+            div.style.boxShadow = '0 1px 4px rgba(0,0,0,0.08)';
+            div.style.pointerEvents = 'none';
+            div.innerText = text;
+            this.div = div;
+            const panes = this.getPanes();
+            panes.overlayMouseTarget.appendChild(div);
+          };
+          overlay.draw = function() {
+            const projection = this.getProjection();
+            const pos = projection.fromLatLngToDivPixel(position);
+            if (pos && this.div) {
+              this.div.style.left = pos.x + 12 + 'px';
+              this.div.style.top = pos.y - 18 + 'px';
+            }
+          };
+          overlay.onRemove = function() {
+            if (this.div) this.div.parentNode.removeChild(this.div);
+            this.div = null;
+          };
+          overlay.setMap(map);
+        }
+        
+        addCustomPopover(map, leg.start_location, leg.start_address.split(',')[0]);
+        addCustomPopover(map, leg.end_location, leg.end_address.split(',')[0]);
+        
+        // Add animated car marker with smoother animation
+        const carIcon = {
+          path: 'M29.395,0H17.636c-3.117,0-5.643,3.467-5.643,6.584v34.804c0,3.116,2.526,5.644,5.643,5.644h11.759   c3.116,0,5.644-2.527,5.644-5.644V6.584C35.037,3.467,32.511,0,29.395,0z M34.05,14.188v11.665l-2.729,0.351v-4.806L34.05,14.188z    M32.618,10.773c-1.016,3.9-2.219,8.51-2.219,8.51H16.631l-2.222-8.51C14.41,10.773,23.293,7.755,32.618,10.773z M15.741,21.713   v4.492l-2.73-0.349V14.502L15.741,21.713z M13.011,37.938V27.579l2.73,0.343v8.196L13.011,37.938z M14.568,40.882l2.218-3.336   h13.771l2.219,3.336H14.568z M31.321,35.805v-7.872l2.729-0.355v10.048L31.321,35.805',
+          fillColor: '#FFC107',
+          fillOpacity: 1,
+          strokeColor: '#FF6F00',
+          strokeWeight: 1,
+          scale: 0.6,
+          anchor: new window.google.maps.Point(23.5, 23.5),
+          rotation: 0
+        };
+        
+        const carMarker = new window.google.maps.Marker({
+          position: leg.start_location,
+          map,
+          icon: carIcon,
+          zIndex: 1000
+        });
+        
+        // Smooth animation along the route with interpolation
+        const path = result.routes[0].overview_path;
+        const totalSteps = 200; // Number of interpolation steps
+        let step = 0;
+        const animationDuration = 8000; // 8 seconds for full route
+        const delayBetweenSteps = animationDuration / totalSteps;
+        
+        // Create interpolated path for smoother animation
+        const smoothPath: any[] = [];
+        for (let i = 0; i < path.length - 1; i++) {
+          const start = path[i];
+          const end = path[i + 1];
+          const stepsForSegment = Math.ceil(totalSteps / (path.length - 1));
+          
+          for (let j = 0; j < stepsForSegment; j++) {
+            const fraction = j / stepsForSegment;
+            smoothPath.push({
+              lat: start.lat() + (end.lat() - start.lat()) * fraction,
+              lng: start.lng() + (end.lng() - start.lng()) * fraction
+            });
+          }
+        }
+        smoothPath.push({
+          lat: path[path.length - 1].lat(),
+          lng: path[path.length - 1].lng()
+        });
+        
+        let lastAngle = 0;
+        
+        function animateCar() {
+          if (step >= smoothPath.length) {
+            // Restart animation from beginning
+            step = 0;
+            setTimeout(animateCar, 1000);
+            return;
+          }
+          
+          // Update marker position
+          carMarker.setPosition(smoothPath[step]);
+          
+          // Calculate and update rotation every 10 steps for smooth rotation
+          if (step % 10 === 0 && step < smoothPath.length - 10) {
+            const current = smoothPath[step];
+            const next = smoothPath[Math.min(step + 10, smoothPath.length - 1)];
+            const currentLatLng = new window.google.maps.LatLng(current.lat, current.lng);
+            const nextLatLng = new window.google.maps.LatLng(next.lat, next.lng);
+            const angle = window.google.maps.geometry.spherical.computeHeading(currentLatLng, nextLatLng);
+            
+            // Smooth angle transition
+            lastAngle = angle;
+            const icon = carMarker.getIcon() as any;
+            icon.rotation = angle;
+            carMarker.setIcon(icon);
+          }
+          
+          step++;
+          setTimeout(animateCar, delayBetweenSteps);
+        }
+        
+        // Start animation after a short delay
+        setTimeout(animateCar, 500);
+      } else {
+        console.error('Directions request failed:', status);
+      }
+    });
+    
+    // Add traffic layer
+    const trafficLayer = new window.google.maps.TrafficLayer();
+    trafficLayer.setMap(map);
+    
+    console.log('Map rendering complete');
+  } catch (error) {
+    console.error('Error rendering map:', error);
+  }
 }
 
 // Watch for coords and render map
 watch([fromCoords, toCoords], () => {
+  console.log('Coordinates changed', {
+    from: fromCoords.value,
+    to: toCoords.value
+  });
+  
   if (fromCoords.value && toCoords.value && realMapContainer.value) {
-    renderRealMap();
+    // Small delay to ensure DOM is ready
+    setTimeout(() => {
+      renderRealMap();
+    }, 100);
   }
 });
 </script> 

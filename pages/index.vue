@@ -29,7 +29,7 @@
           </p>
           
           <!-- Booking Form -->
-          <div class="max-w-6xl mx-auto animate-fade-in-up">
+          <div class="mx-auto animate-fade-in-up">
             <BookingForm />
           </div>
         </div>
@@ -81,7 +81,7 @@
           </div>
 
           <!-- Modern Tab Design -->
-          <div class="max-w-6xl mx-auto">
+          <div class="mx-auto">
             <!-- Tab Navigation -->
             <div class="flex flex-wrap justify-center mb-6 md:mb-8 bg-gray-100 rounded-xl p-1 md:p-2">
               <button 

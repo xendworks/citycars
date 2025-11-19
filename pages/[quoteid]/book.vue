@@ -85,12 +85,26 @@
           </div>
 
           <div class="mt-8 text-center">
-            <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-10 py-3 rounded-xl font-bold text-lg shadow-lg transition-all duration-200">
-              Book Now
+            <button 
+              type="submit" 
+              :disabled="isSubmitting"
+              class="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white px-10 py-3 rounded-xl font-bold text-lg shadow-lg transition-all duration-200"
+            >
+              <span v-if="isSubmitting">Submitting Booking...</span>
+              <span v-else>Book Now</span>
             </button>
           </div>
-          <div v-if="confirmation" class="mt-8 text-center text-green-600 text-lg font-semibold">
-            Booking confirmed! Thank you, {{ form.name }}. We have sent your booking details to {{ form.email }}.
+          
+          <!-- Success message -->
+          <div v-if="confirmation" class="mt-8 text-center text-green-600 text-lg font-semibold bg-green-50 p-4 rounded-lg">
+            ✅ Booking confirmed! Thank you, {{ form.name }}. We have sent your booking details to {{ form.email }}.
+            <br />
+            <span class="text-sm">Redirecting to home page...</span>
+          </div>
+          
+          <!-- Error message -->
+          <div v-if="bookingError" class="mt-8 text-center text-red-600 text-lg font-semibold bg-red-50 p-4 rounded-lg">
+            ❌ {{ bookingError }}
           </div>
         </form>
       </div>
@@ -137,16 +151,48 @@
 </template>
 
 <script setup>
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useQuoteStore } from '~/stores/queryStore'
-import { computed, ref, watchEffect, onMounted } from 'vue'
+import { computed, ref, watch, watchEffect, onMounted } from 'vue'
 
 const route = useRoute()
+const router = useRouter()
 const quoteStore = useQuoteStore()
 const queryStore = useQueryStore()
+const { user, userProfile, isAuthenticated } = useAuth()
 
 // Get quote ID from URL
 const quoteId = route.params.quoteid || route.params.id || route.path.split('/')[1]
+
+// Check authentication on mount
+onMounted(() => {
+  console.log('[BOOKING] Auth check:', {
+    isAuthenticated: isAuthenticated.value,
+    user: user.value?.email,
+    quoteId
+  });
+  
+  if (!isAuthenticated.value) {
+    console.log('[BOOKING] User not authenticated, redirecting to login');
+    // Store the current booking intent
+    localStorage.setItem('bookingIntent', JSON.stringify({
+      quoteId,
+      timestamp: Date.now()
+    }));
+    // Redirect to login with return URL
+    router.push(`/login?redirect=${route.fullPath}`);
+    return;
+  }
+  
+  // Pre-fill form with user data if logged in
+  preFillUserData();
+  
+  // Pre-fill addresses from quote
+  if (quote.value) {
+    form.value.pickupAddress = quote.value.from || '';
+    form.value.dropoffAddress = quote.value.to || '';
+  }
+});
 
 // Try to get quote from store, fallback to queryStore data
 const quote = computed(() => {
@@ -190,6 +236,33 @@ const form = ref({
   specialInfo: '',
   agreeTnC: false,
 })
+
+// Function to pre-fill user data (defined AFTER form)
+const preFillUserData = () => {
+  if (user.value || userProfile.value) {
+    console.log('[BOOKING] Pre-filling form with user data');
+    console.log('[BOOKING] userProfile:', userProfile.value);
+    console.log('[BOOKING] user:', user.value);
+    
+    form.value.name = userProfile.value?.displayName || user.value?.displayName || '';
+    form.value.email = userProfile.value?.email || user.value?.email || '';
+    form.value.phone = userProfile.value?.phoneNumber || user.value?.phoneNumber || '';
+    
+    console.log('[BOOKING] Pre-filled values:', {
+      name: form.value.name,
+      email: form.value.email,
+      phone: form.value.phone
+    });
+  }
+};
+
+// Watch userProfile for changes (it loads asynchronously from Firestore)
+watch(userProfile, (newProfile) => {
+  if (newProfile) {
+    console.log('[BOOKING] userProfile changed, updating form:', newProfile);
+    preFillUserData();
+  }
+}, { immediate: false, deep: true });
 
 watchEffect(() => {
   console.log('Quote ID:', quoteId)
@@ -241,13 +314,110 @@ const totalFare = computed(() => {
 })
 
 const confirmation = ref(false)
+const isSubmitting = ref(false)
+const bookingError = ref('')
 
-function submitBooking() {
+async function submitBooking() {
   if (!form.value.name || !form.value.email || !form.value.phone || !form.value.pickupAddress || !form.value.dropoffAddress || !form.value.paymentMethod || !form.value.agreeTnC) {
     alert('Please fill all required fields and agree to the terms.');
     return;
   }
-  confirmation.value = true
-  // Here you could send the booking to a backend or store in Pinia
+  
+  isSubmitting.value = true
+  bookingError.value = ''
+  
+  try {
+    console.log('[BOOKING] Submitting booking to Firestore...');
+    
+    // Calculate extras
+    const meetAndGreetFee = form.value.meetAndGreet === 'Yes I Need Meet & Greet' ? 10 : 0;
+    const childSeatFee = form.value.childSeat === 'Yes I Need Child Seat' ? 5 : 0;
+    
+    // Calculate payment surcharge
+    const paymentOption = paymentOptions.find(opt => opt.label === form.value.paymentMethod);
+    const baseFare = quote.value?.fare || 0;
+    const surchargeAmount = paymentOption ? (baseFare * paymentOption.surcharge / 100) : 0;
+    
+    const totalAmount = baseFare + meetAndGreetFee + childSeatFee + surchargeAmount;
+    
+    // Prepare booking data
+    const bookingData = {
+      // User info
+      userId: user.value?.uid || '',
+      userName: form.value.name,
+      userEmail: form.value.email,
+      userPhone: form.value.phone,
+      alternatePhone: form.value.altPhone || null,
+      
+      // Journey details
+      pickupAddress: form.value.pickupAddress,
+      dropoffAddress: form.value.dropoffAddress,
+      pickupDateTime: quote.value?.pickupDateTime || '',
+      flightNumber: form.value.flightNumber || null,
+      
+      // Booking details
+      cabType: quote.value?.cabType || 'saloon',
+      passengers: quote.value?.passengers || 1,
+      luggage: quote.value?.luggage || 0,
+      
+      // Extras
+      meetAndGreet: form.value.meetAndGreet === 'Yes I Need Meet & Greet',
+      meetAndGreetFee: meetAndGreetFee,
+      childSeat: form.value.childSeat === 'Yes I Need Child Seat',
+      childSeatFee: childSeatFee,
+      
+      // Payment
+      paymentMethod: form.value.paymentMethod,
+      baseFare: baseFare,
+      surchargeAmount: surchargeAmount,
+      totalFare: totalAmount,
+      
+      // Additional info
+      specialInstructions: form.value.specialInfo || null,
+      
+      // Booking metadata
+      bookingStatus: 'pending',
+      bookingSource: 'web',
+      quoteId: quoteId || null,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+    
+    console.log('[BOOKING] Booking data:', bookingData);
+    
+    // Save to Firestore directly (client-side)
+    const { createBooking } = useFirestore();
+    const response = await createBooking(bookingData);
+    
+    console.log('[BOOKING] Response:', response);
+    
+    if (response && response.id) {
+      confirmation.value = true;
+      console.log('[BOOKING] ✅ Booking saved successfully!');
+      console.log('[BOOKING] Booking ID:', response.id);
+      console.log('[BOOKING] Booking Reference:', response.bookingReference);
+      
+      // Save booking details to localStorage as backup
+      localStorage.setItem('lastBooking', JSON.stringify(bookingData));
+      
+      // Redirect to success page immediately
+      router.push({
+        path: '/booking-success',
+        query: {
+          ref: response.bookingReference,
+          data: encodeURIComponent(JSON.stringify(bookingData))
+        }
+      });
+    } else {
+      throw new Error('Failed to create booking');
+    }
+    
+  } catch (error) {
+    console.error('[BOOKING] ❌ Error submitting booking:', error);
+    bookingError.value = error.message || 'Failed to submit booking. Please try again.';
+    alert('Booking failed: ' + bookingError.value);
+  } finally {
+    isSubmitting.value = false;
+  }
 }
 </script> 

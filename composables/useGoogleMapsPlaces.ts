@@ -16,6 +16,8 @@ interface PlacesAutocomplete {
   getPlace(): Place | null
 }
 
+import { ref, readonly } from 'vue';
+
 export function useGoogleMapsPlaces() {
   const isLoaded = ref(false)
   const { $googleMaps } = useNuxtApp()

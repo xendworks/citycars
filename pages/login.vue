@@ -1,0 +1,203 @@
+<template>
+  <div class="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full space-y-8">
+      <!-- Header -->
+      <div class="text-center">
+        <div class="text-4xl font-bold font-lexend mb-2">
+          <span class="text-black">CITY</span>
+          <span class="text-amber-400">CARS</span>
+        </div>
+        <h2 class="text-3xl font-bold text-gray-900 font-lexend">Sign in to your account</h2>
+        <p class="mt-2 text-sm text-gray-600 font-inter">
+          Or
+          <NuxtLink to="/signup" class="font-medium text-amber-600 hover:text-amber-500">
+            create a new account
+          </NuxtLink>
+        </p>
+      </div>
+
+      <!-- Error Message -->
+      <div v-if="error" class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md text-sm font-inter">
+        {{ error }}
+      </div>
+
+      <!-- Login Form -->
+      <form class="mt-8 space-y-6" @submit.prevent="handleLogin">
+        <div class="rounded-md shadow-sm space-y-4">
+          <!-- Email -->
+          <div>
+            <label for="email" class="block text-sm font-medium text-gray-700 mb-1 font-lexend">
+              Email address
+            </label>
+            <input
+              id="email"
+              v-model="form.email"
+              name="email"
+              type="email"
+              autocomplete="email"
+              required
+              class="appearance-none relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-amber-500 focus:border-amber-500 focus:z-10 sm:text-sm font-inter"
+              placeholder="Enter your email"
+            />
+          </div>
+
+          <!-- Password -->
+          <div>
+            <label for="password" class="block text-sm font-medium text-gray-700 mb-1 font-lexend">
+              Password
+            </label>
+            <input
+              id="password"
+              v-model="form.password"
+              name="password"
+              type="password"
+              autocomplete="current-password"
+              required
+              class="appearance-none relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-amber-500 focus:border-amber-500 focus:z-10 sm:text-sm font-inter"
+              placeholder="Enter your password"
+            />
+          </div>
+        </div>
+
+        <!-- Remember me & Forgot password -->
+        <div class="flex items-center justify-between">
+          <div class="flex items-center">
+            <input
+              id="remember-me"
+              v-model="form.rememberMe"
+              name="remember-me"
+              type="checkbox"
+              class="h-4 w-4 text-amber-600 focus:ring-amber-500 border-gray-300 rounded"
+            />
+            <label for="remember-me" class="ml-2 block text-sm text-gray-900 font-inter">
+              Remember me
+            </label>
+          </div>
+
+          <div class="text-sm">
+            <a href="#" class="font-medium text-amber-600 hover:text-amber-500 font-inter">
+              Forgot password?
+            </a>
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <div>
+          <button
+            type="submit"
+            :disabled="isLoading"
+            class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-amber-600 hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 disabled:opacity-50 disabled:cursor-not-allowed font-lexend transition-colors"
+          >
+            <span v-if="!isLoading">Sign in</span>
+            <span v-else class="flex items-center">
+              <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Signing in...
+            </span>
+          </button>
+        </div>
+      </form>
+
+      <!-- Divider -->
+      <div class="relative">
+        <div class="absolute inset-0 flex items-center">
+          <div class="w-full border-t border-gray-300"></div>
+        </div>
+        <div class="relative flex justify-center text-sm">
+          <span class="px-2 bg-gray-50 text-gray-500 font-inter">Or continue with</span>
+        </div>
+      </div>
+
+      <!-- Google Sign In -->
+      <div>
+        <button
+          type="button"
+          @click="handleGoogleSignIn"
+          :disabled="isLoading"
+          class="w-full flex items-center justify-center gap-3 py-3 px-4 border border-gray-300 rounded-lg shadow-sm bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-inter"
+        >
+          <svg class="w-5 h-5" viewBox="0 0 24 24">
+            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+          </svg>
+          <span class="text-sm font-medium text-gray-700">Sign in with Google</span>
+        </button>
+      </div>
+
+      <!-- Continue as Guest -->
+      <div class="text-center">
+        <NuxtLink to="/" class="text-sm text-gray-600 hover:text-gray-900 font-inter">
+          Continue as guest
+        </NuxtLink>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { reactive, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+
+definePageMeta({
+  layout: false,
+  title: 'Login - City Cars'
+});
+
+const router = useRouter();
+
+console.log('[LOGIN] Initializing useAuth...');
+const { signIn, signInWithGoogle, isLoading, error } = useAuth();
+console.log('[LOGIN] useAuth initialized successfully');
+
+const form = reactive({
+  email: '',
+  password: '',
+  rememberMe: false
+});
+
+const handleLogin = async () => {
+  try {
+    await signIn(form.email, form.password);
+    // Redirect to home or intended page
+    const redirectTo = router.currentRoute.value.query.redirect as string || '/';
+    await router.push(redirectTo);
+  } catch (err) {
+    // Error is handled by the store
+    console.error('Login error:', err);
+  }
+};
+
+const handleGoogleSignIn = async () => {
+  console.log('[LOGIN] Google sign-in clicked');
+  try {
+    console.log('[LOGIN] Calling signInWithGoogle...');
+    const result = await signInWithGoogle();
+    console.log('[LOGIN] Google sign-in result:', result);
+    
+    if (result && result.success) {
+      console.log('[LOGIN] Sign-in successful, redirecting...');
+      const redirectTo = router.currentRoute.value.query.redirect as string || '/';
+      await router.push(redirectTo);
+    } else {
+      console.error('[LOGIN] Sign-in failed - no success flag');
+    }
+  } catch (err: any) {
+    console.error('[LOGIN] Google sign-in error:', err);
+    console.error('[LOGIN] Error code:', err?.code);
+    console.error('[LOGIN] Error message:', err?.message);
+  }
+};
+
+// Redirect if already logged in
+onMounted(() => {
+  const { isAuthenticated } = useAuth();
+  if (isAuthenticated.value) {
+    router.push('/');
+  }
+});
+</script>
+

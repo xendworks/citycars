@@ -46,8 +46,9 @@ export default defineNuxtPlugin((nuxtApp) => {
       }
       
       // Create script element with optimizations
+      // Include region=gb to bias results towards UK
       const script = document.createElement('script')
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${API_KEY}&libraries=places&callback=${callbackName}&v=weekly`
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${API_KEY}&libraries=places,geometry&callback=${callbackName}&v=weekly&region=gb`
       script.async = true
       script.defer = true
       

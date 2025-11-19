@@ -205,6 +205,7 @@
           <a href="#" class="mx-2 my-1 text-sm hover:text-city-gold transition-colors">About Us</a>
           <a href="/contractor-agreement" class="mx-2 my-1 text-sm hover:text-city-gold transition-colors">Terms & Conditions</a>
           <a href="/privacy-policy" class="mx-2 my-1 text-sm hover:text-city-gold transition-colors">Privacy Policy</a>
+          <a href="#" @click.prevent="showCookiePreferences" class="mx-2 my-1 text-sm hover:text-city-gold transition-colors cursor-pointer">Cookie Preferences</a>
           <a href="#" class="mx-2 my-1 text-sm hover:text-city-gold transition-colors">FAQs</a>
           <a href="#" class="mx-2 my-1 text-sm hover:text-city-gold transition-colors">Blog</a>
         </div>
@@ -238,7 +239,11 @@
 </template>
 
 <script setup>
-// Footer component logic here if needed
+const { showPreferences } = useCookieConsent();
+
+const showCookiePreferences = () => {
+  showPreferences();
+};
 </script>
 
 <style scoped>

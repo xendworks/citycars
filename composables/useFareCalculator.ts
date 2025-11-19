@@ -54,11 +54,24 @@ const PEAK_SURCHARGES = {
   weekend: 0.15     // 15% surcharge
 }
 
-// Base fare rates
-const BASE_RATES = {
-  perMile: 2.50,    // £2.50 per mile
-  perMinute: 0.50,  // £0.50 per minute
-  minimumFare: 15.00 // £15 minimum fare
+// Pricing rules based on distance
+const PRICING_RULES = [
+  { minMiles: 1, maxMiles: 5, pricePerMile: 5.00, minimumFare: 25.00 },
+  { minMiles: 6, maxMiles: 10, pricePerMile: 3.00, minimumFare: null },
+  { minMiles: 11, maxMiles: 30, pricePerMile: 2.00, minimumFare: null },
+  { minMiles: 31, maxMiles: null, pricePerMile: 1.50, minimumFare: null }
+]
+
+// Helper function to get pricing rule based on distance
+const getPricingRule = (distanceMiles: number) => {
+  for (const rule of PRICING_RULES) {
+    if (distanceMiles >= rule.minMiles && 
+        (rule.maxMiles === null || distanceMiles <= rule.maxMiles)) {
+      return rule
+    }
+  }
+  // Fallback to last rule (longest distance)
+  return PRICING_RULES[PRICING_RULES.length - 1]
 }
 
 export const useFareCalculator = () => {
@@ -156,11 +169,16 @@ export const useFareCalculator = () => {
       const trafficData = await getTrafficData(request.from, request.to)
       const durationMinutes = trafficData.duration
 
-      // Calculate base fare
-      const baseFare = Math.max(
-        BASE_RATES.minimumFare,
-        distanceMiles * BASE_RATES.perMile + durationMinutes * BASE_RATES.perMinute
-      )
+      // Get pricing rule based on distance
+      const pricingRule = getPricingRule(distanceMiles)
+      
+      // Calculate base fare using the pricing rule
+      let baseFare = distanceMiles * pricingRule.pricePerMile
+      
+      // Apply minimum fare if applicable
+      if (pricingRule.minimumFare && baseFare < pricingRule.minimumFare) {
+        baseFare = pricingRule.minimumFare
+      }
 
       // Calculate peak hour surcharge
       const peakHourData = isPeakHour(request.pickupDateTime)
@@ -177,9 +195,9 @@ export const useFareCalculator = () => {
 
       // Breakdown for transparency
       const breakdown = {
-        baseRate: BASE_RATES.perMile,
-        distanceCost: distanceMiles * BASE_RATES.perMile,
-        timeCost: durationMinutes * BASE_RATES.perMinute,
+        baseRate: pricingRule.pricePerMile,
+        distanceCost: distanceMiles * pricingRule.pricePerMile,
+        timeCost: 0, // No time-based cost in new pricing
         peakHourCost: peakHourSurcharge,
         trafficCost: trafficSurcharge,
         vehicleTypeCost: vehicleSurcharge
@@ -246,6 +264,6 @@ export const useFareCalculator = () => {
     error: computed(() => error.value),
     VEHICLE_SURCHARGES,
     PEAK_SURCHARGES,
-    BASE_RATES
+    PRICING_RULES
   }
 } 
