@@ -171,11 +171,69 @@ export const useFirestore = () => {
     }
   };
 
+  // Delete user account and all associated data (client-side)
+  const deleteUserAccount = async (userId: string) => {
+    try {
+      console.log('[FIRESTORE] 🗑️  Starting account deletion for user:', userId);
+      const { getDocs, query, where, deleteDoc, writeBatch } = await import('firebase/firestore');
+      
+      const batch = writeBatch(db);
+      let deletionCount = 0;
+      
+      // 1. Delete user profile
+      console.log('[FIRESTORE] Deleting user profile...');
+      const userRef = doc(db, 'users', userId);
+      batch.delete(userRef);
+      deletionCount++;
+      
+      // 2. Delete all user bookings
+      console.log('[FIRESTORE] Fetching and deleting user bookings...');
+      const bookingsRef = collection(db, 'bookings');
+      const bookingsQuery = query(bookingsRef, where('userId', '==', userId));
+      const bookingsSnapshot = await getDocs(bookingsQuery);
+      
+      console.log(`[FIRESTORE] Found ${bookingsSnapshot.size} bookings to delete`);
+      bookingsSnapshot.docs.forEach((bookingDoc) => {
+        batch.delete(bookingDoc.ref);
+        deletionCount++;
+      });
+      
+      // 3. Delete wallet data
+      console.log('[FIRESTORE] Deleting wallet data...');
+      const walletRef = doc(db, 'walletData', userId);
+      batch.delete(walletRef);
+      deletionCount++;
+      
+      // 4. Delete wallet transactions
+      console.log('[FIRESTORE] Fetching and deleting wallet transactions...');
+      const transactionsRef = collection(db, 'walletTransactions');
+      const transactionsQuery = query(transactionsRef, where('uid', '==', userId));
+      const transactionsSnapshot = await getDocs(transactionsQuery);
+      
+      console.log(`[FIRESTORE] Found ${transactionsSnapshot.size} transactions to delete`);
+      transactionsSnapshot.docs.forEach((transactionDoc) => {
+        batch.delete(transactionDoc.ref);
+        deletionCount++;
+      });
+      
+      // Commit the batch
+      console.log(`[FIRESTORE] Committing batch deletion of ${deletionCount} documents...`);
+      await batch.commit();
+      
+      console.log('[FIRESTORE] ✅ Successfully deleted all user data from Firestore');
+      return { success: true, deletedCount: deletionCount };
+    } catch (error: any) {
+      console.error('[FIRESTORE] ❌ Error deleting user account:', error);
+      throw error;
+    }
+  };
+
   return {
     saveUserProfile,
     getUserProfile,
     createBooking,
     getUserBookings,
+    deleteUserAccount,
     db
   };
 };

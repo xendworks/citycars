@@ -27,33 +27,25 @@
         </nav>
         <div class="flex items-center space-x-4">
           <template v-if="isAuthenticated">
-            <div class="flex items-center space-x-3">
-              <NuxtLink 
-                to="/profile"
-                class="flex items-center space-x-2 text-gray-700 hover:text-amber-500 font-inter text-sm transition-colors"
+            <NuxtLink 
+              to="/profile"
+              class="flex items-center space-x-2 text-gray-700 hover:text-amber-500 font-inter text-sm transition-colors"
+            >
+              <img
+                v-if="user?.photoURL"
+                :src="user.photoURL"
+                alt="Profile"
+                class="w-8 h-8 rounded-full object-cover border-2 border-amber-400"
+                @error="(e: Event) => (e.target as HTMLImageElement).style.display = 'none'"
+              />
+              <div
+                v-else
+                class="w-8 h-8 rounded-full bg-amber-400 flex items-center justify-center text-white text-xs font-bold"
               >
-                <img
-                  v-if="user?.photoURL"
-                  :src="user.photoURL"
-                  alt="Profile"
-                  class="w-8 h-8 rounded-full object-cover border-2 border-amber-400"
-                  @error="(e: Event) => (e.target as HTMLImageElement).style.display = 'none'"
-                />
-                <div
-                  v-else
-                  class="w-8 h-8 rounded-full bg-amber-400 flex items-center justify-center text-white text-xs font-bold"
-                >
-                  {{ initials }}
-                </div>
-                <span class="hidden md:inline">{{ userProfile?.displayName || 'Profile' }}</span>
-              </NuxtLink>
-              <button 
-                @click="handleLogout"
-                class="text-gray-700 hover:text-amber-500 font-inter text-sm transition-colors"
-              >
-                Logout
-              </button>
-            </div>
+                {{ initials }}
+              </div>
+              <span class="hidden md:inline">{{ userProfile?.displayName || 'Profile' }}</span>
+            </NuxtLink>
           </template>
           <template v-else>
             <NuxtLink 
@@ -82,7 +74,6 @@ const auth = process.client ? useAuth() : null;
 const isAuthenticated = auth?.isAuthenticated || ref(false);
 const user = auth?.user || ref(null);
 const userProfile = auth?.userProfile || ref(null);
-const logout = auth?.logout || (() => Promise.resolve());
 
 // Debug: Watch for user changes (only on client)
 if (process.client) {
@@ -100,15 +91,6 @@ const initials = computed(() => {
   const name = userProfile.value?.displayName || 'U';
   return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
 });
-
-const handleLogout = async () => {
-  try {
-    await logout();
-    navigateTo('/');
-  } catch (error) {
-    console.error('Logout error:', error);
-  }
-};
 </script>
 
 <style scoped lang="scss">

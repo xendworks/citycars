@@ -1,23 +1,23 @@
 <template>
   <div class="min-h-screen bg-gray-50">
     <!-- Header with gradient background -->
-    <div class="bg-gradient-to-r from-teal-600 to-teal-700 text-white py-8 px-6 shadow-lg">
+    <div class="bg-gray-900 text-white py-8 px-6 shadow-lg">
       <div class="container mx-auto max-w-7xl flex items-center justify-between">
         <div>
-          <h1 class="text-4xl font-bold mb-2">{{ userProfile?.displayName || 'User' }}</h1>
-          <p class="text-teal-100">{{ userProfile?.phoneNumber || 'No phone' }} • {{ userProfile?.email }}</p>
+          <h1 class="text-2xl font-bold mb-2">{{ userProfile?.displayName || 'User' }}</h1>
+          <p class="text-amber-50">{{ userProfile?.phoneNumber || 'No phone' }} • {{ userProfile?.email }}</p>
         </div>
         <button
           v-if="activeTab === 'details' && !isEditing"
           @click="startEditing"
-          class="px-6 py-2.5 border-2 border-white text-white rounded-lg hover:bg-white hover:text-teal-600 transition-colors font-semibold uppercase"
+          class="px-6 py-2.5 border-2 border-white text-white rounded-lg hover:bg-white hover:text-amber-600 transition-colors font-semibold uppercase"
         >
           Edit Profile
         </button>
         <button
           v-else-if="activeTab === 'details' && isEditing"
           @click="cancelEditing"
-          class="px-6 py-2.5 border-2 border-white text-white rounded-lg hover:bg-white hover:text-teal-600 transition-colors font-semibold uppercase"
+          class="px-6 py-2.5 border-2 border-white text-white rounded-lg hover:bg-white hover:text-amber-600 transition-colors font-semibold uppercase"
         >
           Cancel
         </button>
@@ -33,6 +33,22 @@
 
     <!-- Main Content -->
     <div class="container mx-auto max-w-7xl py-8 px-6">
+      <!-- Delete Success Alert -->
+      <div v-if="showDeleteSuccessAlert" class="mb-6">
+        <AlertBar
+          :show="showDeleteSuccessAlert"
+          type="success"
+          title="Account Deleted Successfully"
+          message="Your account and all associated data have been permanently deleted. You will be redirected to the home page shortly."
+          actionText="Go to Home"
+          showDismiss
+          :autoDismiss="false"
+          @action="handleAlertAction"
+          @dismiss="showDeleteSuccessAlert = false"
+          @update:show="showDeleteSuccessAlert = $event"
+        />
+      </div>
+
       <!-- Global Success Message -->
       <div v-if="successMessage" class="mb-6 bg-green-50 border-l-4 border-green-500 text-green-700 px-6 py-4 rounded-lg shadow-md flex items-center justify-between">
         <div class="flex items-center">
@@ -255,7 +271,7 @@
               <button
                 v-if="!isEditing"
                 @click="startEditing"
-                class="px-6 py-2.5 bg-teal-600 hover:bg-teal-700 text-white rounded-lg font-semibold transition-colors"
+                class="px-6 py-2.5 bg-amber-500 hover:bg-amber-600 text-white rounded-lg font-semibold transition-colors"
               >
                 Edit Profile
               </button>
@@ -273,8 +289,8 @@
                   type="text"
                   :disabled="!isEditing"
                   :class="[
-                    'appearance-none block w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500',
-                    isEditing ? 'border-teal-300 bg-white' : 'border-gray-300 bg-gray-50 cursor-not-allowed'
+                    'appearance-none block w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-amber-400',
+                    isEditing ? 'border-amber-300 bg-white' : 'border-gray-300 bg-gray-50 cursor-not-allowed'
                   ]"
                 />
               </div>
@@ -297,7 +313,7 @@
               <!-- Phone -->
               <div>
                 <label for="phone" class="block text-sm font-semibold text-gray-700 mb-2">
-                  Phone Number <span v-if="isEditing" class="text-teal-600">(Editable)</span>
+                  Phone Number <span v-if="isEditing" class="text-amber-600">(Editable)</span>
                 </label>
                 <input
                   id="phone"
@@ -305,12 +321,12 @@
                   type="tel"
                   :disabled="!isEditing"
                   :class="[
-                    'appearance-none block w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500',
-                    isEditing ? 'border-teal-300 bg-white' : 'border-gray-300 bg-gray-50 cursor-not-allowed'
+                    'appearance-none block w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-amber-400',
+                    isEditing ? 'border-amber-300 bg-white' : 'border-gray-300 bg-gray-50 cursor-not-allowed'
                   ]"
                   placeholder="+44 1234 567890"
                 />
-                <p v-if="isEditing" class="mt-1 text-xs text-teal-600">✓ You can change your phone number</p>
+                <p v-if="isEditing" class="mt-1 text-xs text-amber-600">✓ You can change your phone number</p>
               </div>
 
               <!-- Action Buttons -->
@@ -344,7 +360,7 @@
               <h2 class="text-2xl font-bold text-gray-900">Saved Addresses</h2>
               <button 
                 @click="showAddressModal = true; addressType = 'pickup'; newAddress = ''"
-                class="px-6 py-2.5 bg-teal-600 hover:bg-teal-700 text-white rounded-lg font-semibold transition-colors"
+                class="px-6 py-2.5 bg-amber-500 hover:bg-amber-600 text-white rounded-lg font-semibold transition-colors"
               >
                 + Add Address
               </button>
@@ -387,7 +403,7 @@
               <button 
                 v-if="pickupLocations.length < 3"
                 @click="showAddressModal = true; addressType = 'pickup'; newAddress = ''"
-                class="mt-4 text-teal-600 hover:text-teal-800 font-medium text-sm"
+                class="mt-4 text-amber-600 hover:text-amber-700 font-medium text-sm"
               >
                 + Add Pickup Location
               </button>
@@ -430,7 +446,7 @@
               <button 
                 v-if="dropoffLocations.length < 3"
                 @click="showAddressModal = true; addressType = 'dropoff'; newAddress = ''"
-                class="mt-4 text-teal-600 hover:text-teal-800 font-medium text-sm"
+                class="mt-4 text-amber-600 hover:text-amber-700 font-medium text-sm"
               >
                 + Add Dropoff Location
               </button>
@@ -442,10 +458,10 @@
             <h2 class="text-2xl font-bold text-gray-900 mb-6">Wallet</h2>
             
             <!-- Wallet Balance Card -->
-            <div class="bg-gradient-to-r from-teal-500 to-teal-600 rounded-xl p-6 text-white mb-6">
+            <div class="bg-gradient-to-r from-amber-400 to-amber-500 rounded-xl p-6 text-white mb-6">
               <p class="text-sm opacity-90">Available Balance</p>
               <h3 class="text-4xl font-bold mt-2">£0.00</h3>
-              <button class="mt-4 px-6 py-2 bg-white text-teal-600 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+              <button class="mt-4 px-6 py-2 bg-white text-amber-600 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
                 Add Money
               </button>
             </div>
@@ -472,7 +488,7 @@
                 </div>
                 <label class="relative inline-flex items-center cursor-pointer">
                   <input type="checkbox" checked class="sr-only peer">
-                  <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-teal-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-teal-600"></div>
+                  <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-amber-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-500"></div>
                 </label>
               </div>
 
@@ -484,8 +500,23 @@
                 </div>
                 <label class="relative inline-flex items-center cursor-pointer">
                   <input type="checkbox" checked class="sr-only peer">
-                  <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-teal-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-teal-600"></div>
+                  <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-amber-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-500"></div>
                 </label>
+              </div>
+
+              <!-- Logout -->
+              <div class="pt-6 pb-6 border-b">
+                <h3 class="text-sm font-semibold text-gray-900 mb-2">Session</h3>
+                <p class="text-sm text-gray-500 mb-4">Sign out of your account on this device</p>
+                <button
+                  @click="handleLogout"
+                  class="px-6 py-2.5 bg-amber-500 hover:bg-amber-600 text-white rounded-lg font-semibold transition-colors inline-flex items-center space-x-2"
+                >
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                  </svg>
+                  <span>Sign Out</span>
+                </button>
               </div>
 
               <!-- Delete Account -->
@@ -537,14 +568,14 @@
               type="text"
               required
               placeholder="e.g., Horley, Gatwick RH6 0NP"
-              class="appearance-none block w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+              class="appearance-none block w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-amber-400"
             />
           </div>
 
           <div class="flex space-x-3">
             <button
               type="submit"
-              class="flex-1 px-6 py-3 bg-teal-600 hover:bg-teal-700 text-white rounded-lg font-semibold transition-colors"
+              class="flex-1 px-6 py-3 bg-amber-500 hover:bg-amber-600 text-white rounded-lg font-semibold transition-colors"
             >
               Add
             </button>
@@ -559,6 +590,20 @@
         </form>
       </div>
     </div>
+
+    <!-- Delete Account Confirmation Modal -->
+    <DeleteConfirmationModal
+      :isOpen="showDeleteModal"
+      title="Delete Account"
+      message="Are you sure you want to delete your account? All of your data, including bookings, saved addresses, and wallet information will be permanently removed from our servers forever. This action cannot be undone."
+      confirmText="Delete Account"
+      cancelText="Cancel"
+      loadingText="Deleting..."
+      :isLoading="isDeletingAccount"
+      @confirm="handleDeleteAccount"
+      @cancel="handleCancelDelete"
+      @update:isOpen="showDeleteModal = $event"
+    />
   </div>
 </template>
 
@@ -578,6 +623,9 @@ const activeTab = ref('bookings');
 const isEditing = ref(false);
 const isSaving = ref(false);
 const successMessage = ref('');
+const showDeleteModal = ref(false);
+const isDeletingAccount = ref(false);
+const showDeleteSuccessAlert = ref(false);
 
 const editForm = reactive({
   displayName: '',
@@ -743,9 +791,78 @@ const handleLogout = async () => {
 };
 
 const confirmDelete = () => {
-  if (confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
-    alert('Account deletion is not yet implemented. Please contact support.');
+  showDeleteModal.value = true;
+};
+
+const handleCancelDelete = () => {
+  showDeleteModal.value = false;
+};
+
+const handleDeleteAccount = async () => {
+  if (!user.value?.uid) {
+    alert('No user found. Please log in again.');
+    return;
   }
+
+  isDeletingAccount.value = true;
+  
+  try {
+    const userId = user.value.uid;
+    console.log('[PROFILE] 🗑️  Starting account deletion for user:', userId);
+    
+    // Step 1: Delete all Firestore data (user profile, bookings, wallet, transactions)
+    console.log('[PROFILE] Step 1: Deleting Firestore data...');
+    const { deleteUserAccount } = useFirestore();
+    const result = await deleteUserAccount(userId);
+    console.log('[PROFILE] ✅ Deleted', result.deletedCount, 'documents from Firestore');
+    
+    // Step 2: Delete Firebase Auth user
+    console.log('[PROFILE] Step 2: Deleting Firebase Auth user...');
+    try {
+      await $fetch('/api/users/delete-account', {
+        method: 'POST',
+        body: { uid: userId }
+      });
+      console.log('[PROFILE] ✅ Firebase Auth user deleted');
+    } catch (authError: any) {
+      console.error('[PROFILE] ⚠️  Firebase Auth deletion failed:', authError);
+      // Continue anyway - the user data is already deleted from Firestore
+    }
+    
+    // Close the modal
+    showDeleteModal.value = false;
+    isDeletingAccount.value = false;
+    
+    // Show success alert
+    showDeleteSuccessAlert.value = true;
+    
+    console.log('[PROFILE] ✅ Account deletion complete!');
+    
+    // Wait 2 seconds to show the alert, then logout and redirect
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    
+    // Log out and redirect to home
+    await logout();
+    router.push('/');
+    
+  } catch (err: any) {
+    console.error('[PROFILE] ❌ Error deleting account:', err);
+    
+    // Show error in a more user-friendly way
+    const errorMessage = err.message || 'An unexpected error occurred while deleting your account. Please try again or contact support.';
+    
+    // Use a simple alert for now, could be replaced with an error AlertBar
+    alert(`Failed to delete account: ${errorMessage}`);
+    
+    isDeletingAccount.value = false;
+    showDeleteModal.value = false;
+  }
+};
+
+const handleAlertAction = () => {
+  // Optional: Navigate to home immediately when user clicks "Go to Home"
+  logout();
+  router.push('/');
 };
 
 // Date formatting helpers
@@ -853,9 +970,12 @@ const initAddressAutocomplete = async () => {
     // Listen for place selection
     addressAutocomplete.value.addListener('place_changed', () => {
       const place = addressAutocomplete.value.getPlace();
-      if (place && (place.formatted_address || place.name)) {
-        newAddress.value = place.formatted_address || place.name;
+      if (place && addressInput.value) {
+        // Use the actual input value instead of formatted_address
+        // This ensures we get EXACTLY what the user clicked in the dropdown
+        newAddress.value = addressInput.value.value;
         console.log('[PROFILE] Address selected:', newAddress.value);
+        console.log('[PROFILE] (Google formatted version was:', place.formatted_address, ')');
       }
     });
     
@@ -904,7 +1024,7 @@ watch(showAddressModal, async (isOpen) => {
 
 .pac-item:hover,
 .pac-item-selected {
-  background-color: #d1fae5 !important;
+  background-color: #fef3c7 !important;
 }
 
 .pac-item-query {
@@ -915,7 +1035,7 @@ watch(showAddressModal, async (isOpen) => {
 
 .pac-matched {
   font-weight: 600 !important;
-  color: #0d9488 !important;
+  color: #d97706 !important;
 }
 
 .pac-icon {

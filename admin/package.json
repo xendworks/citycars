@@ -1,0 +1,33 @@
+{
+  "name": "@citycars/admin",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev --port 4000",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview --port 4000",
+    "postinstall": "nuxt prepare"
+  },
+  "dependencies": {
+    "@element-plus/icons-vue": "^2.3.2",
+    "@headlessui/vue": "^1.7.23",
+    "@heroicons/vue": "^2.2.0",
+    "@nuxtjs/tailwindcss": "^6.13.2",
+    "@pinia/nuxt": "^0.5.5",
+    "dayjs": "^1.11.13",
+    "element-plus": "^2.11.8",
+    "firebase": "^11.6.0",
+    "firebase-admin": "^13.0.1",
+    "nuxt": "^3.16.2",
+    "pinia": "^3.0.1",
+    "vue": "latest",
+    "vue-router": "latest",
+    "vuedraggable": "^4.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.14.0",
+    "typescript": "^5.8.3"
+  }
+}
