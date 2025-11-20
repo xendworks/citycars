@@ -126,6 +126,12 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 
+definePageMeta({
+  layout: 'admin',
+  middleware: 'admin',
+  ssr: false
+});
+
 const stats = ref({
   totalBookings: 0,
   activeDrivers: 0,

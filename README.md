@@ -4,12 +4,11 @@ Professional taxi booking platform with real-time pricing, Google Maps integrati
 
 ## 🏗️ Architecture
 
-**Module Federation / Monorepo**
+**Single Nuxt 3 Application**
 ```
-citycars/
-├── Main App (Port 3001)          # Customer-facing booking platform
-├── Admin Portal (Port 4000)      # Management dashboard
-└── Proxy Server (Port 3000)      # Routes traffic between apps
+citycars/ (Port 3000)
+├── Customer Platform (/)         # Public booking platform
+└── Admin Portal (/admin)         # Protected management dashboard
 ```
 
 ## 🚀 Quick Start
@@ -22,53 +21,52 @@ citycars/
 
 ### Installation
 ```bash
-# Install dependencies (both main and admin)
+# Install dependencies
 pnpm install
-cd admin && pnpm install && cd ..
 ```
 
 ### Development
 ```bash
-# Start all services (main + admin + proxy)
-pnpm run dev:all
+# Start development server
+pnpm dev
 
 # Access:
 # Main App:     http://localhost:3000
 # Admin Portal: http://localhost:3000/admin
+# Admin Login:  http://localhost:3000/admin/login
 ```
 
 ### Production Build
 ```bash
-# Build all applications
-pnpm run build:all
+# Build application
+pnpm build
 
 # Start in production mode
-pnpm run start:production
+pnpm start
 ```
 
 ## 📁 Project Structure
 
 ```
 citycars/
-├── admin/                      # Admin portal (separate Nuxt app)
-│   ├── components/            # Admin-specific components
-│   ├── composables/           # Admin Firestore & auth
-│   ├── layouts/               # Admin layout
-│   ├── pages/                 # Admin pages
-│   └── nuxt.config.ts         # Admin config
-│
-├── components/                 # Shared components
-├── composables/                # Client-side composables
-├── pages/                      # Main app pages
+├── components/                 # Shared + admin components
+├── composables/                # Client-side composables (main + admin)
+├── layouts/                    # Layouts (default + admin)
+├── middleware/                 # Route middleware (auth, admin)
+├── pages/                      # All pages
+│   ├── index.vue              # Homepage
+│   ├── quote.vue              # Booking quote
+│   ├── profile.vue            # User profile
+│   └── admin/                 # Admin portal pages
+│       ├── index.vue          # Dashboard
+│       ├── login.vue          # Admin login
+│       ├── bookings/          # Bookings management
+│       ├── drivers/           # Drivers management
+│       ├── offers/            # Offers/promotions
+│       └── settings/          # Admin settings
 ├── server/                     # API routes
 ├── stores/                     # Pinia stores
-├── utils/                      # Utilities (pricing, etc.)
-│
-├── proxy-server.cjs            # Dev proxy
-├── proxy-production.cjs        # Production proxy
-├── start-all.sh                # Dev startup script
-├── stop-all.sh                 # Stop all services
-└── build-all.sh                # Production build script
+└── utils/                      # Utilities (pricing, etc.)
 ```
 
 ## 🔧 Environment Variables

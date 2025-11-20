@@ -172,7 +172,9 @@
 import { ref } from 'vue';
 
 definePageMeta({
-  middleware: ['admin-auth']
+  layout: 'admin',
+  middleware: 'admin',
+  ssr: false
 });
 
 const router = useRouter();

@@ -36,17 +36,17 @@ services:
       deploy_on_push: true
     
     # Build configuration
-    build_command: chmod +x build-all.sh && ./build-all.sh
+    build_command: pnpm build
     
     # Run configuration
-    run_command: chmod +x start-production.sh && ./start-production.sh
+    run_command: node .output/server/index.mjs
     
     # Resource allocation
     instance_count: 1
     instance_size_slug: basic-xxs  # Upgrade as needed
     
     # HTTP configuration
-    http_port: 8080
+    http_port: 3000
     
     # Health check
     health_check:

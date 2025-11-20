@@ -3,9 +3,9 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   css: ["@/assets/styles/main.scss"],
   
-  // Main app runs on port 3001 (proxy server runs on 3000)
+  // Main app with integrated admin portal
   devServer: {
-    port: 3001
+    port: 3000
   },
   plugins: [
     { src: '~/plugins/firebase.client.ts', mode: 'client' },

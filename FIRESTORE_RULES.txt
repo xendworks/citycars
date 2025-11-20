@@ -103,6 +103,18 @@ service cloud.firestore {
     }
     
     // ============================================
+    // OFFERS/PROMOTIONS COLLECTION
+    // ============================================
+    match /offers/{offerId} {
+      // Anyone can read active offers (for promo code validation)
+      allow read: if true;
+      
+      // Only admin can create/update/delete offers (via client-side admin portal)
+      // In production, consider using Cloud Functions or Admin SDK for better security
+      allow create, update, delete: if isSignedIn();
+    }
+    
+    // ============================================
     // PRICING RULES COLLECTION (Read-Only)
     // ============================================
     match /pricingRules/{ruleId} {

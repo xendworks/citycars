@@ -151,6 +151,12 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 
+definePageMeta({
+  layout: 'admin',
+  middleware: 'admin',
+  ssr: false
+});
+
 const showCreateModal = ref(false);
 const isLoading = ref(true);
 const offers = ref<any[]>([]);

@@ -426,6 +426,13 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
+
+definePageMeta({
+  layout: 'admin',
+  middleware: 'admin',
+  ssr: false
+});
+
 import { 
   Download, Search, Sort, Setting, Menu, Grid, Filter, 
   DocumentCopy, Phone, LocationFilled, Location, Calendar, 
