@@ -97,49 +97,49 @@
         <!-- Why Choose Us -->
         <div>
           <h3 class="text-xl font-lexend font-semibold mb-4">Why ride with City Cars?</h3>
-          <div class="grid grid-cols-2 gap-6">
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div class="flex items-start">
-              <div class="bg-city-gold bg-opacity-20 p-2 rounded-full mr-3">
+              <div class="bg-city-gold bg-opacity-20 p-2 rounded-full mr-3 flex-shrink-0">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-city-gold" viewBox="0 0 20 20" fill="currentColor">
-                  <path fill-rule="evenodd" d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
+                  <path fillRule="evenodd" d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
                 </svg>
               </div>
-              <div>
-                <h4 class="font-lexend font-medium text-white">Competitive Pricing</h4>
-                <p class="text-sm text-gray-300 mt-1">Enjoy great value with our affordable rates.</p>
+              <div class="min-w-0">
+                <h4 class="font-lexend font-medium text-white whitespace-nowrap">Competitive Pricing</h4>
+                <p class="text-sm text-gray-300 mt-1">Great value, affordable rates.</p>
               </div>
             </div>
             <div class="flex items-start">
-              <div class="bg-city-gold bg-opacity-20 p-2 rounded-full mr-3">
+              <div class="bg-city-gold bg-opacity-20 p-2 rounded-full mr-3 flex-shrink-0">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-city-gold" viewBox="0 0 20 20" fill="currentColor">
-                  <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd" />
+                  <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
                 </svg>
               </div>
-              <div>
-                <h4 class="font-lexend font-medium text-white">Easy Booking</h4>
-                <p class="text-sm text-gray-300 mt-1">Simple online platform for fast bookings.</p>
+              <div class="min-w-0">
+                <h4 class="font-lexend font-medium text-white whitespace-nowrap">Easy Booking</h4>
+                <p class="text-sm text-gray-300 mt-1">Fast online bookings.</p>
               </div>
             </div>
             <div class="flex items-start">
-              <div class="bg-city-gold bg-opacity-20 p-2 rounded-full mr-3">
+              <div class="bg-city-gold bg-opacity-20 p-2 rounded-full mr-3 flex-shrink-0">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-city-gold" viewBox="0 0 20 20" fill="currentColor">
                   <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
                 </svg>
               </div>
-              <div>
-                <h4 class="font-lexend font-medium text-white">Professional Drivers</h4>
-                <p class="text-sm text-gray-300 mt-1">Expert drivers ensure your safe journey.</p>
+              <div class="min-w-0">
+                <h4 class="font-lexend font-medium text-white whitespace-nowrap">Professional Drivers</h4>
+                <p class="text-sm text-gray-300 mt-1">Expert, safe journey.</p>
               </div>
             </div>
             <div class="flex items-start">
-              <div class="bg-city-gold bg-opacity-20 p-2 rounded-full mr-3">
+              <div class="bg-city-gold bg-opacity-20 p-2 rounded-full mr-3 flex-shrink-0">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-city-gold" viewBox="0 0 20 20" fill="currentColor">
-                  <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
+                  <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
                 </svg>
               </div>
-              <div>
-                <h4 class="font-lexend font-medium text-white">Safe & Secure</h4>
-                <p class="text-sm text-gray-300 mt-1">Your safety is our top priority.</p>
+              <div class="min-w-0">
+                <h4 class="font-lexend font-medium text-white whitespace-nowrap">Safe & Secure</h4>
+                <p class="text-sm text-gray-300 mt-1">Your safety is our priority.</p>
               </div>
             </div>
           </div>

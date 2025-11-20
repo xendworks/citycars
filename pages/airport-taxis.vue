@@ -176,11 +176,14 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { useQueryStore } from '~/stores/queryStore'
 
-definePageMeta({
-  title: 'Airport Taxis - City Cars'
+// SEO Meta Tags
+useSEO({
+  title: 'Airport Taxi Services - Gatwick, Heathrow & More | CityCars',
+  description: 'Reliable airport taxi services to all major UK airports. Professional drivers, competitive prices, and 24/7 availability. Book your airport transfer with CityCars today.',
+  url: '/airport-taxis'
 })
 </script>
 

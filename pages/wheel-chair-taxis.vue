@@ -199,11 +199,14 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { useQueryStore } from '~/stores/queryStore'
 
-definePageMeta({
-  title: 'Wheelchair Accessible Taxis - City Cars'
+// SEO Meta Tags
+useSEO({
+  title: 'Wheelchair Accessible Taxis Gatwick | Disability-Friendly Airport Transfers',
+  description: 'Wheelchair accessible taxis and disability-friendly airport transfers in Gatwick. Specially modified vehicles with ramps, lifts, and trained drivers. Book your accessible taxi today.',
+  url: '/wheel-chair-taxis'
 })
 </script>
 

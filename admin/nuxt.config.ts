@@ -12,7 +12,12 @@ export default defineNuxtConfig({
   modules: [
     '@nuxtjs/tailwindcss',
     '@pinia/nuxt',
+    'pinia-plugin-persistedstate/nuxt',
   ],
+  
+  piniaPersistedstate: {
+    storage: 'localStorage'
+  },
 
   css: [
     '~/assets/css/global.css'
@@ -42,6 +47,7 @@ export default defineNuxtConfig({
   },
 
   app: {
+    baseURL: process.env.NODE_ENV === 'production' ? '/admin/' : '/',
     head: {
       title: 'CityCars Admin Portal',
       meta: [

@@ -2,6 +2,22 @@ export default defineNuxtConfig({
   compatibilityDate: '2024-04-03',
   devtools: { enabled: true },
   css: ["@/assets/styles/main.scss"],
+  
+  // Main app runs on port 3000
+  devServer: {
+    port: 3000
+  },
+
+  // Proxy /admin requests to admin portal on port 4000
+  nitro: {
+    devProxy: {
+      '/admin': {
+        target: 'http://localhost:4000',
+        changeOrigin: true,
+        ws: true
+      }
+    }
+  },
   plugins: [
     { src: '~/plugins/firebase.client.ts', mode: 'client' },
     { src: '~/plugins/auth-init.client.ts', mode: 'client' },
@@ -15,6 +31,9 @@ export default defineNuxtConfig({
     'pinia-plugin-persistedstate/nuxt',
     '@vueuse/nuxt'
   ],
+  piniaPersistedstate: {
+    storage: 'localStorage'
+  },
   tailwindcss: {
     cssPath: '~/assets/styles/tailwind.css',
     configPath: 'tailwind.config.js',

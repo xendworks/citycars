@@ -626,8 +626,12 @@ const taxiTypes = ref([
 
 const activeTaxiTab = ref('saloon')
 
-definePageMeta({
-  title: 'CityCars - Book Wheelchair Taxis at Gatwick Airport'
+// SEO Meta Tags
+useSEO({
+  title: 'CityCars Gatwick - Airport Transfers & Wheelchair Accessible Taxis',
+  description: 'Book reliable airport transfers and wheelchair accessible taxis to and from Gatwick Airport. Available 24/7 with professional drivers, competitive prices, and easy online booking.',
+  url: '/',
+  type: 'website'
 })
 </script>
 

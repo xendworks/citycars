@@ -1,5 +1,11 @@
 export default defineNuxtRouteMiddleware((to, from) => {
-  const { isAuthenticated } = useAuth();
+  // Skip middleware on server-side
+  if (process.server) return;
+  
+  const auth = useAuth();
+  if (!auth) return;
+  
+  const { isAuthenticated } = auth;
   
   // If not authenticated, redirect to login
   if (!isAuthenticated.value) {

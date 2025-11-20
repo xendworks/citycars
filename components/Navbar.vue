@@ -23,7 +23,7 @@
           <a href="/airport-taxis" class="text-gray-700 hover:text-amber-500">Airport Taxis</a>
           <a href="/wheel-chair-taxis" class="text-gray-700 hover:text-amber-500">Wheel Chair Taxis</a>
           <a href="#" class="text-gray-700 hover:text-amber-500">Areas we cover</a>
-          <a href="/contact-us" class="text-gray-700 hover:text-amber-500">Contact us</a>
+          <NuxtLink to="/contact-us" class="text-gray-700 hover:text-amber-500">Contact us</NuxtLink>
         </nav>
         <div class="flex items-center space-x-4">
           <template v-if="isAuthenticated">

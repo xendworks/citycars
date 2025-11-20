@@ -27,10 +27,10 @@
       <aside class="w-64 bg-white min-h-[calc(100vh-72px)] shadow-lg flex-shrink-0">
         <nav class="p-4 space-y-2">
           <NuxtLink
-            to="/admin"
+            to="/"
             :class="[
               'flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors',
-              $route.path === '/admin' || $route.path === '/admin/'
+              $route.path === '/' || $route.path === ''
                 ? 'bg-amber-50 text-amber-600 font-semibold'
                 : 'text-gray-700 hover:bg-gray-50'
             ]"
@@ -42,10 +42,10 @@
           </NuxtLink>
 
           <NuxtLink
-            to="/admin/bookings"
+            to="/bookings"
             :class="[
               'flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors',
-              $route.path.startsWith('/admin/bookings')
+              $route.path.startsWith('/bookings')
                 ? 'bg-amber-50 text-amber-600 font-semibold'
                 : 'text-gray-700 hover:bg-gray-50'
             ]"
@@ -57,10 +57,10 @@
           </NuxtLink>
 
           <NuxtLink
-            to="/admin/drivers"
+            to="/drivers"
             :class="[
               'flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors',
-              $route.path.startsWith('/admin/drivers')
+              $route.path.startsWith('/drivers')
                 ? 'bg-amber-50 text-amber-600 font-semibold'
                 : 'text-gray-700 hover:bg-gray-50'
             ]"
@@ -72,10 +72,10 @@
           </NuxtLink>
 
           <NuxtLink
-            to="/admin/offers"
+            to="/offers"
             :class="[
               'flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors',
-              $route.path.startsWith('/admin/offers')
+              $route.path.startsWith('/offers')
                 ? 'bg-amber-50 text-amber-600 font-semibold'
                 : 'text-gray-700 hover:bg-gray-50'
             ]"
@@ -87,10 +87,10 @@
           </NuxtLink>
 
           <NuxtLink
-            to="/admin/pricing"
+            to="/pricing"
             :class="[
               'flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors',
-              $route.path.startsWith('/admin/pricing')
+              $route.path.startsWith('/pricing')
                 ? 'bg-amber-50 text-amber-600 font-semibold'
                 : 'text-gray-700 hover:bg-gray-50'
             ]"
@@ -102,10 +102,10 @@
           </NuxtLink>
 
           <NuxtLink
-            to="/admin/users"
+            to="/users"
             :class="[
               'flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors',
-              $route.path.startsWith('/admin/users')
+              $route.path.startsWith('/users')
                 ? 'bg-amber-50 text-amber-600 font-semibold'
                 : 'text-gray-700 hover:bg-gray-50'
             ]"
@@ -117,10 +117,10 @@
           </NuxtLink>
 
           <NuxtLink
-            to="/admin/settings"
+            to="/settings"
             :class="[
               'flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors',
-              $route.path.startsWith('/admin/settings')
+              $route.path.startsWith('/settings')
                 ? 'bg-amber-50 text-amber-600 font-semibold'
                 : 'text-gray-700 hover:bg-gray-50'
             ]"

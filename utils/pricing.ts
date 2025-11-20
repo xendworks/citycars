@@ -43,11 +43,14 @@ export const PRICING_CONFIG = {
   ],
 
   // Vehicle type multipliers (percentage increase over base saloon price)
+  // INCREMENTAL: Each level is 15% MORE than the previous
   vehicleMultipliers: {
-    saloon: 0,      // 0% extra (base price)
-    estate: 15,     // 15% extra
-    mpv: 15,        // 15% extra
-    wheelchair: 15  // 15% extra
+    saloon: 0,       // 0% extra (base price)
+    estate: 15,      // 15% extra
+    mpv: 30,         // 30% extra (15% more than estate)
+    '7seater': 45,   // 45% extra (15% more than mpv)
+    '9seater': 60,   // 60% extra (15% more than 7 seater)
+    wheelchair: 15   // 15% extra
   },
 
   // Extra charges (optional add-ons)
@@ -106,13 +109,13 @@ export function calculateSaloonFare(miles: number): number {
  */
 export function calculateFare(
   miles: number,
-  vehicleType: 'saloon' | 'estate' | 'mpv' | 'wheelchair' = 'saloon'
+  vehicleType: 'saloon' | 'estate' | 'mpv' | '7seater' | '9seater' | 'wheelchair' = 'saloon'
 ): number {
   // Calculate base saloon fare
   const saloonFare = calculateSaloonFare(miles);
 
   // Apply vehicle type multiplier
-  const multiplier = PRICING_CONFIG.vehicleMultipliers[vehicleType] || 0;
+  const multiplier = PRICING_CONFIG.vehicleMultipliers[vehicleType as keyof typeof PRICING_CONFIG.vehicleMultipliers] || 0;
   const vehicleSurcharge = (saloonFare * multiplier) / 100;
 
   const totalFare = saloonFare + vehicleSurcharge;
@@ -137,7 +140,7 @@ export function calculateFare(
  */
 export function getFareBreakdown(
   miles: number,
-  vehicleType: 'saloon' | 'estate' | 'mpv' | 'wheelchair' = 'saloon',
+  vehicleType: 'saloon' | 'estate' | 'mpv' | '7seater' | '9seater' | 'wheelchair' = 'saloon',
   extras: {
     meetAndGreet?: boolean;
     childSeat?: boolean;
@@ -209,7 +212,7 @@ export function getPricingTier(miles: number) {
  */
 export function estimateFare(
   estimatedMiles: number,
-  vehicleType: 'saloon' | 'estate' | 'mpv' | 'wheelchair' = 'saloon'
+  vehicleType: 'saloon' | 'estate' | 'mpv' | '7seater' | '9seater' | 'wheelchair' = 'saloon'
 ): { min: number; max: number; average: number } {
   const exactFare = calculateFare(estimatedMiles, vehicleType);
   

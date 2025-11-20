@@ -646,16 +646,18 @@ const generateMockCabResults = () => {
   }
 
   // Map cab names to vehicle types for pricing calculation
-  const vehicleTypeMap: Record<string, 'saloon' | 'estate' | 'mpv' | 'wheelchair'> = {
-    'Saloon': 'saloon',
-    'Estate': 'estate',
-    'MPV': 'mpv',
-    '7 Seater': 'mpv', // Use MPV pricing for 7 seater (15% extra)
-    '9 Seater': 'mpv', // Use MPV pricing for 9 seater (15% extra)
+  // INCREMENTAL PRICING: Each level +15% more than previous
+  const vehicleTypeMap: Record<string, 'saloon' | 'estate' | 'mpv' | '7seater' | '9seater' | 'wheelchair'> = {
+    'Saloon': 'saloon',      // Base (0%)
+    'Estate': 'estate',      // +15%
+    'MPV': 'mpv',            // +30%
+    '7 Seater': '7seater',   // +45%
+    '9 Seater': '9seater',   // +60%
     'Wheelchair': 'wheelchair'
   }
 
   console.log('💰 Calculating fares for', distanceInMiles.toFixed(2), 'miles');
+  console.log('Vehicle Type Map:', vehicleTypeMap);
 
   const availableCabs = baseCabs
     .filter(cab => cab.passengerCapacity >= passengers.value && cab.luggageCapacity >= luggage.value)
@@ -664,7 +666,7 @@ const generateMockCabResults = () => {
       const vehicleType = vehicleTypeMap[cab.name] || 'saloon'
       const fareForVehicle = calculateFare(distanceInMiles, vehicleType)
       
-      console.log(`${cab.name}: £${fareForVehicle.toFixed(2)} (${vehicleType})`);
+      console.log(`🚗 ${cab.name}: Vehicle Type="${vehicleType}", Fare=£${fareForVehicle.toFixed(2)}`);
       
       return {
         ...cab,
@@ -826,8 +828,17 @@ async function renderRealMap() {
         
         // Update route details with real data
         const leg = result.routes[0].legs[0];
+        
+        // Convert distance to miles if in KM
+        let distanceText = leg.distance.text;
+        if (distanceText.toLowerCase().includes('km')) {
+          const kmValue = parseFloat(distanceText.replace(/[^0-9.]/g, ''));
+          const milesValue = (kmValue * 0.621371).toFixed(1);
+          distanceText = `${milesValue} miles`;
+        }
+        
         routeDetails.value = {
-          distance: leg.distance.text,
+          distance: distanceText,
           duration: leg.duration.text,
           eta: new Date(Date.now() + leg.duration.value * 1000).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })
         };
@@ -904,8 +915,9 @@ async function renderRealMap() {
           overlay.setMap(map);
         }
         
-        addCustomPopover(map, leg.start_location, leg.start_address.split(',')[0]);
-        addCustomPopover(map, leg.end_location, leg.end_address.split(',')[0]);
+        // Use the place names entered by user instead of street addresses to avoid "Unnamed Road"
+        addCustomPopover(map, leg.start_location, fromLocation.value || leg.start_address.split(',')[0]);
+        addCustomPopover(map, leg.end_location, toLocation.value || leg.end_address.split(',')[0]);
         
         // Add animated car marker with smoother animation
         const carIcon = {
