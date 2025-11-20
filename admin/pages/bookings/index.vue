@@ -139,7 +139,7 @@
         <el-table-column
           prop="userPhone"
           label="PHONE"
-          width="160"
+          width="200"
           :resizable="true"
         >
           <template #default="{ row }">
@@ -183,7 +183,7 @@
         <!-- Date & Time Column -->
         <el-table-column
           label="DATE & TIME"
-          width="180"
+          width="280"
           sortable="custom"
           prop="pickupDateTime"
           :resizable="true"
@@ -236,7 +236,7 @@
         <!-- Actions Column -->
         <el-table-column
           label="ACTIONS"
-          width="100"
+          width="140"
           fixed="right"
           align="center"
         >

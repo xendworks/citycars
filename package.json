@@ -9,11 +9,16 @@
   },
   "scripts": {
     "build": "nuxt build",
+    "build:all": "chmod +x build-all.sh && ./build-all.sh",
     "dev": "nuxt dev",
+    "dev:all": "chmod +x start-all.sh && ./start-all.sh",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
-    "start": "node .output/server/index.mjs"
+    "start": "node .output/server/index.mjs",
+    "start:proxy": "node proxy-server.cjs",
+    "start:production": "chmod +x start-production.sh && ./start-production.sh",
+    "stop": "chmod +x stop-all.sh && ./stop-all.sh"
   },
   "dependencies": {
     "@googlemaps/js-api-loader": "^1.16.8",

@@ -3,20 +3,9 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   css: ["@/assets/styles/main.scss"],
   
-  // Main app runs on port 3000
+  // Main app runs on port 3001 (proxy server runs on 3000)
   devServer: {
-    port: 3000
-  },
-
-  // Proxy /admin requests to admin portal on port 4000
-  nitro: {
-    devProxy: {
-      '/admin': {
-        target: 'http://localhost:4000',
-        changeOrigin: true,
-        ws: true
-      }
-    }
+    port: 3001
   },
   plugins: [
     { src: '~/plugins/firebase.client.ts', mode: 'client' },
@@ -39,10 +28,26 @@ export default defineNuxtConfig({
     configPath: 'tailwind.config.js',
     exposeConfig: false,
     viewer: true,
+    injectPosition: 'first' // Ensure Tailwind loads first to prevent FOUC
+  },
+  
+  // Fix CSS flash (FOUC) on page navigation - inline critical CSS
+  features: {
+    inlineStyles: true
   },
   typescript: {
     strict: false,
     typeCheck: false
+  },
+  
+  // Fix FOUC (Flash of Unstyled Content) during navigation
+  experimental: {
+    inlineSSRStyles: true
+  },
+  
+  // Inline critical CSS
+  features: {
+    inlineStyles: true
   },
   build: {
     transpile: ['@googlemaps/js-api-loader']

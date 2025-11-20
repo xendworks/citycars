@@ -31,8 +31,15 @@ export default defineNuxtConfig({
     // Public keys (exposed to client)
     public: {
       apiUrl: process.env.NUXT_PUBLIC_API_URL || '/api',
+      // Firebase config with both long and short names for compatibility
       firebaseApiKey: process.env.NUXT_PUBLIC_FIREBASE_API_KEY || "AIzaSyBuUPDFnKHfH21vaclS5CaK8O7qV41l8X0",
       firebaseAuthDomain: process.env.NUXT_PUBLIC_FIREBASE_AUTH_DOMAIN || "city-cars-83256.firebaseapp.com",
+      firebaseProjectId: process.env.NUXT_PUBLIC_FIREBASE_PROJECT_ID || "city-cars-83256",
+      firebaseStorageBucket: process.env.NUXT_PUBLIC_FIREBASE_STORAGE_BUCKET || "city-cars-83256.firebasestorage.app",
+      firebaseMessagingSenderId: process.env.NUXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || "413911303220",
+      firebaseAppId: process.env.NUXT_PUBLIC_FIREBASE_APP_ID || "1:413911303220:web:e18b7b14c3eba16fcb7661",
+      firebaseMeasurementId: process.env.NUXT_PUBLIC_FIREBASE_MEASUREMENT_ID || "G-NPXSZ0VECD",
+      // Short names for plugin compatibility
       projectId: process.env.NUXT_PUBLIC_FIREBASE_PROJECT_ID || "city-cars-83256",
       storageBucket: process.env.NUXT_PUBLIC_FIREBASE_STORAGE_BUCKET || "city-cars-83256.firebasestorage.app",
       messagingSenderId: process.env.NUXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || "413911303220",
@@ -45,9 +52,20 @@ export default defineNuxtConfig({
     strict: false,
     typeCheck: false
   },
+  
+  // Fix FOUC (Flash of Unstyled Content) during navigation
+  experimental: {
+    inlineSSRStyles: true
+  },
+  
+  // Inline critical CSS
+  features: {
+    inlineStyles: true
+  },
 
   app: {
-    baseURL: process.env.NODE_ENV === 'production' ? '/admin/' : '/',
+    // IMPORTANT: Set baseURL to /admin for module federation/proxy
+    baseURL: '/admin',
     head: {
       title: 'CityCars Admin Portal',
       meta: [

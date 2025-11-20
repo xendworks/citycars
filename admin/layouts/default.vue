@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen bg-gray-100 overflow-x-hidden">
     <!-- Top Navigation Bar -->
-    <nav class="bg-gray-900 text-white shadow-lg">
+    <nav class="bg-gray-900 text-white shadow-lg fixed top-0 left-0 right-0 z-10">
       <div class="px-6 py-4">
         <div class="flex items-center justify-between">
           <div class="flex items-center space-x-4">
@@ -24,8 +24,8 @@
 
     <div class="flex overflow-x-hidden">
       <!-- Sidebar -->
-      <aside class="w-64 bg-white min-h-[calc(100vh-72px)] shadow-lg flex-shrink-0">
-        <nav class="p-4 space-y-2">
+      <aside class="w-64 bg-white min-h-screen shadow-lg flex-shrink-0">
+        <nav class="p-4 mt-16 fixed space-y-2">
           <NuxtLink
             to="/"
             :class="[
@@ -135,7 +135,7 @@
       </aside>
 
       <!-- Main Content -->
-      <main class="flex-1 overflow-x-hidden max-w-full">
+      <main class="flex-1 p-4 mt-20 overflow-x-hidden max-w-full">
         <slot />
       </main>
     </div>

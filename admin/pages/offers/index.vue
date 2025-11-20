@@ -87,10 +87,12 @@
       </div>
     </div>
 
-    <!-- Create/Edit Modal (Placeholder) -->
+    <!-- Create/Edit Modal -->
     <div v-if="showCreateModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div class="bg-white rounded-lg p-8 max-w-2xl w-full mx-4">
-        <h2 class="text-2xl font-bold text-gray-900 mb-6">Create New Offer</h2>
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">
+          {{ isEditMode ? 'Edit Offer' : 'Create New Offer' }}
+        </h2>
         
         <div class="space-y-4 mb-6">
           <div>
@@ -129,13 +131,13 @@
 
         <div class="flex space-x-3">
           <button
-            @click="createOffer"
+            @click="isEditMode ? saveEdit() : createOffer()"
             class="flex-1 px-6 py-2.5 bg-amber-500 hover:bg-amber-600 text-white rounded-lg font-semibold transition-colors"
           >
-            Create Offer
+            {{ isEditMode ? 'Save Changes' : 'Create Offer' }}
           </button>
           <button
-            @click="showCreateModal = false"
+            @click="closeModal"
             class="flex-1 px-6 py-2.5 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg font-semibold transition-colors"
           >
             Cancel
@@ -152,6 +154,8 @@ import { ref, onMounted } from 'vue';
 const showCreateModal = ref(false);
 const isLoading = ref(true);
 const offers = ref<any[]>([]);
+const isEditMode = ref(false);
+const editingOfferId = ref('');
 
 const newOffer = ref({
   title: '',
@@ -182,17 +186,7 @@ const createOffer = async () => {
     const { createOffer: createOfferInDb } = useAdminFirestore();
     await createOfferInDb(newOffer.value);
     console.log('[OFFERS] ✅ Offer created successfully');
-    showCreateModal.value = false;
-    
-    // Reset form
-    newOffer.value = {
-      title: '',
-      description: '',
-      code: '',
-      discountPercent: 0,
-      validUntil: '',
-      isActive: false
-    };
+    closeModal();
     
     // Reload offers
     await loadOffers();
@@ -204,7 +198,65 @@ const createOffer = async () => {
 
 const editOffer = (offer: any) => {
   console.log('[OFFERS] Edit offer:', offer);
-  alert(`Offer: ${offer.title}\nCode: ${offer.code}\nDiscount: ${offer.discountPercent}%\n\nFull edit functionality coming soon!`);
+  
+  // Set edit mode and store offer ID
+  isEditMode.value = true;
+  editingOfferId.value = offer.id;
+  
+  // Pre-fill form with offer data
+  newOffer.value = {
+    title: offer.title || '',
+    description: offer.description || '',
+    code: offer.code || '',
+    discountPercent: offer.discountPercent || 0,
+    validUntil: formatDateForInput(offer.validUntil),
+    isActive: offer.isActive || false
+  };
+  
+  // Show modal
+  showCreateModal.value = true;
+};
+
+const saveEdit = async () => {
+  try {
+    console.log('[OFFERS] Saving offer edits...', editingOfferId.value);
+    const { updateOffer } = useAdminFirestore();
+    await updateOffer(editingOfferId.value, newOffer.value);
+    console.log('[OFFERS] ✅ Offer updated successfully');
+    closeModal();
+    
+    // Reload offers to show updated data
+    await loadOffers();
+  } catch (error: any) {
+    console.error('[OFFERS] ❌ Error updating offer:', error);
+    alert('Failed to update offer: ' + error.message);
+  }
+};
+
+const closeModal = () => {
+  showCreateModal.value = false;
+  isEditMode.value = false;
+  editingOfferId.value = '';
+  
+  // Reset form
+  newOffer.value = {
+    title: '',
+    description: '',
+    code: '',
+    discountPercent: 0,
+    validUntil: '',
+    isActive: false
+  };
+};
+
+const formatDateForInput = (dateValue: any) => {
+  if (!dateValue) return '';
+  try {
+    const date = typeof dateValue === 'string' ? new Date(dateValue) : dateValue.toDate();
+    return date.toISOString().split('T')[0]; // Returns YYYY-MM-DD format for input[type="date"]
+  } catch (e) {
+    return '';
+  }
 };
 
 const toggleOffer = async (offer: any) => {
