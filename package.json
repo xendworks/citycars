@@ -14,7 +14,8 @@
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "start": "node .output/server/index.mjs",
-    "seed:admin": "node scripts/seed-admin-users.mjs"
+    "seed:admin": "node scripts/seed-admin-users.mjs",
+    "seed:routes": "node scripts/seed-routes.mjs"
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.2",

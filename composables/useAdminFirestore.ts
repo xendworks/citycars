@@ -5,8 +5,13 @@ export const useAdminFirestore = () => {
     throw new Error('useAdminFirestore can only be used on the client side');
   }
 
-  const { $firestore } = useNuxtApp();
-  const db = $firestore as any;
+  const { $firebase } = useNuxtApp();
+  
+  if (!$firebase) {
+    throw new Error('Firebase not initialized');
+  }
+  
+  const db = getFirestore($firebase as any);
 
   // =====================================
   // BOOKINGS

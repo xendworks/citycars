@@ -76,6 +76,7 @@ export const collections = {
   pricingRules: () => getDb().collection('pricingRules'),
   walletData: () => getDb().collection('walletData'),
   walletTransactions: () => getDb().collection('walletTransactions'),
+  routes: () => getDb().collection('routes'),
 };
 
 /**

@@ -48,22 +48,16 @@ const db = getFirestore(app);
 // Admin users to create
 const adminUsers = [
   {
+    email: 'xendworks@gmail.com',
+    password: 'Minicabee@123',
+    displayName: 'Main Admin',
+    role: 'admin',
+  },
+  {
     email: 'admin@citycars.com',
     password: 'admin123',
     displayName: 'Super Admin',
-    role: 'super_admin',
-  },
-  {
-    email: 'manager@citycars.com',
-    password: 'manager123',
-    displayName: 'Manager',
-    role: 'manager',
-  },
-  {
-    email: 'operator@citycars.com',
-    password: 'operator123',
-    displayName: 'Operator',
-    role: 'operator',
+    role: 'admin',
   },
 ];
 
@@ -171,9 +165,8 @@ async function seedAdminUsers() {
   console.log('\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
   console.log('🎉 Seeding complete!');
   console.log('\n📋 Admin Credentials:');
+  console.log('   • Main Admin:  xendworks@gmail.com / Minicabee@123');
   console.log('   • Super Admin: admin@citycars.com / admin123');
-  console.log('   • Manager:     manager@citycars.com / manager123');
-  console.log('   • Operator:    operator@citycars.com / operator123');
   console.log('\n🌐 Login at: http://localhost:3000/admin/login');
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
 }
@@ -187,4 +180,5 @@ seedAdminUsers()
     console.error('\n❌ Fatal error:', error);
     process.exit(1);
   });
+
 

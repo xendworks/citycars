@@ -2,7 +2,7 @@ import { ref, computed } from 'vue';
 import { signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'firebase/auth';
 
 // Define admin roles with permissions
-export type AdminRole = 'super_admin' | 'manager' | 'operator';
+export type AdminRole = 'admin' | 'super_admin' | 'manager' | 'operator';
 
 export interface AdminUser {
   id: string;
@@ -31,6 +31,24 @@ export interface AdminUser {
 
 // Role-based permissions
 const rolePermissions: Record<AdminRole, AdminUser['permissions']> = {
+  admin: {
+    canViewBookings: true,
+    canEditBookings: true,
+    canDeleteBookings: true,
+    canViewDrivers: true,
+    canEditDrivers: true,
+    canDeleteDrivers: true,
+    canViewUsers: true,
+    canEditUsers: true,
+    canDeleteUsers: true,
+    canViewOffers: true,
+    canEditOffers: true,
+    canDeleteOffers: true,
+    canViewPricing: true,
+    canEditPricing: true,
+    canViewSettings: true,
+    canEditSettings: true,
+  },
   super_admin: {
     canViewBookings: true,
     canEditBookings: true,
@@ -107,7 +125,7 @@ export const useAdminAuth = () => {
           
           // Check if user has an admin role
           const adminRole = userProfile?.role as AdminRole;
-          if (adminRole && ['super_admin', 'manager', 'operator'].includes(adminRole)) {
+          if (adminRole && ['admin', 'super_admin', 'manager', 'operator'].includes(adminRole)) {
             const user: AdminUser = {
               id: firebaseUser.uid,
               email: firebaseUser.email || '',
@@ -159,7 +177,7 @@ export const useAdminAuth = () => {
       const adminRole = userProfile?.role as AdminRole;
       
       // Verify user has admin role
-      if (!adminRole || !['super_admin', 'manager', 'operator'].includes(adminRole)) {
+      if (!adminRole || !['admin', 'super_admin', 'manager', 'operator'].includes(adminRole)) {
         await signOut($firebaseAuth);
         throw new Error('You do not have admin access');
       }
