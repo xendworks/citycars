@@ -41,21 +41,21 @@
             <div>
               <h4 class="text-city-gold font-medium mb-3">Airports</h4>
               <ul class="space-y-2 text-sm">
-                <li><a href="#" class="hover:text-city-gold transition-colors">Heathrow Airport</a></li>
-                <li><a href="#" class="hover:text-city-gold transition-colors">Gatwick Airport</a></li>
-                <li><a href="#" class="hover:text-city-gold transition-colors">Stansted Airport</a></li>
-                <li><a href="#" class="hover:text-city-gold transition-colors">Luton Airport</a></li>
-                <li><a href="#" class="hover:text-city-gold transition-colors">Manchester Airport</a></li>
+                <li><NuxtLink to="/heathrow-airport-to-gatwick-airport" class="hover:text-city-gold transition-colors">Heathrow Airport</NuxtLink></li>
+                <li><NuxtLink to="/gatwick-airport-to-heathrow-airport" class="hover:text-city-gold transition-colors">Gatwick Airport</NuxtLink></li>
+                <li><NuxtLink to="/stansted-airport-to-gatwick-airport" class="hover:text-city-gold transition-colors">Stansted Airport</NuxtLink></li>
+                <li><NuxtLink to="/luton-airport-to-gatwick-airport" class="hover:text-city-gold transition-colors">Luton Airport</NuxtLink></li>
+                <li><NuxtLink to="/manchester-airport-to-gatwick-airport" class="hover:text-city-gold transition-colors">Manchester Airport</NuxtLink></li>
               </ul>
             </div>
             <div>
               <h4 class="text-city-gold font-medium mb-3">Stations</h4>
               <ul class="space-y-2 text-sm">
-                <li><a href="#" class="hover:text-city-gold transition-colors">Victoria Station</a></li>
-                <li><a href="#" class="hover:text-city-gold transition-colors">Paddington Station</a></li>
-                <li><a href="#" class="hover:text-city-gold transition-colors">Kings Cross Station</a></li>
-                <li><a href="#" class="hover:text-city-gold transition-colors">Euston Station</a></li>
-                <li><a href="#" class="hover:text-city-gold transition-colors">London Bridge Station</a></li>
+                <li><NuxtLink to="/victoria-station-to-gatwick-airport" class="hover:text-city-gold transition-colors">Victoria Station</NuxtLink></li>
+                <li><NuxtLink to="/paddington-station-to-gatwick-airport" class="hover:text-city-gold transition-colors">Paddington Station</NuxtLink></li>
+                <li><NuxtLink to="/kings-cross-station-to-gatwick-airport" class="hover:text-city-gold transition-colors">Kings Cross Station</NuxtLink></li>
+                <li><NuxtLink to="/euston-station-to-gatwick-airport" class="hover:text-city-gold transition-colors">Euston Station</NuxtLink></li>
+                <li><NuxtLink to="/london-bridge-station-to-gatwick-airport" class="hover:text-city-gold transition-colors">London Bridge Station</NuxtLink></li>
               </ul>
             </div>
           </div>
@@ -65,18 +65,18 @@
         <div>
           <h3 class="text-xl font-lexend font-semibold mb-6 text-white border-b border-gray-700 pb-2">UK Wide Service</h3>
           <div class="grid grid-cols-3 gap-x-2 gap-y-2 text-sm">
-            <a href="#" class="hover:text-city-gold transition-colors">London</a>
-            <a href="#" class="hover:text-city-gold transition-colors">Birmingham</a>
-            <a href="#" class="hover:text-city-gold transition-colors">Manchester</a>
-            <a href="#" class="hover:text-city-gold transition-colors">Leeds</a>
-            <a href="#" class="hover:text-city-gold transition-colors">Edinburgh</a>
-            <a href="#" class="hover:text-city-gold transition-colors">Glasgow</a>
-            <a href="#" class="hover:text-city-gold transition-colors">Liverpool</a>
-            <a href="#" class="hover:text-city-gold transition-colors">Bristol</a>
-            <a href="#" class="hover:text-city-gold transition-colors">Oxford</a>
-            <a href="#" class="hover:text-city-gold transition-colors">Cambridge</a>
-            <a href="#" class="hover:text-city-gold transition-colors">Cardiff</a>
-            <a href="#" class="hover:text-city-gold transition-colors">York</a>
+            <NuxtLink to="/london-to-gatwick-airport" class="hover:text-city-gold transition-colors">London</NuxtLink>
+            <NuxtLink to="/birmingham-to-gatwick-airport" class="hover:text-city-gold transition-colors">Birmingham</NuxtLink>
+            <NuxtLink to="/manchester-to-gatwick-airport" class="hover:text-city-gold transition-colors">Manchester</NuxtLink>
+            <NuxtLink to="/leeds-to-gatwick-airport" class="hover:text-city-gold transition-colors">Leeds</NuxtLink>
+            <NuxtLink to="/edinburgh-to-gatwick-airport" class="hover:text-city-gold transition-colors">Edinburgh</NuxtLink>
+            <NuxtLink to="/glasgow-to-gatwick-airport" class="hover:text-city-gold transition-colors">Glasgow</NuxtLink>
+            <NuxtLink to="/liverpool-to-gatwick-airport" class="hover:text-city-gold transition-colors">Liverpool</NuxtLink>
+            <NuxtLink to="/bristol-to-gatwick-airport" class="hover:text-city-gold transition-colors">Bristol</NuxtLink>
+            <NuxtLink to="/oxford-to-gatwick-airport" class="hover:text-city-gold transition-colors">Oxford</NuxtLink>
+            <NuxtLink to="/cambridge-to-gatwick-airport" class="hover:text-city-gold transition-colors">Cambridge</NuxtLink>
+            <NuxtLink to="/cardiff-to-gatwick-airport" class="hover:text-city-gold transition-colors">Cardiff</NuxtLink>
+            <NuxtLink to="/york-to-gatwick-airport" class="hover:text-city-gold transition-colors">York</NuxtLink>
           </div>
         </div>
       </div>

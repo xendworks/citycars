@@ -2,17 +2,17 @@
   <ClientOnly>
     <div class="min-h-screen bg-gray-50">
       <!-- Hero Section -->
-      <section class="relative py-12 md:py-20 bg-gradient-to-br from-amber-50 to-yellow-100">
-        <div class="absolute inset-0 opacity-20">
-          <div class="absolute inset-0" style="background-image: radial-gradient(circle, #f59e0b 2px, transparent 2px); background-size: 40px 40px;"></div>
-        </div>
-        
+    <section class="relative py-12 md:py-20 bg-gradient-to-br from-amber-50 to-yellow-100">
+      <div class="absolute inset-0 opacity-20">
+        <div class="absolute inset-0" style="background-image: radial-gradient(circle, #f59e0b 2px, transparent 2px); background-size: 40px 40px;"></div>
+      </div>
+      
         <div class="container-fluid mx-auto px-4 relative z-10">
-          <!-- Main Heading -->
+        <!-- Main Heading -->
           <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-gray-900 text-center">
             <span v-if="taxiRoute">{{ taxiRoute.seoData.h1Title }}</span>
             <span v-else class="inline-block h-12 w-96 max-w-full bg-gray-300 animate-pulse rounded"></span>
-          </h1>
+        </h1>
 
           <p class="text-lg md:text-xl text-gray-700 text-center max-w-5xl mx-auto mb-4">
             Professional taxi service from 
@@ -29,28 +29,28 @@
             with no hidden fees.
           </p>
 
-        
-          <!-- Booking Form -->
+
+        <!-- Booking Form -->
           <div class="container mx-auto px-4 p-6 md:p-8">
-            <BookingForm 
+          <BookingForm 
               v-if="taxiRoute?.fromLocation && taxiRoute?.toLocation"
-              :prefillPickup="taxiRoute.fromLocation.name"
-              :prefillDropoff="taxiRoute.toLocation.name"
-            />
+            :prefillPickup="taxiRoute.fromLocation.name"
+            :prefillDropoff="taxiRoute.toLocation.name"
+          />
             <div v-else class="space-y-4">
               <div class="h-12 bg-gray-300 animate-pulse rounded-lg"></div>
             </div>
-          </div>
         </div>
-      </section>
+      </div>
+    </section>
 
       <!-- Introduction & Route Details -->
       <section class="py-16 bg-white">
-        <div class="container mx-auto px-4">
+      <div class="container mx-auto px-4">
           <div class="max-w-4xl mx-auto prose prose-lg">
             <h2 class="text-3xl font-bold mb-6">About This Journey</h2>
             
-            <p class="text-lg text-gray-700 leading-relaxed mb-6">
+          <p class="text-lg text-gray-700 leading-relaxed mb-6">
               <span v-if="taxiRoute">{{ taxiRoute.content.introduction }}</span>
               <span v-else class="inline-block h-6 w-full bg-gray-300 animate-pulse rounded"></span>
             </p>
@@ -83,14 +83,14 @@
               <span v-else class="inline-block h-5 w-16 bg-gray-300 animate-pulse rounded align-middle"></span>, 
               with no surge pricing during peak hours. All prices are confirmed upfront, so you know exactly what you'll pay 
               before you book. The fare includes all taxes, tolls, and waiting time.
-            </p>
-          </div>
+          </p>
         </div>
-      </section>
+      </div>
+    </section>
 
       <!-- Vehicle Options -->
       <section class="py-16 bg-gray-50">
-        <div class="container mx-auto px-4">
+      <div class="container mx-auto px-4">
           <div class="text-center mb-12">
             <h2 class="text-3xl md:text-4xl font-bold mb-4">Choose Your Vehicle</h2>
             <p class="text-lg text-gray-600 max-w-3xl mx-auto">
@@ -132,14 +132,14 @@
               <div class="mt-4 pt-4 border-t border-gray-200">
                 <div class="h-10 bg-gray-300 animate-pulse rounded"></div>
               </div>
-            </div>
           </div>
         </div>
-      </section>
+      </div>
+    </section>
 
-      <!-- Why Choose Us -->
+    <!-- Why Choose Us -->
       <section class="py-16 bg-white">
-        <div class="container mx-auto px-4">
+      <div class="container mx-auto px-4">
           <h2 class="text-3xl md:text-4xl font-bold text-center mb-12">Why Choose CityCars Gatwick?</h2>
           
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
@@ -174,7 +174,7 @@
             </div>
 
             <div class="text-center p-6">
-              <div class="inline-block bg-amber-100 rounded-full p-4 mb-4">
+            <div class="inline-block bg-amber-100 rounded-full p-4 mb-4">
                 <svg class="w-10 h-10 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
                 </svg>
@@ -248,8 +248,8 @@
                 <div>
                   <h3 class="text-xl font-bold mb-4 flex items-center">
                     <svg class="w-6 h-6 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                    </svg>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+              </svg>
                     Drop-off Location
                   </h3>
                   <p class="text-lg font-semibold text-gray-900 mb-2">
@@ -312,15 +312,15 @@
                     </div>
                   </div>
                 </div>
-              </div>
             </div>
           </div>
         </div>
-      </section>
+      </div>
+    </section>
 
       <!-- What's Included -->
       <section class="py-16 bg-white">
-        <div class="container mx-auto px-4">
+      <div class="container mx-auto px-4">
           <div class="max-w-4xl mx-auto">
             <h2 class="text-3xl font-bold mb-8 text-center">What's Included in Your Fare</h2>
             
@@ -523,15 +523,15 @@
                   Our prices are fixed regardless of traffic conditions. If there's congestion, your driver will take alternative routes. 
                   We recommend allowing extra time during rush hours (7-9am, 5-7pm weekdays).
                 </p>
-              </div>
             </div>
           </div>
         </div>
-      </section>
+      </div>
+    </section>
 
       <!-- Booking Process -->
       <section class="py-16 bg-gradient-to-b from-white to-gray-50">
-        <div class="container mx-auto px-4">
+      <div class="container mx-auto px-4">
           <div class="max-w-6xl mx-auto">
             <div class="text-center mb-12">
               <h2 class="text-3xl md:text-4xl font-bold mb-4">How to Book Your Taxi</h2>
@@ -631,14 +631,14 @@
                   <p class="text-gray-700">{{ tip }}</p>
                 </div>
               </div>
-            </div>
           </div>
         </div>
-      </section>
+      </div>
+    </section>
 
       <!-- Service Features -->
       <section class="py-16 bg-white">
-        <div class="container mx-auto px-4">
+      <div class="container mx-auto px-4">
           <div class="max-w-4xl mx-auto">
             <h2 class="text-3xl font-bold mb-8 text-center">Our Service Standards</h2>
             
@@ -674,12 +674,12 @@
               </p>
             </div>
           </div>
-        </div>
-      </section>
+      </div>
+    </section>
 
-      <!-- CTA Section -->
+    <!-- CTA Section -->
       <section class="py-16 bg-gradient-to-r from-amber-500 to-amber-600">
-        <div class="container mx-auto px-4 text-center">
+      <div class="container mx-auto px-4 text-center">
           <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">
             Ready to Book Your Taxi from 
             <span v-if="taxiRoute">{{ taxiRoute.fromLocation.name }} to {{ taxiRoute.toLocation.name }}</span>
@@ -692,16 +692,16 @@
           <p class="text-amber-100 text-lg mb-8 max-w-2xl mx-auto">
             Join thousands of satisfied customers who trust CityCars Gatwick for their taxi needs. 
             Book now and experience the difference.
-          </p>
-          <button 
+        </p>
+        <button 
             @click="scrollToTop"
             class="bg-white text-amber-600 px-10 py-4 rounded-lg font-bold text-lg hover:bg-gray-100 transition-colors shadow-lg"
-          >
+        >
             Book Your Taxi Now
-          </button>
-        </div>
-      </section>
-    </div>
+        </button>
+      </div>
+    </section>
+  </div>
   </ClientOnly>
 </template>
 
