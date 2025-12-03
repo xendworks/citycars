@@ -3,6 +3,23 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   css: ["@/assets/styles/main.scss"],
   
+  // Serve static files like sitemap.xml directly (bypass [slug].vue catch-all)
+  nitro: {
+    publicAssets: [
+      {
+        baseURL: '/',
+        dir: 'public',
+        maxAge: 60 * 60 * 24 // 24 hours cache
+      }
+    ]
+  },
+  
+  // Route rules to ensure sitemap.xml is served as static file
+  routeRules: {
+    '/sitemap.xml': { prerender: true },
+    '/robots.txt': { prerender: true }
+  },
+  
   // Main app with integrated admin portal
   devServer: {
     port: 3000
