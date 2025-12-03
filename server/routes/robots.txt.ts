@@ -12,7 +12,6 @@ Disallow: /api/
 
 # Sitemap
 Sitemap: ${siteUrl}/sitemap.xml
-Sitemap: ${siteUrl}/api/sitemap.xml
 `;
 
   setHeader(event, 'Content-Type', 'text/plain');
