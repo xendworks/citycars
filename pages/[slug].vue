@@ -1,6 +1,52 @@
 <template>
   <ClientOnly>
-    <div class="min-h-screen bg-gray-50">
+    <!-- 404 Not Found Page -->
+    <div v-if="notFound" class="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div class="text-center max-w-2xl mx-auto px-4">
+        <h1 class="text-6xl font-bold text-amber-500 mb-4">404</h1>
+        <h2 class="text-3xl font-bold text-gray-900 mb-4">Route Not Found</h2>
+        <p class="text-lg text-gray-600 mb-8">
+          Sorry, we couldn't find the taxi route you're looking for. 
+          Please check the URL or use our booking form to get a custom quote.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+          <NuxtLink 
+            to="/" 
+            class="inline-flex items-center justify-center px-6 py-3 bg-amber-500 text-white font-semibold rounded-lg hover:bg-amber-600 transition-colors"
+          >
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+            </svg>
+            Go Home
+          </NuxtLink>
+          <NuxtLink 
+            to="/quote" 
+            class="inline-flex items-center justify-center px-6 py-3 border-2 border-amber-500 text-amber-600 font-semibold rounded-lg hover:bg-amber-50 transition-colors"
+          >
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+            </svg>
+            Get a Quote
+          </NuxtLink>
+        </div>
+        <div class="mt-12">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">Popular Routes</h3>
+          <div class="flex flex-wrap gap-2 justify-center">
+            <NuxtLink 
+              v-for="route in ['gatwick-airport-to-london', 'heathrow-airport-to-gatwick-airport', 'gatwick-airport-to-brighton', 'gatwick-airport-to-central-london']" 
+              :key="route"
+              :to="`/${route}`"
+              class="text-sm px-3 py-1.5 bg-gray-100 text-gray-700 rounded-full hover:bg-amber-100 hover:text-amber-700 transition-colors"
+            >
+              {{ route.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()).replace(' To ', ' → ') }}
+            </NuxtLink>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Route Page -->
+    <div v-else class="min-h-screen bg-gray-50">
       <!-- Hero Section -->
     <section class="relative py-12 md:py-20 bg-gradient-to-br from-amber-50 to-yellow-100">
       <div class="absolute inset-0 opacity-20">
@@ -11,7 +57,7 @@
         <!-- Main Heading -->
           <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-gray-900 text-center">
             <span v-if="taxiRoute">{{ taxiRoute.seoData.h1Title }}</span>
-            <span v-else class="inline-block h-12 w-96 max-w-full bg-gray-300 animate-pulse rounded"></span>
+            <span v-else>{{ displayTitle }}</span>
         </h1>
 
           <p class="text-lg md:text-xl text-gray-700 text-center max-w-5xl mx-auto mb-4">
@@ -701,12 +747,12 @@
         </button>
       </div>
     </section>
-  </div>
+    </div>
   </ClientOnly>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import { getFirestore, collection, query, where, getDocs } from 'firebase/firestore';
 
 const route = useRoute();
@@ -714,6 +760,22 @@ const slug = ref(route.params.slug);
 const taxiRoute = ref(null);
 const loading = ref(true);
 const isRoute = ref(true); // Assume it's a route page initially
+const notFound = ref(false); // Track if route not found
+
+// Format slug for display (e.g., "gatwick-airport-to-london" -> "Gatwick Airport to London")
+const formatSlugForDisplay = (slugStr) => {
+  if (!slugStr) return '';
+  return slugStr
+    .split('-')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ')
+    .replace(' To ', ' to ');
+};
+
+const displayTitle = computed(() => {
+  if (taxiRoute.value?.seoData?.h1Title) return taxiRoute.value.seoData.h1Title;
+  return `Taxi ${formatSlugForDisplay(slug.value)}`;
+});
 
 // Combine dynamic tips with static tips
 const allTips = computed(() => {
@@ -733,6 +795,28 @@ const allTips = computed(() => {
 const scrollToTop = () => {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 };
+
+// Set default SEO immediately (before data loads)
+const canonicalUrl = `https://citycarsgatwick.co.uk/${slug.value}`;
+const defaultTitle = `Taxi ${formatSlugForDisplay(slug.value)} | CityCars Gatwick`;
+const defaultDescription = `Book a reliable taxi for ${formatSlugForDisplay(slug.value)}. Professional drivers, fixed prices, 24/7 service. No hidden fees. Book online now!`;
+
+useHead({
+  title: defaultTitle,
+  link: [
+    { rel: 'canonical', href: canonicalUrl }
+  ],
+  meta: [
+    { name: 'description', content: defaultDescription },
+    { property: 'og:title', content: defaultTitle },
+    { property: 'og:description', content: defaultDescription },
+    { property: 'og:url', content: canonicalUrl },
+    { property: 'og:type', content: 'website' },
+    { name: 'twitter:card', content: 'summary_large_image' },
+    { name: 'twitter:title', content: defaultTitle },
+    { name: 'twitter:description', content: defaultDescription }
+  ]
+});
 
 onMounted(async () => {
   try {
@@ -757,53 +841,74 @@ onMounted(async () => {
       taxiRoute.value = { id: doc.id, ...doc.data() };
       console.log('✅ Route loaded:', taxiRoute.value.fromLocation.name, '→', taxiRoute.value.toLocation.name);
     } else {
-      // Not a route, redirect to quote/booking page
-      console.log('❌ Not a route, redirecting to quote page...');
+      // Route not found - show 404 content instead of redirecting
+      console.log('❌ Route not found:', slug.value);
+      notFound.value = true;
       isRoute.value = false;
-      await navigateTo(`/${slug.value}/book`);
     }
   } catch (error) {
     console.error('Error loading route:', error);
+    notFound.value = true;
   } finally {
     loading.value = false;
   }
 });
 
-// SEO Meta Tags
-if (taxiRoute.value) {
-  useSEO({
-    title: taxiRoute.value.seoData?.title || `Taxi from ${taxiRoute.value.fromLocation.name} to ${taxiRoute.value.toLocation.name}`,
-    description: taxiRoute.value.seoData?.metaDescription || 'Book your taxi with CityCars Gatwick',
-    url: `/${slug.value}`
-  });
-  
-  // Structured Data
-  useHead({
-    script: [
-      {
-        type: 'application/ld+json',
-        innerHTML: JSON.stringify({
-          '@context': 'https://schema.org',
-          '@type': 'TaxiService',
-          'name': `CityCars Gatwick - ${taxiRoute.value.fromLocation.name} to ${taxiRoute.value.toLocation.name}`,
-          'description': taxiRoute.value.seoData?.metaDescription,
-          'provider': {
-            '@type': 'LocalBusiness',
-            'name': 'CityCars Gatwick',
-            'url': 'https://citycarsgatwick.co.uk'
-          },
-          'areaServed': [
-            { '@type': 'Place', 'name': taxiRoute.value.fromLocation.name },
-            { '@type': 'Place', 'name': taxiRoute.value.toLocation.name }
-          ],
-          'offers': {
-            '@type': 'Offer',
-            'price': taxiRoute.value.averagePrice,
-            'priceCurrency': 'GBP'
-          }
-        })
-      }
-    ]
-  });
-}
+// Update SEO when route data loads
+watch(taxiRoute, (newRoute) => {
+  if (newRoute) {
+    const title = newRoute.seoData?.title || `Taxi from ${newRoute.fromLocation.name} to ${newRoute.toLocation.name} | CityCars Gatwick`;
+    const description = newRoute.seoData?.metaDescription || `Book a taxi from ${newRoute.fromLocation.name} to ${newRoute.toLocation.name}. Fixed price from £${newRoute.averagePrice}. Professional drivers, 24/7 service.`;
+    
+    useHead({
+      title: title,
+      link: [
+        { rel: 'canonical', href: canonicalUrl }
+      ],
+      meta: [
+        { name: 'description', content: description },
+        { property: 'og:title', content: title },
+        { property: 'og:description', content: description },
+        { property: 'og:url', content: canonicalUrl },
+        { property: 'og:type', content: 'website' },
+        { name: 'twitter:card', content: 'summary_large_image' },
+        { name: 'twitter:title', content: title },
+        { name: 'twitter:description', content: description }
+      ],
+      script: [
+        {
+          type: 'application/ld+json',
+          innerHTML: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'TaxiService',
+            'name': `CityCars Gatwick - ${newRoute.fromLocation.name} to ${newRoute.toLocation.name}`,
+            'description': description,
+            'url': canonicalUrl,
+            'provider': {
+              '@type': 'LocalBusiness',
+              'name': 'CityCars Gatwick',
+              'url': 'https://citycarsgatwick.co.uk',
+              'telephone': '+44 1234 567890',
+              'address': {
+                '@type': 'PostalAddress',
+                'addressLocality': 'Gatwick',
+                'addressCountry': 'UK'
+              }
+            },
+            'areaServed': [
+              { '@type': 'Place', 'name': newRoute.fromLocation.name },
+              { '@type': 'Place', 'name': newRoute.toLocation.name }
+            ],
+            'offers': {
+              '@type': 'Offer',
+              'price': newRoute.averagePrice,
+              'priceCurrency': 'GBP',
+              'availability': 'https://schema.org/InStock'
+            }
+          })
+        }
+      ]
+    });
+  }
+}, { immediate: true });
 </script>
