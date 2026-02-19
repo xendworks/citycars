@@ -7,25 +7,22 @@ envs:
     value: production
   - key: GOOGLE_MAPS_API_KEY
     scope: RUN_AND_BUILD_TIME
-    type: SECRET
   - key: FIREBASE_SERVICE_ACCOUNT
     scope: RUN_AND_BUILD_TIME
-    type: SECRET
   - key: NUXT_PUBLIC_FIREBASE_API_KEY
     scope: RUN_AND_BUILD_TIME
-    type: SECRET
   - key: NUXT_PUBLIC_FIREBASE_AUTH_DOMAIN
-    value: city-cars-83256.firebaseapp.com
+    scope: RUN_AND_BUILD_TIME
   - key: NUXT_PUBLIC_FIREBASE_PROJECT_ID
-    value: city-cars-83256
+    scope: RUN_AND_BUILD_TIME
   - key: NUXT_PUBLIC_FIREBASE_STORAGE_BUCKET
-    value: city-cars-83256.firebasestorage.app
+    scope: RUN_AND_BUILD_TIME
   - key: NUXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
-    value: "413911303220"
+    scope: RUN_AND_BUILD_TIME
   - key: NUXT_PUBLIC_FIREBASE_APP_ID
-    value: "1:413911303220:web:e18b7b14c3eba16fcb7661"
+    scope: RUN_AND_BUILD_TIME
   - key: NUXT_PUBLIC_FIREBASE_MEASUREMENT_ID
-    value: G-NPXSZ0VECD
+    scope: RUN_AND_BUILD_TIME
 
 # Single web service with module federation
 services:
