@@ -4,7 +4,7 @@
     <div class="bg-gray-900 text-white py-8 px-6 shadow-lg">
       <div class="container mx-auto max-w-7xl flex items-center justify-between">
         <div>
-          <h1 class="text-2xl font-bold mb-2">{{ userProfile?.displayName || 'User' }}</h1>
+          <h1 class="text-xl text-white font-bold mb-2">{{ userProfile?.displayName || 'User' }}</h1>
           <p class="text-amber-50">{{ userProfile?.phoneNumber || 'No phone' }} • {{ userProfile?.email }}</p>
         </div>
         <button v-if="activeTab === 'details' && !isEditing" @click="startEditing"
@@ -50,87 +50,95 @@
         </button>
       </div>
 
-      <div class="flex gap-6">
+      <div class="flex flex-col lg:flex-row gap-6">
         <!-- Sidebar -->
-        <div class="w-80 flex-shrink-0">
-          <div class="bg-white rounded-lg shadow-md overflow-hidden">
+        <div class="w-full lg:w-80 flex-shrink-0">
+          <div
+            class="bg-white rounded-lg shadow-md overflow-x-auto lg:overflow-hidden flex lg:flex-col snap-x scrollbar-hide border border-gray-100 lg:border-none">
+
             <button @click="activeTab = 'bookings'" :class="[
-              'w-full flex items-center space-x-3 px-6 py-4 text-left transition-colors',
+              'flex-1 lg:w-full min-w-max flex items-center justify-center lg:justify-start space-x-2 lg:space-x-3 px-6 py-4 text-center lg:text-left transition-colors snap-center',
               activeTab === 'bookings'
-                ? 'bg-orange-50 border-l-4 border-orange-500'
-                : 'hover:bg-gray-50'
+                ? 'bg-amber-50 lg:bg-orange-50 lg:border-l-4 lg:border-b-0 border-b-[3px] border-amber-500'
+                : 'hover:bg-gray-50 text-gray-600'
             ]">
-              <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center flex-shrink-0">
-                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div
+                class="w-7 h-7 lg:w-8 lg:h-8 rounded-full bg-gray-800 flex items-center justify-center flex-shrink-0">
+                <svg class="w-3.5 h-3.5 lg:w-4 lg:h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                 </svg>
               </div>
-              <span class="font-semibold text-gray-800">My Bookings</span>
+              <span class="font-semibold" :class="activeTab === 'bookings' ? 'text-gray-900' : ''">My Bookings</span>
             </button>
 
             <button @click="activeTab = 'details'" :class="[
-              'w-full flex items-center space-x-3 px-6 py-4 text-left transition-colors',
+              'flex-1 lg:w-full min-w-max flex items-center justify-center lg:justify-start space-x-2 lg:space-x-3 px-6 py-4 text-center lg:text-left transition-colors snap-center',
               activeTab === 'details'
-                ? 'bg-orange-50 border-l-4 border-orange-500'
-                : 'hover:bg-gray-50'
+                ? 'bg-amber-50 lg:bg-orange-50 lg:border-l-4 lg:border-b-0 border-b-[3px] border-amber-500'
+                : 'hover:bg-gray-50 text-gray-600'
             ]">
-              <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center flex-shrink-0">
-                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div
+                class="w-7 h-7 lg:w-8 lg:h-8 rounded-full bg-gray-800 flex items-center justify-center flex-shrink-0">
+                <svg class="w-3.5 h-3.5 lg:w-4 lg:h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                 </svg>
               </div>
-              <span class="font-semibold text-gray-800">Account Details</span>
+              <span class="font-semibold" :class="activeTab === 'details' ? 'text-gray-900' : ''">Account Details</span>
             </button>
 
             <button @click="activeTab = 'addresses'" :class="[
-              'w-full flex items-center space-x-3 px-6 py-4 text-left transition-colors',
+              'flex-1 lg:w-full min-w-max flex items-center justify-center lg:justify-start space-x-2 lg:space-x-3 px-6 py-4 text-center lg:text-left transition-colors snap-center',
               activeTab === 'addresses'
-                ? 'bg-orange-50 border-l-4 border-orange-500'
-                : 'hover:bg-gray-50'
+                ? 'bg-amber-50 lg:bg-orange-50 lg:border-l-4 lg:border-b-0 border-b-[3px] border-amber-500'
+                : 'hover:bg-gray-50 text-gray-600'
             ]">
-              <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center flex-shrink-0">
-                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div
+                class="w-7 h-7 lg:w-8 lg:h-8 rounded-full bg-gray-800 flex items-center justify-center flex-shrink-0">
+                <svg class="w-3.5 h-3.5 lg:w-4 lg:h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
               </div>
-              <span class="font-semibold text-gray-800">Saved Addresses</span>
+              <span class="font-semibold" :class="activeTab === 'addresses' ? 'text-gray-900' : ''">Saved
+                Addresses</span>
             </button>
 
             <button @click="activeTab = 'wallet'" :class="[
-              'w-full flex items-center space-x-3 px-6 py-4 text-left transition-colors',
+              'flex-1 lg:w-full min-w-max flex items-center justify-center lg:justify-start space-x-2 lg:space-x-3 px-6 py-4 text-center lg:text-left transition-colors snap-center',
               activeTab === 'wallet'
-                ? 'bg-orange-50 border-l-4 border-orange-500'
-                : 'hover:bg-gray-50'
+                ? 'bg-amber-50 lg:bg-orange-50 lg:border-l-4 lg:border-b-0 border-b-[3px] border-amber-500'
+                : 'hover:bg-gray-50 text-gray-600'
             ]">
-              <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center flex-shrink-0">
-                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div
+                class="w-7 h-7 lg:w-8 lg:h-8 rounded-full bg-gray-800 flex items-center justify-center flex-shrink-0">
+                <svg class="w-3.5 h-3.5 lg:w-4 lg:h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                 </svg>
               </div>
-              <span class="font-semibold text-gray-800">Wallet</span>
+              <span class="font-semibold" :class="activeTab === 'wallet' ? 'text-gray-900' : ''">Wallet</span>
             </button>
 
             <button @click="activeTab = 'settings'" :class="[
-              'w-full flex items-center space-x-3 px-6 py-4 text-left transition-colors',
+              'flex-1 lg:w-full min-w-max flex items-center justify-center lg:justify-start space-x-2 lg:space-x-3 px-6 py-4 text-center lg:text-left transition-colors snap-center',
               activeTab === 'settings'
-                ? 'bg-orange-50 border-l-4 border-orange-500'
-                : 'hover:bg-gray-50'
+                ? 'bg-amber-50 lg:bg-orange-50 lg:border-l-4 lg:border-b-0 border-b-[3px] border-amber-500'
+                : 'hover:bg-gray-50 text-gray-600'
             ]">
-              <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center flex-shrink-0">
-                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div
+                class="w-7 h-7 lg:w-8 lg:h-8 rounded-full bg-gray-800 flex items-center justify-center flex-shrink-0">
+                <svg class="w-3.5 h-3.5 lg:w-4 lg:h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
               </div>
-              <span class="font-semibold text-gray-800">Settings</span>
+              <span class="font-semibold" :class="activeTab === 'settings' ? 'text-gray-900' : ''">Settings</span>
             </button>
           </div>
         </div>
@@ -469,7 +477,7 @@
                       Balance</p>
                     <div class="flex items-baseline gap-1">
                       <span class="text-3xl text-amber-500/90 font-medium">£</span>
-                      <h3 class="text-[2.75rem] leading-none font-black tracking-tight">0.00</h3>
+                      <h3 class="text-[2.75rem] leading-none text-white tracking-tight">0.00</h3>
                     </div>
                   </div>
                 </div>

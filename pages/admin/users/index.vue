@@ -83,8 +83,7 @@
     </div>
 
     <!-- Onboarding Modal -->
-    <el-dialog v-model="showAddModal" :title="isEditing ? 'Revise Authority' : 'Onboard New Administrator'"
-      width="500px" class="onboarding-dialog" destroy-on-close>
+    <Modal v-model="showAddModal" :title="isEditing ? 'Revise Authority' : 'Onboard New Administrator'" size="md">
       <div class="space-y-6 py-4">
         <div>
           <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Display Name</label>
@@ -105,15 +104,20 @@
         </div>
       </div>
       <template #footer>
-        <div class="flex space-x-3 pt-4">
-          <el-button @click="showAddModal = false" class="flex-1 !rounded-xl !py-5 !font-bold">Cancel</el-button>
-          <el-button @click="submitForm" type="primary" :loading="isSubmitting"
-            class="flex-1 !rounded-xl !py-5 !font-bold !bg-slate-950 !border-slate-950">
+        <div class="flex space-x-3 w-full">
+          <Button variant="white" @click="showAddModal = false" class="flex-1">Cancel</Button>
+          <Button variant="primary" @click="submitForm" :loading="isSubmitting"
+            class="flex-1 !bg-slate-950 !border-slate-950">
             {{ isEditing ? 'Update Credentials' : 'Commit Onboarding' }}
-          </el-button>
+          </Button>
         </div>
       </template>
-    </el-dialog>
+    </Modal>
+
+    <!-- Delete Confirmation Modal -->
+    <DeleteConfirmationModal v-model="showDeleteModal" title="Critical Action"
+      :message="`Revoke all privileges for ${userToDelete?.displayName}?`" confirmText="Revoke Access"
+      :loading="isDeleting" @confirm="confirmDelete" />
   </div>
 </template>
 
@@ -135,6 +139,10 @@ const isLoading = ref(true);
 const isSubmitting = ref(false);
 const showAddModal = ref(false);
 const isEditing = ref(false);
+
+const showDeleteModal = ref(false);
+const userToDelete = ref<any>(null);
+const isDeleting = ref(false);
 
 const form = ref({
   id: '',
@@ -176,7 +184,7 @@ const loadData = async () => {
       { id: 'admin' }, { id: 'manager' }, { id: 'operator' }
     ];
 
-    users.value = allUsers.filter(u => u.role);
+    users.value = allUsers.filter((u: any) => u.role);
   } catch (err) {
     ElMessage.error('Failed to sync management pool.');
   } finally {
@@ -226,37 +234,24 @@ const submitForm = async () => {
 };
 
 const handleDelete = (user: any) => {
-  ElMessageBox.confirm(`Revoke all privileges for ${user.displayName}?`, 'Critical Action', {
-    confirmButtonText: 'Revoke Access',
-    cancelButtonText: 'Abort',
-    type: 'warning'
-  }).then(async () => {
-    // In a real app, you might want a special delete function, 
-    // for now we just remove the role or use useAdminFirestore.deleteUser (if exists)
-    // I'll reuse a generic delete or just upsert with no role
-    await upsertAdminUser(user.id, { role: null }); // Effective revocation
+  userToDelete.value = user;
+  showDeleteModal.value = true;
+};
+
+const confirmDelete = async () => {
+  if (!userToDelete.value) return;
+  isDeleting.value = true;
+  try {
+    await upsertAdminUser(userToDelete.value.id, { role: null });
     ElMessage.success('Privileges revoked.');
+    showDeleteModal.value = false;
     await loadData();
-  });
+  } catch (err) {
+    ElMessage.error('Failed to revoke privileges.');
+  } finally {
+    isDeleting.value = false;
+  }
 };
 
 onMounted(loadData);
 </script>
-
-<style scoped>
-:deep(.onboarding-dialog) {
-  border-radius: 24px;
-}
-
-:deep(.onboarding-dialog .el-dialog__header) {
-  margin-right: 0;
-  padding: 30px 30px 10px;
-}
-
-:deep(.onboarding-dialog .el-dialog__title) {
-  font-family: 'Sora', sans-serif;
-  font-weight: 800;
-  font-size: 1.25rem;
-  letter-spacing: -0.02em;
-}
-</style>

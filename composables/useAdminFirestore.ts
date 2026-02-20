@@ -683,7 +683,97 @@ export const useAdminFirestore = () => {
     },
     
     // Direct DB access
-    db
+    db,
+
+    // =====================================
+    // PRICING RULES
+    // =====================================
+    
+    getBasePricingConfig: async () => {
+      try {
+        const docRef = doc(db, 'pricingRules', 'baseConfig');
+        const snap = await getDoc(docRef);
+        if (snap.exists()) {
+          return snap.data();
+        }
+        return null;
+      } catch (error) {
+        console.error('[ADMIN] Error fetching base pricing config:', error);
+        return null;
+      }
+    },
+    
+    saveBasePricingConfig: async (configData: any) => {
+      try {
+        const docRef = doc(db, 'pricingRules', 'baseConfig');
+        await setDoc(docRef, {
+          ...configData,
+          updatedAt: serverTimestamp()
+        }, { merge: true });
+        return { success: true };
+      } catch (error) {
+        console.error('[ADMIN] Error saving base pricing config:', error);
+        throw error;
+      }
+    },
+    
+    getPricingRules: async () => {
+      try {
+        const q = query(
+          collection(db, 'pricingRules'), 
+          where('type', '==', 'dynamic')
+        );
+        const snapshot = await getDocs(q);
+        return snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+      } catch (error) {
+        console.error('[ADMIN] Error fetching pricing rules:', error);
+        return [];
+      }
+    },
+    
+    addPricingRule: async (ruleData: any) => {
+      try {
+        const rulesRef = collection(db, 'pricingRules');
+        const docRef = await addDoc(rulesRef, {
+          ...ruleData,
+          type: 'dynamic',
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp()
+        });
+        return { success: true, id: docRef.id };
+      } catch (error) {
+        console.error('[ADMIN] Error adding pricing rule:', error);
+        throw error;
+      }
+    },
+    
+    updatePricingRule: async (ruleId: string, ruleData: any) => {
+      try {
+        const ruleRef = doc(db, 'pricingRules', ruleId);
+        await updateDoc(ruleRef, {
+          ...ruleData,
+          updatedAt: serverTimestamp()
+        });
+        return { success: true };
+      } catch (error) {
+        console.error('[ADMIN] Error updating pricing rule:', error);
+        throw error;
+      }
+    },
+    
+    deletePricingRule: async (ruleId: string) => {
+      try {
+        const ruleRef = doc(db, 'pricingRules', ruleId);
+        await deleteDoc(ruleRef);
+        return { success: true };
+      } catch (error) {
+        console.error('[ADMIN] Error deleting pricing rule:', error);
+        throw error;
+      }
+    }
   };
 };
 
