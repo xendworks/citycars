@@ -3,11 +3,11 @@
     <div class="max-w-md w-full space-y-8">
       <!-- Header -->
       <div class="text-center">
-        <div class="text-4xl font-bold font-lexend mb-2">
+        <div class="text-4xl font-bold font-sora mb-2">
           <span class="text-black">CITY</span>
           <span class="text-amber-400">CARS</span>
         </div>
-        <h2 class="text-3xl font-bold text-gray-900 font-lexend">Sign in to your account</h2>
+        <h2 class="text-3xl font-bold text-gray-900 font-sora">Sign in to your account</h2>
         <p class="mt-2 text-sm text-gray-600 font-inter">
           Or
           <NuxtLink to="/signup" class="font-medium text-amber-600 hover:text-amber-500">
@@ -26,7 +26,7 @@
         <div class="rounded-md shadow-sm space-y-4">
           <!-- Email -->
           <div>
-            <label for="email" class="block text-sm font-medium text-gray-700 mb-1 font-lexend">
+            <label for="email" class="block text-sm font-medium text-gray-700 mb-1 font-sora">
               Email address
             </label>
             <input
@@ -43,7 +43,7 @@
 
           <!-- Password -->
           <div>
-            <label for="password" class="block text-sm font-medium text-gray-700 mb-1 font-lexend">
+            <label for="password" class="block text-sm font-medium text-gray-700 mb-1 font-sora">
               Password
             </label>
             <input
@@ -86,7 +86,7 @@
           <button
             type="submit"
             :disabled="isLoading"
-            class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-amber-600 hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 disabled:opacity-50 disabled:cursor-not-allowed font-lexend transition-colors"
+            class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-amber-600 hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 disabled:opacity-50 disabled:cursor-not-allowed font-sora transition-colors"
           >
             <span v-if="!isLoading">Sign in</span>
             <span v-else class="flex items-center">
@@ -149,9 +149,7 @@ definePageMeta({
 
 const router = useRouter();
 
-console.log('[LOGIN] Initializing useAuth...');
 const { signIn, signInWithGoogle, isLoading, error } = useAuth();
-console.log('[LOGIN] useAuth initialized successfully');
 
 const form = reactive({
   email: '',
@@ -172,14 +170,10 @@ const handleLogin = async () => {
 };
 
 const handleGoogleSignIn = async () => {
-  console.log('[LOGIN] Google sign-in clicked');
   try {
-    console.log('[LOGIN] Calling signInWithGoogle...');
     const result = await signInWithGoogle();
-    console.log('[LOGIN] Google sign-in result:', result);
     
     if (result && result.success) {
-      console.log('[LOGIN] Sign-in successful, redirecting...');
       const redirectTo = router.currentRoute.value.query.redirect as string || '/';
       await router.push(redirectTo);
     } else {

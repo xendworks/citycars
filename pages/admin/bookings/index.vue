@@ -3,9 +3,31 @@
     <!-- Header with Title and Actions -->
     <div class="page-header">
       <h1 class="page-title">Bookings Management</h1>
-      <div class="header-actions">
+      <div class="header-actions flex items-center">
+        <!-- Segmented Tabs -->
+        <span class="isolate inline-flex rounded-md shadow-sm mr-4 overflow-hidden border border-slate-200">
+          <button @click="timeFilter = ''" type="button"
+            :class="[timeFilter === '' ? 'bg-amber-500 text-white' : 'bg-white text-slate-600 hover:bg-slate-50', 'relative inline-flex items-center px-5 py-2.5 text-xs font-bold uppercase tracking-widest transition-all focus:z-10']">
+            All
+          </button>
+          <button @click="timeFilter = 'past'" type="button"
+            :class="[timeFilter === 'past' ? 'bg-amber-500 text-white' : 'bg-white text-slate-600 hover:bg-slate-50', 'relative -ml-px inline-flex items-center px-5 py-2.5 text-xs font-bold uppercase tracking-widest transition-all border-l border-slate-200 focus:z-10']">
+            Past
+          </button>
+          <button @click="timeFilter = 'today'" type="button"
+            :class="[timeFilter === 'today' ? 'bg-amber-500 text-white' : 'bg-white text-slate-600 hover:bg-slate-50', 'relative -ml-px inline-flex items-center px-5 py-2.5 text-xs font-bold uppercase tracking-widest transition-all border-l border-slate-200 focus:z-10']">
+            Today
+          </button>
+          <button @click="timeFilter = 'future'" type="button"
+            :class="[timeFilter === 'future' ? 'bg-amber-500 text-white' : 'bg-white text-slate-600 hover:bg-slate-50', 'relative -ml-px inline-flex items-center px-5 py-2.5 text-xs font-bold uppercase tracking-widest transition-all border-l border-slate-200 focus:z-10']">
+            Future
+          </button>
+        </span>
+
         <Button variant="primary" size="lg" @click="exportData">
-          <el-icon class="mr-1"><Download /></el-icon>
+          <el-icon class="mr-1">
+            <Download />
+          </el-icon>
           Export
         </Button>
       </div>
@@ -14,266 +36,47 @@
     <!-- Toolbar - Everything in Single Line -->
     <div class="toolbar">
       <!-- Search with Filter -->
-      <SearchInput
-        v-model="searchQuery"
-        v-model:filter-value="searchFilter"
-        :filter-options="searchFilterOptions"
-        filter-label="Search by"
-        placeholder="Search by Booking ID, Customer, Phone..."
-        @search="handleSearch"
-        @filter-change="handleSearchFilterChange"
-        class="search-component"
-      />
+      <SearchInput v-model="searchQuery" v-model:filter-value="searchFilter" :filter-options="searchFilterOptions"
+        filter-label="Search by" placeholder="Search by Booking ID, Customer, Phone..." @search="handleSearch"
+        @filter-change="handleSearchFilterChange" class="search-component" />
 
       <!-- Sort Dropdown -->
-      <Dropdown
-        v-model="currentSort"
-        button-text="Sort"
-        :items="sortOptions"
-        @select="handleSortSelect"
-      >
+      <Dropdown class="ml-auto" v-model="currentSort" button-text="Sort" :items="sortOptions"
+        @select="handleSortSelect">
         <template #button>
-          <el-icon class="mr-1"><Sort /></el-icon>
+          <el-icon class="mr-1">
+            <Sort />
+          </el-icon>
           Sort
         </template>
       </Dropdown>
 
       <!-- Column Reorder -->
       <Button size="md" :rounded="false" @click="showColumnSettings = true">
-        <el-icon><Setting /></el-icon>
+        <el-icon>
+          <Setting />
+        </el-icon>
         <span class="ml-1">Reorder</span>
       </Button>
 
       <!-- Status Filter Dropdown -->
-      <Dropdown
-        v-model="statusFilter"
-        :button-text="getStatusLabel(statusFilter)"
-        :items="statusOptions"
-        @select="filterByStatus"
-      />
-
-      <!-- View Toggle -->
-      <Button
-        :variant="viewMode === 'table' ? 'primary' : 'white'"
-        size="md"
-        :rounded="false"
-        @click="viewMode = 'table'"
-      >
-        <el-icon><Menu /></el-icon>
-      </Button>
-      <Button
-        :variant="viewMode === 'grid' ? 'primary' : 'white'"
-        size="md"
-        :rounded="false"
-        @click="viewMode = 'grid'"
-      >
-        <el-icon><Grid /></el-icon>
-      </Button>
+      <Dropdown v-model="statusFilter" :button-text="getStatusLabel(statusFilter)" :items="statusOptions"
+        @select="filterByStatus" />
 
       <!-- Advanced Filter Dropdown -->
-      <Dropdown
-        button-text="Filter"
-        :items="advancedFilterOptions"
-        @select="handleAdvancedFilter"
-      >
+      <Dropdown button-text="Filter" :items="advancedFilterOptions" @select="handleAdvancedFilter">
         <template #button>
-          <el-icon class="mr-1"><Filter /></el-icon>
+          <el-icon class="mr-1">
+            <Filter />
+          </el-icon>
           Filter
         </template>
       </Dropdown>
     </div>
 
     <!-- Data Table -->
-    <div class="table-container">
-      <el-table
-        ref="tableRef"
-        :data="paginatedBookings"
-        v-loading="isLoading"
-        stripe
-        :default-sort="{ prop: 'createdAt', order: 'descending' }"
-        @sort-change="handleSortChange"
-        style="width: 100%"
-        :row-class-name="getRowClassName"
-      >
-        <!-- ID Column -->
-        <el-table-column
-          prop="bookingReference"
-          label="ID"
-          width="160"
-          sortable="custom"
-          fixed
-          :resizable="true"
-        >
-          <template #default="{ row }">
-            <div class="id-cell">
-              <el-icon class="copy-icon" @click="copyToClipboard(row.bookingReference)">
-                <DocumentCopy />
-              </el-icon>
-              <span class="booking-id">{{ row.bookingReference }}</span>
-            </div>
-          </template>
-        </el-table-column>
-
-        <!-- Customer Column -->
-        <el-table-column
-          label="CUSTOMER"
-          width="280"
-          sortable="custom"
-          prop="userName"
-          :resizable="true"
-        >
-          <template #default="{ row }">
-            <div class="customer-cell">
-              <el-avatar :size="40" :src="row.photoURL">
-                {{ getInitials(row.userName) }}
-              </el-avatar>
-              <div class="customer-info">
-                <div class="customer-name">{{ row.userName || 'N/A' }}</div>
-                <div class="customer-email">{{ row.userEmail }}</div>
-              </div>
-            </div>
-          </template>
-        </el-table-column>
-
-        <!-- Phone Column -->
-        <el-table-column
-          prop="userPhone"
-          label="PHONE"
-          width="200"
-          :resizable="true"
-        >
-          <template #default="{ row }">
-            <div class="phone-cell">
-              <el-icon><Phone /></el-icon>
-              <span>{{ row.userPhone }}</span>
-            </div>
-          </template>
-        </el-table-column>
-
-        <!-- Pickup Column -->
-        <el-table-column
-          label="PICKUP"
-          width="250"
-          show-overflow-tooltip
-          :resizable="true"
-        >
-          <template #default="{ row }">
-            <div class="address-cell">
-              <el-icon class="location-icon"><LocationFilled /></el-icon>
-              <span>{{ row.pickupAddress }}</span>
-            </div>
-          </template>
-        </el-table-column>
-
-        <!-- Dropoff Column -->
-        <el-table-column
-          label="DROPOFF"
-          width="250"
-          show-overflow-tooltip
-          :resizable="true"
-        >
-          <template #default="{ row }">
-            <div class="address-cell">
-              <el-icon class="location-icon"><Location /></el-icon>
-              <span>{{ row.dropoffAddress }}</span>
-            </div>
-          </template>
-        </el-table-column>
-
-        <!-- Date & Time Column -->
-        <el-table-column
-          label="DATE & TIME"
-          width="280"
-          sortable="custom"
-          prop="pickupDateTime"
-          :resizable="true"
-        >
-          <template #default="{ row }">
-            <div class="datetime-cell">
-              <el-icon><Calendar /></el-icon>
-              <span>{{ formatDateTime(row.pickupDateTime) }}</span>
-            </div>
-          </template>
-        </el-table-column>
-
-        <!-- Vehicle Column -->
-        <el-table-column
-          prop="vehicleType"
-          label="VEHICLE"
-          width="130"
-          :resizable="true"
-        >
-          <template #default="{ row }">
-            <el-tag size="small" class="vehicle-tag">{{ row.vehicleType?.toUpperCase() }}</el-tag>
-          </template>
-        </el-table-column>
-
-        <!-- Fare Column -->
-        <el-table-column
-          label="FARE"
-          width="120"
-          sortable="custom"
-          prop="totalFare"
-          align="right"
-          :resizable="true"
-        >
-          <template #default="{ row }">
-            <div class="fare-cell">£{{ row.totalFare?.toFixed(2) || '0.00' }}</div>
-          </template>
-        </el-table-column>
-
-        <!-- Status Column -->
-        <el-table-column
-          label="STATUS"
-          width="140"
-          :resizable="true"
-        >
-          <template #default="{ row }">
-            <StatusBadge :status="row.status" />
-          </template>
-        </el-table-column>
-
-        <!-- Actions Column -->
-        <el-table-column
-          label="ACTIONS"
-          width="140"
-          fixed="right"
-          align="center"
-        >
-          <template #default="{ row }">
-            <el-dropdown trigger="click" @command="(cmd) => handleAction(cmd, row)">
-              <Button size="sm">
-                <el-icon><MoreFilled /></el-icon>
-              </Button>
-              <template #dropdown>
-                <el-dropdown-menu>
-                  <el-dropdown-item command="view">
-                    <el-icon><View /></el-icon>
-                    <span>View Details</span>
-                  </el-dropdown-item>
-                  <el-dropdown-item command="status">
-                    <el-icon><Edit /></el-icon>
-                    <span>Change Status</span>
-                  </el-dropdown-item>
-                  <el-dropdown-item command="assign">
-                    <el-icon><User /></el-icon>
-                    <span>Assign Driver</span>
-                  </el-dropdown-item>
-                  <el-dropdown-item command="print" divided>
-                    <el-icon><Printer /></el-icon>
-                    <span>Print</span>
-                  </el-dropdown-item>
-                </el-dropdown-menu>
-              </template>
-            </el-dropdown>
-          </template>
-        </el-table-column>
-
-        <template #empty>
-          <el-empty description="No bookings found" />
-        </template>
-      </el-table>
-    </div>
+    <AdminBookingTable :data="bookings" :loading="isLoading" :height="'100%'" @sort-change="handleSortChange"
+      @copy="copyToClipboard" @action="handleAction" class="flex-1 min-height-0" />
 
     <!-- Footer with Pagination -->
     <div class="table-footer">
@@ -281,16 +84,9 @@
         <span class="total-count">Total {{ totalBookings }}</span>
       </div>
       <div class="footer-center">
-        <el-pagination
-          v-model:current-page="currentPage"
-          v-model:page-size="pageSize"
-          :page-sizes="[10, 30, 50, 100]"
-          :total="totalBookings"
-          layout="prev, pager, next"
-          background
-          @size-change="handleSizeChange"
-          @current-change="handlePageChange"
-        />
+        <el-pagination v-model:current-page="currentPage" v-model:page-size="pageSize" :page-sizes="[10, 30, 50, 100]"
+          :total="totalBookings" layout="prev, pager, next" background @size-change="handleSizeChange"
+          @current-change="handlePageChange" />
       </div>
       <div class="footer-right">
         <el-select v-model="pageSize" size="large" @change="handleSizeChange">
@@ -303,24 +99,18 @@
     </div>
 
     <!-- Column Settings Modal -->
-    <Modal
-      v-model="showColumnSettings"
-      title="Reorder Columns"
-      size="md"
-    >
+    <Modal v-model="showColumnSettings" title="Reorder Columns" size="md">
       <div class="column-settings">
         <p class="text-sm text-gray-600 mb-4">Select which columns to display and drag to reorder them.</p>
         <div class="space-y-2">
           <div v-for="(column, index) in availableColumns" :key="column.key" class="column-item">
             <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-              <el-icon class="drag-handle cursor-move text-gray-400"><DCaret /></el-icon>
-              <input
-                type="checkbox"
-                :id="`col-${column.key}`"
-                :checked="column.visible"
+              <el-icon class="drag-handle cursor-move text-gray-400">
+                <DCaret />
+              </el-icon>
+              <input type="checkbox" :id="`col-${column.key}`" :checked="column.visible"
                 @change="toggleColumn(column.key)"
-                class="w-4 h-4 text-amber-600 bg-gray-100 border-gray-300 rounded focus:ring-amber-500"
-              />
+                class="w-4 h-4 text-amber-600 bg-gray-100 border-gray-300 rounded focus:ring-amber-500" />
               <label :for="`col-${column.key}`" class="flex-1 text-sm font-medium text-gray-900 cursor-pointer">
                 {{ column.label }}
               </label>
@@ -338,23 +128,14 @@
     </Modal>
 
     <!-- Status Change Modal -->
-    <Modal
-      v-model="showStatusDialog"
-      title="Change Booking Status"
-      size="lg"
-    >
+    <Modal v-model="showStatusDialog" title="Change Booking Status" size="lg">
       <div v-if="selectedBooking">
         <p class="dialog-subtitle">
           Update status for booking <strong>{{ selectedBooking.bookingReference }}</strong>
         </p>
         <div class="status-options">
-          <div
-            v-for="status in availableStatuses"
-            :key="status.value"
-            @click="changeStatus(status.value)"
-            class="status-option"
-            :class="{ active: selectedBooking.status === status.value }"
-          >
+          <div v-for="status in availableStatuses" :key="status.value" @click="changeStatus(status.value)"
+            class="status-option" :class="{ active: selectedBooking.status === status.value }">
             <span>{{ status.label }}</span>
             <StatusBadge :status="status.value" />
           </div>
@@ -369,11 +150,7 @@
     </Modal>
 
     <!-- Booking Details Modal -->
-    <Modal
-      v-model="showDetailsDialog"
-      title="Booking Details"
-      size="xl"
-    >
+    <Modal v-model="showDetailsDialog" title="Booking Details" size="xl">
       <div v-if="selectedBooking">
         <el-descriptions :column="2" border size="large">
           <el-descriptions-item label="Booking ID">
@@ -409,8 +186,20 @@
           <el-descriptions-item label="Luggage">
             {{ selectedBooking.luggage || 'N/A' }}
           </el-descriptions-item>
-          <el-descriptions-item label="Total Fare">
+          <el-descriptions-item label="Total Fare" :span="2">
             <span class="fare-large">£{{ selectedBooking.totalFare?.toFixed(2) || '0.00' }}</span>
+          </el-descriptions-item>
+
+          <el-descriptions-item label="Driver Info" v-if="selectedBooking.driverId" :span="2">
+            <div class="flex items-center gap-2">
+              <el-avatar :size="24" class="bg-amber-100 text-amber-700 font-bold">{{ selectedBooking.driverName?.[0]
+                }}</el-avatar>
+              <span>{{ selectedBooking.driverName }} ({{ selectedBooking.driverPhone }})</span>
+            </div>
+          </el-descriptions-item>
+          <el-descriptions-item label="Driver Info" v-else :span="2">
+            <span class="text-gray-400 italic font-medium">No driver assigned</span>
+            <Button size="sm" class="ml-4" @click="handleAction('assign', selectedBooking)">Assign Now</Button>
           </el-descriptions-item>
         </el-descriptions>
       </div>
@@ -421,36 +210,100 @@
         </div>
       </template>
     </Modal>
+
+    <!-- Assign Driver Modal -->
+    <Modal v-model="showAssignDriverDialog" title="Assign Driver" size="lg">
+      <div v-if="selectedBooking" class="space-y-6">
+        <div class="bg-blue-50 p-4 rounded-xl border border-blue-100 mb-6">
+          <div class="flex items-start gap-3">
+            <el-icon class="text-blue-600 mt-1">
+              <InfoFilled />
+            </el-icon>
+            <div>
+              <p class="text-sm font-medium text-blue-900">Assigning driver to booking #{{
+                selectedBooking.bookingReference
+                }}</p>
+              <p class="text-xs text-blue-700 mt-1">
+                Pickup: {{ selectedBooking.pickupAddress }}<br>
+                Date: {{ formatDateTime(selectedBooking.pickupDateTime) }}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="driver-selection py-2">
+          <label class="block text-sm font-bold text-gray-700 mb-2">Select Available Driver</label>
+          <el-select v-model="selectedDriverId" placeholder="Search driver by name or phone" filterable remote
+            :loading="isDriversLoading" class="w-full h-12" size="large">
+            <el-option v-for="driver in drivers" :key="driver.id"
+              :label="`${driver.name || driver.displayName} (${driver.phone || driver.phoneNumber || 'No phone'})`"
+              :value="driver.id">
+              <div class="flex items-center justify-between">
+                <span>{{ driver.name || driver.displayName }}</span>
+                <el-tag size="small" :type="driver.status === 'online' ? 'success' : 'info'">
+                  {{ driver.status?.toUpperCase() || 'OFFLINE' }}
+                </el-tag>
+              </div>
+            </el-option>
+          </el-select>
+        </div>
+
+        <div v-if="selectedDriverId"
+          class="selected-driver-preview bg-gray-50 p-4 rounded-xl border border-gray-200 mt-4 transition-all">
+          <h4 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">Driver Preview</h4>
+          <div class="flex items-center gap-4">
+            <div
+              class="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center text-amber-700 font-bold text-xl uppercase">
+              {{drivers.find(d => d.id === selectedDriverId)?.name?.[0] || 'D'}}
+            </div>
+            <div>
+              <p class="font-bold text-gray-900">{{drivers.find(d => d.id === selectedDriverId)?.name}}</p>
+              <p class="text-sm text-gray-600">{{drivers.find(d => d.id === selectedDriverId)?.phone}}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <template #footer>
+        <div class="modal-footer">
+          <Button size="lg" @click="showAssignDriverDialog = false">Cancel</Button>
+          <Button variant="primary" size="lg" @click="handleAssignDriver" :loading="isLoading">Confirm
+            Assignment</Button>
+        </div>
+      </template>
+    </Modal>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 
 definePageMeta({
   layout: 'admin',
-  middleware: 'admin',
-  ssr: false
+  middleware: 'admin'
 });
 
-import { 
-  Download, Search, Sort, Setting, Menu, Grid, Filter, 
-  DocumentCopy, Phone, LocationFilled, Location, Calendar, 
-  MoreFilled, View, Edit, User, Printer, DCaret 
+import {
+  Download, Search, Sort, Setting, Menu, Grid, Filter,
+  DocumentCopy, Phone, LocationFilled, Location, Calendar,
+  MoreFilled, View, Edit, User, Printer, DCaret, InfoFilled, MagicStick
 } from '@element-plus/icons-vue';
-import { ElMessage } from 'element-plus';
+import { ElMessage, ElMessageBox } from 'element-plus';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 
 // State
 const isLoading = ref(true);
+const isSeeding = ref(false);
 const bookings = ref<any[]>([]);
 const searchQuery = ref('');
 const searchFilter = ref('all');
 const statusFilter = ref('');
+const timeFilter = ref('today');
 const vehicleFilter = ref('');
 const dateRange = ref<[Date, Date] | null>(null);
 const viewMode = ref('table');
 const currentPage = ref(1);
-const pageSize = ref(30);
+const pageSize = ref(15);
 const sortProp = ref('createdAt');
 const sortOrder = ref('descending');
 const currentSort = ref('date-desc');
@@ -497,7 +350,12 @@ const advancedFilterOptions = [
 const showColumnSettings = ref(false);
 const showStatusDialog = ref(false);
 const showDetailsDialog = ref(false);
+const showAssignDriverDialog = ref(false);
 const selectedBooking = ref<any>(null);
+
+const drivers = ref<any[]>([]);
+const isDriversLoading = ref(false);
+const selectedDriverId = ref('');
 
 const availableStatuses = [
   { value: 'pending', label: 'Pending' },
@@ -520,64 +378,29 @@ const availableColumns = ref([
   { key: 'status', label: 'Status', visible: true }
 ]);
 
-// Computed
-const filteredBookings = computed(() => {
-  let filtered = [...bookings.value];
+// Methods
+const loadBookings = async () => {
+  isLoading.value = true;
+  try {
+    const { getBookingsPage } = useAdminFirestore();
 
-  // Search filter with specific field filtering
-  if (searchQuery.value) {
-    const query = searchQuery.value.toLowerCase();
-    
-    filtered = filtered.filter(b => {
-      switch (searchFilter.value) {
-        case 'id':
-          return b.bookingReference?.toLowerCase().includes(query);
-        case 'customer':
-          return b.userName?.toLowerCase().includes(query);
-        case 'phone':
-          return b.userPhone?.includes(query);
-        case 'email':
-          return b.userEmail?.toLowerCase().includes(query);
-        case 'all':
-        default:
-          return (
-            b.bookingReference?.toLowerCase().includes(query) ||
-            b.userName?.toLowerCase().includes(query) ||
-            b.userEmail?.toLowerCase().includes(query) ||
-            b.userPhone?.includes(query)
-          );
-      }
+    const response = await getBookingsPage(currentPage.value, pageSize.value, {
+      status: statusFilter.value,
+      time: timeFilter.value,
+      searchQuery: searchQuery.value,
+      searchFilter: searchFilter.value
     });
+
+    bookings.value = response.items;
+    totalBookings.value = response.total;
+
+  } catch (error: any) {
+    console.error('[ADMIN] Failed to load bookings:', error);
+    ElMessage.error('Failed to load bookings: ' + error.message);
+  } finally {
+    isLoading.value = false;
   }
-
-  // Status filter
-  if (statusFilter.value) {
-    filtered = filtered.filter(b => b.status === statusFilter.value);
-  }
-
-  // Vehicle filter
-  if (vehicleFilter.value) {
-    filtered = filtered.filter(b => b.vehicleType === vehicleFilter.value);
-  }
-
-  // Date range filter
-  if (dateRange.value && dateRange.value.length === 2) {
-    const [start, end] = dateRange.value;
-    filtered = filtered.filter(b => {
-      const bookingDate = new Date(b.pickupDateTime);
-      return bookingDate >= start && bookingDate <= end;
-    });
-  }
-
-  totalBookings.value = filtered.length;
-  return filtered;
-});
-
-const paginatedBookings = computed(() => {
-  const start = (currentPage.value - 1) * pageSize.value;
-  const end = start + pageSize.value;
-  return filteredBookings.value.slice(start, end);
-});
+};
 
 // Methods
 const formatDateTime = (dateString: any) => {
@@ -594,15 +417,6 @@ const formatDateTime = (dateString: any) => {
   } catch (e) {
     return 'Invalid Date';
   }
-};
-
-const getInitials = (name: string) => {
-  if (!name) return 'NA';
-  return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
-};
-
-const getRowClassName = ({ rowIndex }: { rowIndex: number }) => {
-  return rowIndex % 2 === 0 ? 'even-row' : 'odd-row';
 };
 
 const handleSearch = () => {
@@ -640,7 +454,7 @@ const getStatusLabel = (status: string) => {
 const handleAdvancedFilter = (filterValue: string | number) => {
   const value = filterValue as string;
   const now = new Date();
-  
+
   switch (value) {
     case 'today':
       dateRange.value = [now, now];
@@ -659,7 +473,7 @@ const handleAdvancedFilter = (filterValue: string | number) => {
       ElMessage.info('Custom date range coming soon!');
       break;
   }
-  
+
   if (value !== 'custom') {
     applyFilters();
   }
@@ -695,13 +509,16 @@ const handleAction = (command: string, row: any) => {
   selectedBooking.value = row;
   switch (command) {
     case 'view':
-      showDetailsDialog.value = true;
+      navigateTo(`/admin/bookings/${row.id}`);
       break;
     case 'status':
       showStatusDialog.value = true;
       break;
     case 'assign':
-      ElMessage.info('Assign driver feature coming soon!');
+      openAssignDriverDialog();
+      break;
+    case 'edit':
+      navigateTo(`/admin/bookings/edit/${row.id}`);
       break;
     case 'print':
       ElMessage.info('Print feature coming soon!');
@@ -709,9 +526,56 @@ const handleAction = (command: string, row: any) => {
   }
 };
 
+const openAssignDriverDialog = async () => {
+  showAssignDriverDialog.value = true;
+  selectedDriverId.value = selectedBooking.value?.driverId || '';
+
+  if (drivers.value.length === 0) {
+    await loadDrivers();
+  }
+};
+
+const loadDrivers = async () => {
+  isDriversLoading.value = true;
+  try {
+    const { getAllDrivers } = useAdminFirestore();
+    drivers.value = await getAllDrivers();
+  } catch (error: any) {
+    ElMessage.error('Failed to load drivers: ' + error.message);
+  } finally {
+    isDriversLoading.value = false;
+  }
+};
+
+const handleAssignDriver = async () => {
+  if (!selectedBooking.value || !selectedDriverId.value) {
+    ElMessage.warning('Please select a driver');
+    return;
+  }
+
+  try {
+    const { assignDriverToBooking } = useAdminFirestore();
+    await assignDriverToBooking(selectedBooking.value.id, selectedDriverId.value);
+
+    // Update local state
+    const driver = drivers.value.find(d => d.id === selectedDriverId.value);
+    selectedBooking.value.driverId = selectedDriverId.value;
+    selectedBooking.value.driverName = driver?.name || driver?.displayName || 'Unknown';
+    selectedBooking.value.status = 'confirmed';
+
+    showAssignDriverDialog.value = false;
+    ElMessage.success('Driver assigned successfully!');
+
+    // Refresh bookings to show updated info
+    loadBookings();
+  } catch (error: any) {
+    ElMessage.error('Failed to assign driver: ' + error.message);
+  }
+};
+
 const changeStatus = async (newStatus: string) => {
   if (!selectedBooking.value) return;
-  
+
   try {
     const { updateBookingStatus } = useAdminFirestore();
     await updateBookingStatus(selectedBooking.value.id, newStatus);
@@ -739,18 +603,110 @@ const applyColumnSettings = () => {
   ElMessage.success('Column settings applied!');
 };
 
-const loadBookings = async () => {
-  isLoading.value = true;
+const handleSeedBookings = async () => {
   try {
-    const { getAllBookings } = useAdminFirestore();
-    bookings.value = await getAllBookings({});
-    totalBookings.value = bookings.value.length;
+    await ElMessageBox.confirm(
+      'This will seed 50 random bookings into the database. Are you sure?',
+      'Seed Test Data',
+      {
+        confirmButtonText: 'Seed 50 Bookings',
+        cancelButtonText: 'Cancel',
+        type: 'warning',
+      }
+    );
+
+    isSeeding.value = true;
+    const { getAllUsers, getAllDrivers, db } = useAdminFirestore();
+
+    const [users, allDrivers] = await Promise.all([
+      getAllUsers(),
+      getAllDrivers()
+    ]);
+
+    if (users.length === 0) {
+      ElMessage.warning('No users found in system to assign bookings to.');
+      isSeeding.value = false;
+      return;
+    }
+
+    const pickupLocations = [
+      "Heathrow Airport Terminal 5", "Gatwick Airport North", "Paddington Station",
+      "Kings Cross St Pancras", "Oxford Street", "Canary Wharf",
+      "Wembley Stadium", "The O2 Arena", "Chelsea", "Mayfair",
+      "Kensington High St", "Westminster Abbey", "London Bridge"
+    ];
+
+    const dropoffLocations = [
+      "Victoria Station", "Manchester Piccadilly", "Birmingham New St",
+      "Luton Airport", "Stansted Airport", "Camden Town",
+      "Notting Hill Gate", "Greenwich Park", "Richmond Park",
+      "Shoreditch High St", "Liverpool Street", "Waterloo Station"
+    ];
+
+    const vehicleTypes = ['Standard', 'Executive', 'MPV', 'Estate', 'Minibuses'];
+    const statuses = ['pending', 'confirmed', 'in-progress', 'completed', 'cancelled'];
+
+    const bookingsCollection = collection(db, 'bookings');
+    let seededCount = 0;
+
+    for (let i = 0; i < 50; i++) {
+      const user = users[Math.floor(Math.random() * users.length)] as any;
+      const driver = allDrivers.length > 0 ? allDrivers[Math.floor(Math.random() * allDrivers.length)] as any : null;
+      const status = statuses[Math.floor(Math.random() * statuses.length)];
+      const pickup = pickupLocations[Math.floor(Math.random() * pickupLocations.length)];
+      const dropoff = dropoffLocations[Math.floor(Math.random() * dropoffLocations.length)];
+      const vehicle = vehicleTypes[Math.floor(Math.random() * vehicleTypes.length)];
+      const fare = Math.floor(Math.random() * 150) + 20;
+
+      // Random date within last 30 days
+      const date = new Date();
+      date.setDate(date.getDate() - Math.floor(Math.random() * 30));
+      date.setHours(Math.floor(Math.random() * 24), Math.floor(Math.random() * 60));
+
+      const bookingRef = `CTY${Math.floor(10000000 + Math.random() * 90000000)}`;
+
+      const bookingData = {
+        bookingReference: bookingRef,
+        userId: user.id || user.uid,
+        userName: user.displayName || user.name || 'Anonymous User',
+        userEmail: user.email || 'N/A',
+        userPhone: user.phoneNumber || user.phone || 'N/A',
+        pickupAddress: pickup,
+        dropoffAddress: dropoff,
+        pickupDateTime: date.toISOString(),
+        vehicleType: vehicle,
+        totalFare: fare,
+        status: status,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+        driverId: status !== 'pending' && status !== 'cancelled' ? (driver?.id || null) : null,
+        driverName: status !== 'pending' && status !== 'cancelled' ? (driver?.name || driver?.displayName || null) : null,
+        driverPhone: status !== 'pending' && status !== 'cancelled' ? (driver?.phone || driver?.phoneNumber || null) : null,
+        paymentStatus: status === 'completed' ? 'paid' : 'pending',
+        passengers: Math.floor(Math.random() * 4) + 1,
+        luggage: Math.floor(Math.random() * 3) + 1
+      };
+
+      await addDoc(bookingsCollection, bookingData);
+      seededCount++;
+    }
+
+    ElMessage.success(`Successfully seeded ${seededCount} bookings!`);
+    loadBookings();
   } catch (error: any) {
-    ElMessage.error('Failed to load bookings: ' + error.message);
+    if (error !== 'cancel') {
+      console.error('[SEED] ❌ Error seeding bookings:', error);
+      ElMessage.error('Failed to seed bookings: ' + error.message);
+    }
   } finally {
-    isLoading.value = false;
+    isSeeding.value = false;
   }
 };
+
+// Add watchers to trigger re-fetch on pagination/filter changes
+watch([currentPage, pageSize, statusFilter, timeFilter, searchQuery, searchFilter], () => {
+  loadBookings();
+});
 
 onMounted(() => {
   loadBookings();
@@ -759,43 +715,52 @@ onMounted(() => {
 
 <style scoped lang="scss">
 .bookings-page {
-  padding: 24px;
-  background: #f5f5f5;
-  min-height: 100vh;
+  padding: 16px 10px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 .page-header {
+  flex-shrink: 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 24px;
+  margin-bottom: 20px;
 
   .page-title {
     font-size: 24px;
-    font-weight: 600;
-    color: #1f2937;
+    font-weight: 700;
+    color: #0f172a;
     margin: 0;
+    letter-spacing: -0.02em;
   }
 }
 
 .toolbar {
+  flex-shrink: 0;
   display: flex;
+  position: sticky;
+  top: 50px;
+  z-index: 50;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
   gap: 8px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   background: white;
   padding: 12px 16px;
   border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 
   .search-component {
     width: 420px;
-    max-width: 100%;
   }
 }
 
 .table-container {
+  flex: 1;
+  min-height: 0;
   background: white;
   border-radius: 12px;
   overflow: hidden;
@@ -803,19 +768,20 @@ onMounted(() => {
 }
 
 .table-footer {
+  flex-shrink: 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-top: 16px;
-  padding: 16px 24px;
+  padding: 12px 24px;
   background: white;
   border-radius: 12px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 
   .total-count {
     font-size: 14px;
-    color: #6b7280;
-    font-weight: 500;
+    color: #64748b;
+    font-weight: 600;
   }
 }
 
@@ -828,6 +794,7 @@ onMounted(() => {
   .copy-icon {
     cursor: pointer;
     color: #9ca3af;
+
     &:hover {
       color: #6b7280;
     }
@@ -1006,7 +973,7 @@ onMounted(() => {
     font-weight: 500;
     border-radius: 8px;
     margin: 0 2px;
-    
+
     &.is-active {
       background-color: #dc2626;
       color: white;

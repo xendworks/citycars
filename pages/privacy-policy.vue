@@ -3,7 +3,7 @@
     <!-- Hero Section -->
     <section class="bg-amber-50 py-12">
       <div class="container mx-auto px-4 text-center">
-        <h1 class="text-3xl font-bold mb-4 font-lexend">Privacy Policy</h1>
+        <h1 class="text-3xl font-bold mb-4 font-sora">Privacy Policy</h1>
         <p class="max-w-3xl mx-auto text-gray-700 mb-8 font-inter">
           Your privacy is important to us. This policy explains how City Cars collects, uses, and protects your personal information in accordance with UK GDPR and EU data protection regulations.
         </p>
@@ -20,7 +20,7 @@
           
           <!-- Introduction -->
           <div class="mb-12">
-            <h2 class="text-2xl font-bold mb-4 font-lexend">1. Introduction</h2>
+            <h2 class="text-2xl font-bold mb-4 font-sora">1. Introduction</h2>
             <p class="text-gray-700 mb-4 font-inter">
               City Cars ("we", "us", "our") is committed to protecting your privacy and personal data. This Privacy Policy explains how we collect, use, store, and protect your personal information when you use our taxi and private hire services, visit our website, or interact with us in any way.
             </p>
@@ -34,7 +34,7 @@
 
           <!-- Data Controller -->
           <div class="mb-12">
-            <h2 class="text-2xl font-bold mb-4 font-lexend">2. Data Controller</h2>
+            <h2 class="text-2xl font-bold mb-4 font-sora">2. Data Controller</h2>
             <p class="text-gray-700 mb-4 font-inter">
               City Cars is the data controller responsible for your personal data. If you have any questions about this privacy policy or our data practices, please contact us:
             </p>
@@ -47,12 +47,12 @@
 
           <!-- Information We Collect -->
           <div class="mb-12">
-            <h2 class="text-2xl font-bold mb-4 font-lexend">3. Information We Collect</h2>
+            <h2 class="text-2xl font-bold mb-4 font-sora">3. Information We Collect</h2>
             <p class="text-gray-700 mb-4 font-inter">
               We collect and process the following categories of personal data:
             </p>
             
-            <h3 class="text-xl font-semibold mb-3 font-lexend">3.1 Personal Information</h3>
+            <h3 class="text-xl font-semibold mb-3 font-sora">3.1 Personal Information</h3>
             <ul class="list-disc pl-6 text-gray-700 mb-4 font-inter space-y-2">
               <li>Name and title</li>
               <li>Contact information (email address, phone number, postal address)</li>
@@ -61,14 +61,14 @@
               <li>Special requirements or accessibility needs</li>
             </ul>
 
-            <h3 class="text-xl font-semibold mb-3 font-lexend">3.2 Location Data</h3>
+            <h3 class="text-xl font-semibold mb-3 font-sora">3.2 Location Data</h3>
             <ul class="list-disc pl-6 text-gray-700 mb-4 font-inter space-y-2">
               <li>Pick-up and drop-off locations</li>
               <li>Real-time location data during active journeys (with your consent)</li>
               <li>IP address and approximate location from website usage</li>
             </ul>
 
-            <h3 class="text-xl font-semibold mb-3 font-lexend">3.3 Technical Data</h3>
+            <h3 class="text-xl font-semibold mb-3 font-sora">3.3 Technical Data</h3>
             <ul class="list-disc pl-6 text-gray-700 mb-4 font-inter space-y-2">
               <li>Device information (type, operating system, browser)</li>
               <li>Website usage data (pages visited, time spent, click patterns)</li>
@@ -76,7 +76,7 @@
               <li>Log files and analytics data</li>
             </ul>
 
-            <h3 class="text-xl font-semibold mb-3 font-lexend">3.4 Communication Data</h3>
+            <h3 class="text-xl font-semibold mb-3 font-sora">3.4 Communication Data</h3>
             <ul class="list-disc pl-6 text-gray-700 mb-4 font-inter space-y-2">
               <li>Correspondence with us (emails, phone calls, messages)</li>
               <li>Feedback and reviews</li>
@@ -86,12 +86,12 @@
 
           <!-- How We Use Your Information -->
           <div class="mb-12">
-            <h2 class="text-2xl font-bold mb-4 font-lexend">4. How We Use Your Information</h2>
+            <h2 class="text-2xl font-bold mb-4 font-sora">4. How We Use Your Information</h2>
             <p class="text-gray-700 mb-4 font-inter">
               We use your personal data for the following purposes and legal bases:
             </p>
             
-            <h3 class="text-xl font-semibold mb-3 font-lexend">4.1 Service Provision (Contractual Necessity)</h3>
+            <h3 class="text-xl font-semibold mb-3 font-sora">4.1 Service Provision (Contractual Necessity)</h3>
             <ul class="list-disc pl-6 text-gray-700 mb-4 font-inter space-y-2">
               <li>Processing and managing your bookings</li>
               <li>Facilitating taxi and private hire services</li>
@@ -100,7 +100,7 @@
               <li>Providing customer support</li>
             </ul>
 
-            <h3 class="text-xl font-semibold mb-3 font-lexend">4.2 Legal Obligations</h3>
+            <h3 class="text-xl font-semibold mb-3 font-sora">4.2 Legal Obligations</h3>
             <ul class="list-disc pl-6 text-gray-700 mb-4 font-inter space-y-2">
               <li>Complying with licensing and regulatory requirements</li>
               <li>Maintaining records as required by law</li>
@@ -108,7 +108,7 @@
               <li>Ensuring driver and passenger safety compliance</li>
             </ul>
 
-            <h3 class="text-xl font-semibold mb-3 font-lexend">4.3 Legitimate Interests</h3>
+            <h3 class="text-xl font-semibold mb-3 font-sora">4.3 Legitimate Interests</h3>
             <ul class="list-disc pl-6 text-gray-700 mb-4 font-inter space-y-2">
               <li>Improving our services and website functionality</li>
               <li>Analyzing usage patterns and customer preferences</li>
@@ -117,7 +117,7 @@
               <li>Business analytics and reporting</li>
             </ul>
 
-            <h3 class="text-xl font-semibold mb-3 font-lexend">4.4 Consent</h3>
+            <h3 class="text-xl font-semibold mb-3 font-sora">4.4 Consent</h3>
             <ul class="list-disc pl-6 text-gray-700 mb-4 font-inter space-y-2">
               <li>Location tracking during active journeys</li>
               <li>Marketing communications (where consent is required)</li>
@@ -128,12 +128,12 @@
 
           <!-- Data Sharing -->
           <div class="mb-12">
-            <h2 class="text-2xl font-bold mb-4 font-lexend">5. Data Sharing and Disclosure</h2>
+            <h2 class="text-2xl font-bold mb-4 font-sora">5. Data Sharing and Disclosure</h2>
             <p class="text-gray-700 mb-4 font-inter">
               We may share your personal data with the following parties:
             </p>
             
-            <h3 class="text-xl font-semibold mb-3 font-lexend">5.1 Service Providers</h3>
+            <h3 class="text-xl font-semibold mb-3 font-sora">5.1 Service Providers</h3>
             <ul class="list-disc pl-6 text-gray-700 mb-4 font-inter space-y-2">
               <li>Independent contractors and drivers (only necessary booking information)</li>
               <li>Payment processors and financial institutions</li>
@@ -141,14 +141,14 @@
               <li>Customer support and communication platforms</li>
             </ul>
 
-            <h3 class="text-xl font-semibold mb-3 font-lexend">5.2 Legal and Regulatory</h3>
+            <h3 class="text-xl font-semibold mb-3 font-sora">5.2 Legal and Regulatory</h3>
             <ul class="list-disc pl-6 text-gray-700 mb-4 font-inter space-y-2">
               <li>Government authorities and licensing bodies</li>
               <li>Law enforcement agencies (when legally required)</li>
               <li>Legal advisors and courts</li>
             </ul>
 
-            <h3 class="text-xl font-semibold mb-3 font-lexend">5.3 Business Transfers</h3>
+            <h3 class="text-xl font-semibold mb-3 font-sora">5.3 Business Transfers</h3>
             <p class="text-gray-700 mb-4 font-inter">
               In the event of a merger, acquisition, or sale of assets, your data may be transferred to the new entity, subject to the same privacy protections.
             </p>
@@ -160,7 +160,7 @@
 
           <!-- Data Retention -->
           <div class="mb-12">
-            <h2 class="text-2xl font-bold mb-4 font-lexend">6. Data Retention</h2>
+            <h2 class="text-2xl font-bold mb-4 font-sora">6. Data Retention</h2>
             <p class="text-gray-700 mb-4 font-inter">
               We retain your personal data only for as long as necessary to fulfill the purposes outlined in this policy, unless a longer retention period is required by law:
             </p>
@@ -177,7 +177,7 @@
 
           <!-- Your Rights -->
           <div class="mb-12">
-            <h2 class="text-2xl font-bold mb-4 font-lexend">7. Your Rights Under GDPR</h2>
+            <h2 class="text-2xl font-bold mb-4 font-sora">7. Your Rights Under GDPR</h2>
             <p class="text-gray-700 mb-4 font-inter">
               Under UK GDPR and EU GDPR, you have the following rights regarding your personal data:
             </p>
@@ -209,7 +209,7 @@
 
           <!-- Data Security -->
           <div class="mb-12">
-            <h2 class="text-2xl font-bold mb-4 font-lexend">8. Data Security</h2>
+            <h2 class="text-2xl font-bold mb-4 font-sora">8. Data Security</h2>
             <p class="text-gray-700 mb-4 font-inter">
               We implement appropriate technical and organizational measures to protect your personal data against unauthorized access, alteration, disclosure, or destruction:
             </p>
@@ -228,7 +228,7 @@
 
           <!-- International Transfers -->
           <div class="mb-12">
-            <h2 class="text-2xl font-bold mb-4 font-lexend">9. International Data Transfers</h2>
+            <h2 class="text-2xl font-bold mb-4 font-sora">9. International Data Transfers</h2>
             <p class="text-gray-700 mb-4 font-inter">
               Your personal data is primarily processed and stored within the UK and European Economic Area (EEA). If we transfer data outside the UK/EEA, we ensure appropriate safeguards are in place, such as:
             </p>
@@ -242,7 +242,7 @@
 
           <!-- Cookies -->
           <div class="mb-12">
-            <h2 class="text-2xl font-bold mb-4 font-lexend">10. Cookies and Tracking Technologies</h2>
+            <h2 class="text-2xl font-bold mb-4 font-sora">10. Cookies and Tracking Technologies</h2>
             <p class="text-gray-700 mb-4 font-inter">
               Our website uses cookies and similar technologies to enhance your experience, analyze usage, and provide personalized content. For detailed information about our cookie usage, please refer to our Cookie Policy (if separate) or contact us.
             </p>
@@ -253,7 +253,7 @@
 
           <!-- Children's Privacy -->
           <div class="mb-12">
-            <h2 class="text-2xl font-bold mb-4 font-lexend">11. Children's Privacy</h2>
+            <h2 class="text-2xl font-bold mb-4 font-sora">11. Children's Privacy</h2>
             <p class="text-gray-700 mb-4 font-inter">
               Our services are not directed to individuals under the age of 16. We do not knowingly collect personal data from children without parental consent. If you believe we have collected information from a child, please contact us immediately.
             </p>
@@ -261,7 +261,7 @@
 
           <!-- Changes to Policy -->
           <div class="mb-12">
-            <h2 class="text-2xl font-bold mb-4 font-lexend">12. Changes to This Privacy Policy</h2>
+            <h2 class="text-2xl font-bold mb-4 font-sora">12. Changes to This Privacy Policy</h2>
             <p class="text-gray-700 mb-4 font-inter">
               We may update this Privacy Policy from time to time to reflect changes in our practices, technology, legal requirements, or other factors. We will notify you of significant changes by:
             </p>
@@ -277,7 +277,7 @@
 
           <!-- Contact -->
           <div class="mb-12">
-            <h2 class="text-2xl font-bold mb-4 font-lexend">13. Contact Us</h2>
+            <h2 class="text-2xl font-bold mb-4 font-sora">13. Contact Us</h2>
             <p class="text-gray-700 mb-4 font-inter">
               If you have any questions, concerns, or requests regarding this Privacy Policy or our data practices, please contact us:
             </p>
@@ -305,11 +305,11 @@ definePageMeta({
 
 <style scoped>
 .prose h2 {
-  @apply text-2xl font-bold mb-4 font-lexend;
+  @apply text-2xl font-bold mb-4 font-sora;
 }
 
 .prose h3 {
-  @apply text-xl font-semibold mb-3 font-lexend;
+  @apply text-xl font-semibold mb-3 font-sora;
 }
 
 .prose ul {

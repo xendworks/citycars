@@ -39,7 +39,6 @@ export default defineEventHandler(async (event) => {
 
     const updatedDoc = await collections.routes().doc(doc.id).get();
 
-    console.log('[API] ✅ Route updated successfully:', slug);
 
     return {
       success: true,

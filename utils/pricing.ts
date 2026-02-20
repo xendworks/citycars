@@ -120,13 +120,6 @@ export function calculateFare(
 
   const totalFare = saloonFare + vehicleSurcharge;
 
-  console.log('💰 FARE CALCULATION:', {
-    distance: `${miles.toFixed(2)} miles`,
-    vehicleType,
-    saloonBaseFare: `£${saloonFare.toFixed(2)}`,
-    vehicleSurcharge: `${multiplier}% = £${vehicleSurcharge.toFixed(2)}`,
-    totalFare: `£${totalFare.toFixed(2)}`
-  });
 
   return Math.round(totalFare * 100) / 100; // Round to 2 decimal places
 }

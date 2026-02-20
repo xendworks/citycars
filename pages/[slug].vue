@@ -820,7 +820,6 @@ useHead({
 
 onMounted(async () => {
   try {
-    console.log('🔍 Looking for route:', slug.value);
     
     const { $firebase } = useNuxtApp();
     const db = getFirestore($firebase);
@@ -833,16 +832,13 @@ onMounted(async () => {
     
     const snapshot = await getDocs(q);
     
-    console.log('Query result:', snapshot.size, 'documents');
     
     if (!snapshot.empty) {
       // Route found!
       const doc = snapshot.docs[0];
       taxiRoute.value = { id: doc.id, ...doc.data() };
-      console.log('✅ Route loaded:', taxiRoute.value.fromLocation.name, '→', taxiRoute.value.toLocation.name);
     } else {
       // Route not found - show 404 content instead of redirecting
-      console.log('❌ Route not found:', slug.value);
       notFound.value = true;
       isRoute.value = false;
     }

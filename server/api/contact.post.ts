@@ -30,11 +30,6 @@ export default defineEventHandler(async (event) => {
       });
     }
 
-    console.log('[CONTACT] Received contact form submission:', {
-      name: body.name,
-      email: body.email,
-      subject: body.subject
-    });
 
     // Create a transporter using Gmail SMTP
     // For production, use environment variables for credentials
@@ -178,7 +173,6 @@ Submitted on ${new Date().toLocaleString('en-GB', {
       html: htmlContent
     });
 
-    console.log('[CONTACT] ✅ Email sent successfully:', info.messageId);
 
     // Send auto-reply to customer
     try {
@@ -237,7 +231,6 @@ Submitted on ${new Date().toLocaleString('en-GB', {
           </html>
         `
       });
-      console.log('[CONTACT] ✅ Auto-reply sent to customer');
     } catch (replyError) {
       console.error('[CONTACT] ⚠️ Failed to send auto-reply:', replyError);
       // Don't fail the request if auto-reply fails

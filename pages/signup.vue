@@ -3,11 +3,11 @@
     <div class="max-w-md w-full space-y-8">
       <!-- Header -->
       <div class="text-center">
-        <div class="text-4xl font-bold font-lexend mb-2">
+        <div class="text-4xl font-bold font-sora mb-2">
           <span class="text-black">CITY</span>
           <span class="text-amber-400">CARS</span>
         </div>
-        <h2 class="text-3xl font-bold text-gray-900 font-lexend">Create your account</h2>
+        <h2 class="text-3xl font-bold text-gray-900 font-sora">Create your account</h2>
         <p class="mt-2 text-sm text-gray-600 font-inter">
           Already have an account?
           <NuxtLink to="/login" class="font-medium text-amber-600 hover:text-amber-500">
@@ -26,7 +26,7 @@
         <div class="rounded-md shadow-sm space-y-4">
           <!-- Full Name -->
           <div>
-            <label for="displayName" class="block text-sm font-medium text-gray-700 mb-1 font-lexend">
+            <label for="displayName" class="block text-sm font-medium text-gray-700 mb-1 font-sora">
               Full Name
             </label>
             <input
@@ -43,7 +43,7 @@
 
           <!-- Email -->
           <div>
-            <label for="email" class="block text-sm font-medium text-gray-700 mb-1 font-lexend">
+            <label for="email" class="block text-sm font-medium text-gray-700 mb-1 font-sora">
               Email address
             </label>
             <input
@@ -60,7 +60,7 @@
 
           <!-- Phone -->
           <div>
-            <label for="phone" class="block text-sm font-medium text-gray-700 mb-1 font-lexend">
+            <label for="phone" class="block text-sm font-medium text-gray-700 mb-1 font-sora">
               Phone Number
             </label>
             <input
@@ -76,7 +76,7 @@
 
           <!-- Password -->
           <div>
-            <label for="password" class="block text-sm font-medium text-gray-700 mb-1 font-lexend">
+            <label for="password" class="block text-sm font-medium text-gray-700 mb-1 font-sora">
               Password
             </label>
             <input
@@ -95,7 +95,7 @@
 
           <!-- Confirm Password -->
           <div>
-            <label for="confirmPassword" class="block text-sm font-medium text-gray-700 mb-1 font-lexend">
+            <label for="confirmPassword" class="block text-sm font-medium text-gray-700 mb-1 font-sora">
               Confirm Password
             </label>
             <input
@@ -135,7 +135,7 @@
           <button
             type="submit"
             :disabled="isLoading || !isFormValid"
-            class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-amber-600 hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 disabled:opacity-50 disabled:cursor-not-allowed font-lexend transition-colors"
+            class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-amber-600 hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 disabled:opacity-50 disabled:cursor-not-allowed font-sora transition-colors"
           >
             <span v-if="!isLoading">Create account</span>
             <span v-else class="flex items-center">
@@ -185,14 +185,14 @@
       @click.self="showPhoneModal = false"
     >
       <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
-        <h3 class="text-xl font-bold text-gray-900 font-lexend mb-4">Complete Your Profile</h3>
+        <h3 class="text-xl font-bold text-gray-900 font-sora mb-4">Complete Your Profile</h3>
         <p class="text-sm text-gray-600 font-inter mb-4">
           Please provide your phone number to complete the registration.
         </p>
         
         <form @submit.prevent="handlePhoneSubmit">
           <div class="mb-4">
-            <label for="modal-phone" class="block text-sm font-medium text-gray-700 mb-1 font-lexend">
+            <label for="modal-phone" class="block text-sm font-medium text-gray-700 mb-1 font-sora">
               Phone Number
             </label>
             <input
@@ -263,14 +263,6 @@ const isFormValid = computed(() => {
 });
 
 const handleSignup = async () => {
-  console.log('[SIGNUP] Form validation:', {
-    isValid: isFormValid.value,
-    displayName: form.displayName,
-    email: form.email,
-    hasPassword: !!form.password,
-    passwordMatch: form.password === form.confirmPassword,
-    acceptTerms: form.acceptTerms
-  });
 
   if (!isFormValid.value) {
     console.error('[SIGNUP] Form validation failed');
@@ -283,9 +275,7 @@ const handleSignup = async () => {
   }
 
   try {
-    console.log('[SIGNUP] Attempting signup...');
     await signUp(form.email, form.password, form.displayName);
-    console.log('[SIGNUP] Signup successful, redirecting...');
     
     // If phone was provided, update it (we'll need to add this to Firestore)
     if (form.phone) {

@@ -89,12 +89,10 @@ export const useAuthStore = defineStore('auth', {
             
             // Then, load full profile from Firestore
             try {
-              console.log('[AUTH] Loading user profile from Firestore for UID:', user.uid);
               const { getUserProfile } = useFirestore();
               const firestoreProfile = await getUserProfile(user.uid);
               
               if (firestoreProfile) {
-                console.log('[AUTH] ✓ Loaded Firestore profile:', firestoreProfile);
                 // Merge Firestore data with Firebase Auth data
                 this.userProfile = {
                   uid: user.uid,
@@ -103,13 +101,9 @@ export const useAuthStore = defineStore('auth', {
                   phoneNumber: firestoreProfile.phoneNumber || user.phoneNumber,
                   photoURL: firestoreProfile.photoURL || user.photoURL
                 };
-                console.log('[AUTH] ✓ Merged userProfile:', this.userProfile);
               } else {
-                console.log('[AUTH] No Firestore profile found, using Firebase Auth data only');
               }
             } catch (err) {
-              console.error('[AUTH] Failed to load Firestore profile:', err);
-              // Keep using Firebase Auth data if Firestore fetch fails
             }
           } else {
             this.userProfile = null;
@@ -166,7 +160,6 @@ export const useAuthStore = defineStore('auth', {
               phoneNumber: userCredential.user.phoneNumber,
               photoURL: userCredential.user.photoURL
             });
-            console.log('✓ User profile created in Firestore');
           } catch (err) {
             console.error('Failed to create user profile in Firestore:', err);
           }
@@ -219,37 +212,22 @@ export const useAuthStore = defineStore('auth', {
     },
 
     async signInWithGoogle() {
-      console.log('[AUTH STORE] signInWithGoogle called');
       this.isLoading = true;
       this.error = null;
 
       try {
         const nuxtApp = useNuxtApp();
         const $firebaseAuth = nuxtApp.$firebaseAuth as any;
-        
-        console.log('[AUTH STORE] Firebase Auth:', $firebaseAuth ? 'Initialized' : 'NOT initialized');
-        
+                
         if (!$firebaseAuth) {
           throw new Error('Firebase Auth not initialized');
         }
 
-        console.log('[AUTH STORE] Creating Google provider...');
         const provider = new GoogleAuthProvider();
         provider.setCustomParameters({
           prompt: 'select_account'
         });
-
-        console.log('[AUTH STORE] Opening Google sign-in popup...');
-        const userCredential = await signInWithPopup($firebaseAuth, provider);
-        console.log('[AUTH STORE] Sign-in successful, user:', userCredential.user.email);
-        console.log('[AUTH STORE] User photo URL:', userCredential.user.photoURL);
-        console.log('[AUTH STORE] Full user object:', {
-          email: userCredential.user.email,
-          displayName: userCredential.user.displayName,
-          photoURL: userCredential.user.photoURL,
-          phoneNumber: userCredential.user.phoneNumber
-        });
-        
+        const userCredential = await signInWithPopup($firebaseAuth, provider);        
         this.user = userCredential.user;
         this.isAuthenticated = true;
         this.userProfile = {
@@ -259,8 +237,6 @@ export const useAuthStore = defineStore('auth', {
           phoneNumber: userCredential.user.phoneNumber,
           photoURL: userCredential.user.photoURL
         };
-
-        console.log('[AUTH STORE] Saved userProfile:', this.userProfile);
         
         // Create/update user profile in Firestore (client-side only)
         if (process.client) {
@@ -272,20 +248,17 @@ export const useAuthStore = defineStore('auth', {
               phoneNumber: userCredential.user.phoneNumber,
               photoURL: userCredential.user.photoURL
             });
-            console.log('✓ User profile synced to Firestore');
           } catch (err) {
             console.error('Failed to sync user profile to Firestore:', err);
           }
         }
         
-        console.log('[AUTH STORE] Returning success result');
         return { 
           success: true, 
           user: userCredential.user,
           isNewUser: !userCredential.user.phoneNumber // If no phone, likely new user
         };
       } catch (error: any) {
-        console.error('[AUTH STORE] Sign-in error:', error);
         if (error.code === 'auth/popup-closed-by-user') {
           this.error = 'Sign-in cancelled';
         } else if (error.code === 'auth/popup-blocked') {
@@ -308,8 +281,6 @@ export const useAuthStore = defineStore('auth', {
           throw new Error('No user logged in');
         }
 
-        // Update in Firestore (you'll need to implement this based on your DB structure)
-        // For now, just update local state
         if (this.userProfile) {
           this.userProfile.phoneNumber = phoneNumber;
         }
@@ -369,7 +340,6 @@ export const useAuthStore = defineStore('auth', {
         this.recaptchaVerifier = new RecaptchaVerifier($firebaseAuth, containerId, {
           size: 'invisible',
           callback: () => {
-            console.log('[AUTH] reCAPTCHA solved');
           },
           'expired-callback': () => {
             console.error('[AUTH] reCAPTCHA expired');
@@ -378,7 +348,6 @@ export const useAuthStore = defineStore('auth', {
         });
 
         await this.recaptchaVerifier.render();
-        console.log('[AUTH] reCAPTCHA setup complete');
         
         return this.recaptchaVerifier;
       } catch (error: any) {
@@ -404,14 +373,12 @@ export const useAuthStore = defineStore('auth', {
           throw new Error('reCAPTCHA not initialized. Call setupRecaptcha first.');
         }
 
-        console.log('[AUTH] Sending SMS to:', phoneNumber);
         this.confirmationResult = await signInWithPhoneNumber(
           $firebaseAuth,
           phoneNumber,
           this.recaptchaVerifier
         );
         
-        console.log('[AUTH] SMS sent successfully');
         return { success: true, message: 'SMS verification code sent!' };
       } catch (error: any) {
         console.error('[AUTH] SMS send error:', error);
@@ -431,7 +398,6 @@ export const useAuthStore = defineStore('auth', {
           throw new Error('No SMS verification in progress. Send SMS first.');
         }
 
-        console.log('[AUTH] Verifying SMS code...');
         const userCredential = await this.confirmationResult.confirm(code);
         
         this.user = userCredential.user;
@@ -444,7 +410,6 @@ export const useAuthStore = defineStore('auth', {
           photoURL: userCredential.user.photoURL
         };
 
-        console.log('[AUTH] SMS verification successful');
         return { success: true, user: userCredential.user };
       } catch (error: any) {
         console.error('[AUTH] SMS verification error:', error);
@@ -490,7 +455,6 @@ export const useAuthStore = defineStore('auth', {
             this.userProfile.phoneNumber = userCredential.user.phoneNumber;
           }
 
-          console.log('[AUTH] Phone number linked successfully');
           return { success: true };
         }
 

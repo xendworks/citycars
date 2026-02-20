@@ -204,7 +204,6 @@ const filteredRoutes = computed(() => {
 // Search function
 const searchRoutes = () => {
   // The computed property will automatically filter
-  console.log('Searching routes...');
 };
 
 // Popular destinations for quick access

@@ -1,9 +1,18 @@
-// Color Variables
-$primary-color: #FF9C07;
-$secondary-color: #6c757d;
-$white-color: #ffffff;
-$text-color: #17171D;
-$font-family-primary: 'Lexend', sans-serif;
+// 🎨 SaaS Color Architecture (Amber/Slate System)
+$primary: #f59e0b;      // Amber-500 (Base Brand Color)
+$primary-light: #fffbeb; // Amber-50
+$secondary: #64748b;    // Slate-500 (Labels/Metadata)
+
+$text-main: #0f172a;    // Slate-900 (Headings/Value Titles)
+$text-secondary: #475569; // Slate-600 (Normal text)
+$text-muted: #94a3b8;   // Slate-400 (Placeholder/Less important)
+
+$bg-app: #f8fafc;       // Slate-50
+$border-color: #e2e8f0; // Slate-200
+$white: #ffffff;
+
+// 🖋️ Typography Tokens
+$font-family-primary: 'Sora', sans-serif;
 $font-family-secondary: 'Inter', sans-serif;
 
 // Spacing

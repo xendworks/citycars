@@ -71,15 +71,14 @@ onMounted(async () => {
   selectedDateTime.value = queryStore.pickupDateTime;
   passengersCount.value = queryStore.passengers;
   luggageCount.value = queryStore.luggage;
-  
+
   // Wait for next tick to ensure DOM is ready
   await nextTick();
-  
+
   // Load Google Maps first, then initialize autocomplete
   try {
     await loadGoogleMaps();
-    console.log('Google Maps loaded successfully');
-    
+
     // Wait a bit more to ensure the API is fully ready
     setTimeout(async () => {
       await initAutocomplete(pickupInput, pickupLocation, true);
@@ -112,10 +111,9 @@ const loadGoogleMaps = () => {
 
 const initAutocomplete = async (inputRef: any, locationRef: any, isPickup: boolean) => {
   if (process.server) return;
-  
+
   try {
-    console.log(`✨ Initializing CLASSIC Autocomplete for ${isPickup ? 'pickup' : 'dropoff'}...`);
-    
+
     // Don't re-initialize if already exists
     if (isPickup && pickupAutocomplete.value) {
       console.log('Pickup autocomplete already initialized');
@@ -125,7 +123,7 @@ const initAutocomplete = async (inputRef: any, locationRef: any, isPickup: boole
       console.log('Dropoff autocomplete already initialized');
       return;
     }
-    
+
     // Wait for input element to be available
     if (!inputRef.value) {
       console.warn(`Input ref not available for ${isPickup ? 'pickup' : 'dropoff'}`);
@@ -136,46 +134,38 @@ const initAutocomplete = async (inputRef: any, locationRef: any, isPickup: boole
       }, 300);
       return;
     }
-    
+
     // Create the CLASSIC Autocomplete (yes it's "deprecated" but it WORKS!)
     //@ts-ignore
     const autocomplete = new window.google.maps.places.Autocomplete(inputRef.value, {
       componentRestrictions: { country: 'gb' },
       fields: ['formatted_address', 'geometry', 'name', 'address_components']
     });
-    
+
     // Store the autocomplete instance
     if (isPickup) {
       pickupAutocomplete.value = autocomplete;
     } else {
       dropoffAutocomplete.value = autocomplete;
     }
-    
+
     // Listen for place selection
     autocomplete.addListener('place_changed', () => {
       const place = autocomplete.getPlace();
-      
+
       if (!place.geometry || !place.geometry.location) {
         console.warn('No geometry found for place');
         return;
       }
-      
+
       // Google automatically fills the input with the place name
       // We just need to sync it with our v-model by reading the input value
       // This ensures the input shows EXACTLY what the user clicked in the dropdown
       locationRef.value = inputRef.value.value;
-      
-      console.log(`✓ Selected ${isPickup ? 'pickup' : 'dropoff'} location:`, locationRef.value);
-      console.log('Place details:', {
-        name: place.name,
-        address: place.formatted_address,
-        lat: place.geometry.location.lat(),
-        lng: place.geometry.location.lng()
-      });
+
     });
-    
-    console.log(`✅ CLASSIC Autocomplete successfully initialized for ${isPickup ? 'pickup' : 'dropoff'}`);
-    
+
+
   } catch (error) {
     console.error(`❌ Error initializing Autocomplete for ${isPickup ? 'pickup' : 'dropoff'}:`, error);
   }
@@ -208,10 +198,10 @@ function suggestVehicleType(passengers: number, luggages: number): string {
 
 const handleSearch = () => {
   const vehicleType = suggestVehicleType(Number(passengersCount.value), Number(luggageCount.value));
-  
+
   // Create a unique booking ID
   const bookingId = Date.now().toString();
-  
+
   // Store in Pinia with booking ID
   queryStore.setQueryData({
     from: pickupLocation.value,
@@ -221,7 +211,7 @@ const handleSearch = () => {
     pickupDateTime: selectedDateTime.value,
     vehicleType
   });
-  
+
   // Save quote details with booking ID
   quoteStore.saveQuote(bookingId, {
     from: pickupLocation.value,
@@ -232,7 +222,7 @@ const handleSearch = () => {
     cabType: vehicleType, // Changed from vehicleType to cabType to match booking page
     fare: 50 // Default fare, you can calculate this based on distance
   });
-  
+
   // Check if we're already on the quote page
   if (route.path === '/quote') {
     console.log('🔍 Already on quote page, emitting search event');
@@ -260,20 +250,12 @@ const handleSearch = () => {
     <div class="block md:hidden space-y-4">
       <!-- Pickup Location - Full Width -->
       <div class="w-full">
-        <label class="block text-sm font-medium text-gray-700 mb-2 font-inter">Pick-up Location</label>
+        <label class="block text-left text-sm font-medium text-gray-700 mb-2 font-inter">Pick-up Location</label>
         <div class="relative">
-          <input
-            ref="pickupInput"
-            v-model="pickupLocation"
-            @focus="handlePickupChange"
-            @change="handlePickupChange"
-            autocomplete="off"
-            name="pickup-autocomplete"
-            type="text"
-            placeholder="Eg: Gatwick Airport"
+          <input ref="pickupInput" v-model="pickupLocation" @focus="handlePickupChange" @change="handlePickupChange"
+            autocomplete="off" name="pickup-autocomplete" type="text" placeholder="Eg: Gatwick Airport"
             class="w-full p-3  border border-gray-200 rounded-lg text-base shadow-sm focus:border-amber-400 focus:ring-2 focus:ring-amber-100 transition-all duration-200 hover:border-gray-300"
-            :disabled="isGoogleMapsLoading"
-          />
+            :disabled="isGoogleMapsLoading" />
         </div>
       </div>
 
@@ -281,59 +263,42 @@ const handleSearch = () => {
       <div class="w-full">
         <label class="block text-sm font-medium text-gray-700 mb-2">Drop-off Location</label>
         <div class="relative">
-          <input
-            ref="dropoffInput"
-            v-model="dropoffLocation"
-            @focus="handleDropoffChange"
-            @change="handleDropoffChange"
-            autocomplete="off"
-            name="dropoff-autocomplete"
-            type="text"
-            placeholder="Eg: SW1 7NL"
+          <input ref="dropoffInput" v-model="dropoffLocation" @focus="handleDropoffChange" @change="handleDropoffChange"
+            autocomplete="off" name="dropoff-autocomplete" type="text" placeholder="Eg: SW1 7NL"
             class="w-full p-3 border border-gray-200 rounded-lg text-base shadow-sm focus:border-amber-400 focus:ring-2 focus:ring-amber-100 transition-all duration-200 hover:border-gray-300"
-            :disabled="isGoogleMapsLoading"
-          />
+            :disabled="isGoogleMapsLoading" />
         </div>
       </div>
 
       <!-- Date & Time - Full Width -->
       <div class="w-full">
         <label class="block text-sm font-medium text-gray-700 mb-2">Pickup Date & Time</label>
-        <input 
-          type="datetime-local" 
-          v-model="selectedDateTime"
+        <input type="datetime-local" v-model="selectedDateTime"
           class="w-full p-3 border border-gray-200 rounded-lg text-sm shadow-sm focus:border-amber-400 focus:ring-2 focus:ring-amber-100 transition-all duration-200 hover:border-gray-300"
-          :min="new Date().toISOString().slice(0, 16)"
-        />
+          :min="new Date().toISOString().slice(0, 16)" />
       </div>
 
       <!-- Passengers & Luggage - 50/50 on Mobile -->
       <div class="grid grid-cols-2 gap-3">
         <div>
-          <CustomSelect
-            v-model="passengersCount"
-            :options="['1', '2', '3', '4', '5', '6', '7', '8']"
-            label="Passengers"
-          />
+          <CustomSelect v-model="passengersCount" :options="['1', '2', '3', '4', '5', '6', '7', '8']"
+            label="Passengers" />
         </div>
         <div>
-          <CustomSelect
-            v-model="luggageCount"
-            :options="['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10']"
-            label="Luggages"
-          />
+          <CustomSelect v-model="luggageCount" :options="['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10']"
+            label="Luggages" />
         </div>
       </div>
 
       <!-- Search Button - Full Width -->
       <div class="w-full">
-        <button 
-          @click="handleSearch"
-          class="w-full bg-amber-400 hover:bg-amber-500 text-gray-800 p-3 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-amber-300 focus:ring-offset-2 font-medium"
-        >
+        <button @click="handleSearch"
+          class="w-full bg-amber-400 hover:bg-amber-500 text-gray-800 p-3 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-amber-300 focus:ring-offset-2 font-medium">
           <div class="flex items-center justify-center space-x-2">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+              <path fill-rule="evenodd"
+                d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+                clip-rule="evenodd" />
             </svg>
             <span>Search & Book</span>
           </div>
@@ -345,20 +310,12 @@ const handleSearch = () => {
     <div class="hidden md:flex flex-col lg:flex-row items-end gap-4">
       <!-- Pickup Location -->
       <div class="flex-1 min-w-0">
-        <label class="block text-sm font-medium text-gray-700 mb-2 font-inter">Pick-up Location</label>
+        <label class="block text-left text-sm font-medium text-gray-700 mb-2 font-inter">Pick-up Location</label>
         <div class="relative">
-          <input
-            ref="pickupInput"
-            v-model="pickupLocation"
-            @focus="handlePickupChange"
-            @change="handlePickupChange"
-            autocomplete="off"
-            name="pickup-autocomplete"
-            type="text"
-            placeholder="Eg: Gatwick Airport"
+          <input ref="pickupInput" v-model="pickupLocation" @focus="handlePickupChange" @change="handlePickupChange"
+            autocomplete="off" name="pickup-autocomplete" type="text" placeholder="Eg: Gatwick Airport"
             class="w-full p-3  border border-gray-300 rounded-lg text-sm shadow-sm focus:border-amber-400 focus:ring-2 focus:ring-amber-100 transition-all duration-200 hover:border-gray-300"
-            :disabled="isGoogleMapsLoading"
-          />
+            :disabled="isGoogleMapsLoading" />
           <div v-if="isGoogleMapsLoading" class="absolute right-3 top-1/2 transform -translate-y-1/2">
             <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-amber-400"></div>
           </div>
@@ -367,20 +324,12 @@ const handleSearch = () => {
 
       <!-- Drop-off Location -->
       <div class="flex-1 min-w-0">
-        <label class="block text-sm font-medium text-gray-700 mb-2">Drop-off Location</label>
+        <label class="block text-left text-sm font-medium text-gray-700 mb-2">Drop-off Location</label>
         <div class="relative">
-          <input
-            ref="dropoffInput"
-            v-model="dropoffLocation"
-            @focus="handleDropoffChange"
-            @change="handleDropoffChange"
-            autocomplete="off"
-            name="dropoff-autocomplete"
-            type="text"
-            placeholder="Eg: SW1 7NL"
+          <input ref="dropoffInput" v-model="dropoffLocation" @focus="handleDropoffChange" @change="handleDropoffChange"
+            autocomplete="off" name="dropoff-autocomplete" type="text" placeholder="Eg: SW1 7NL"
             class="w-full p-3 border border-gray-300 rounded-lg text-sm shadow-sm focus:border-amber-400 focus:ring-2 focus:ring-amber-100 transition-all duration-200 hover:border-gray-300"
-            :disabled="isGoogleMapsLoading"
-          />
+            :disabled="isGoogleMapsLoading" />
           <div v-if="isGoogleMapsLoading" class="absolute right-3 top-1/2 transform -translate-y-1/2">
             <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-amber-400"></div>
           </div>
@@ -389,41 +338,32 @@ const handleSearch = () => {
 
       <!-- Date Picker -->
       <div class="flex-1 min-w-0">
-        <label class="block text-sm font-medium text-gray-700 mb-2">Pickup Date & Time</label>
-        <input 
-          type="datetime-local" 
-          v-model="selectedDateTime"
+        <label class="block text-left text-sm font-medium text-gray-700 mb-2">Pickup Date & Time</label>
+        <input type="datetime-local" v-model="selectedDateTime"
           class="w-full p-3  border border-gray-300 rounded-lg text-sm shadow-sm focus:border-amber-400 focus:ring-2 focus:ring-amber-100 transition-all duration-200 hover:border-gray-300"
-          :min="new Date().toISOString().slice(0, 16)"
-        />
+          :min="new Date().toISOString().slice(0, 16)" />
       </div>
 
       <!-- Passengers -->
       <div class="flex-1 min-w-0">
-        <CustomSelect
-          v-model="passengersCount"
-          :options="['1', '2', '3', '4', '5', '6', '7', '8']"
-          label="Passengers"
-        />
+        <CustomSelect v-model="passengersCount" :options="['1', '2', '3', '4', '5', '6', '7', '8']"
+          label="Passengers" />
       </div>
 
       <!-- Luggage -->
       <div class="flex-1 min-w-0">
-        <CustomSelect
-          v-model="luggageCount"
-          :options="['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10']"
-          label="Luggages"
-        />
+        <CustomSelect v-model="luggageCount" :options="['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10']"
+          label="Luggages" />
       </div>
 
       <!-- Search Button -->
       <div class="flex-shrink-0">
-        <button 
-          @click="handleSearch"
-          class="bg-amber-400 hover:bg-amber-500 text-gray-800 p-3 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-amber-300 focus:ring-offset-2"
-        >
+        <button @click="handleSearch"
+          class="bg-amber-400 hover:bg-amber-500 text-gray-800 p-3 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-amber-300 focus:ring-offset-2">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+            <path fill-rule="evenodd"
+              d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+              clip-rule="evenodd" />
           </svg>
         </button>
       </div>

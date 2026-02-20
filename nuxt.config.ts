@@ -1,11 +1,12 @@
 export default defineNuxtConfig({
   compatibilityDate: '2024-04-03',
+  // Trigger update
   devtools: { enabled: true },
   app: {
     head: {
       script: [
         {
-          children: `(function(c,l,a,r,i,t,y){
+          innerHTML: `(function(c,l,a,r,i,t,y){
         c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
         t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
         y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
@@ -15,7 +16,10 @@ export default defineNuxtConfig({
       ]
     }
   },
-  css: ["@/assets/styles/main.scss"],
+  css: [
+    "element-plus/dist/index.css",
+    "@/assets/styles/main.scss"
+  ],
   
   // Serve static files like sitemap.xml directly (bypass [slug].vue catch-all)
   nitro: {
@@ -38,28 +42,20 @@ export default defineNuxtConfig({
   devServer: {
     port: 3000
   },
-  plugins: [
-    { src: '~/plugins/firebase.client.ts', mode: 'client' },
-    { src: '~/plugins/auth-init.client.ts', mode: 'client' },
-    { src: '~/plugins/chat.client.ts', mode: 'client' },
-    { src: '~/plugins/cookie-consent.client.ts', mode: 'client' },
-    { src: '~/plugins/google-maps.client.js', mode: 'client' },
-  ],
   modules: [
     '@nuxtjs/tailwindcss',
     '@pinia/nuxt',
     'pinia-plugin-persistedstate/nuxt',
     '@vueuse/nuxt'
   ],
-  piniaPersistedstate: {
+  piniaPluginPersistedstate: {
     storage: 'localStorage'
   },
   tailwindcss: {
     cssPath: '~/assets/styles/tailwind.css',
     configPath: 'tailwind.config.js',
     exposeConfig: false,
-    viewer: true,
-    injectPosition: 'first' // Ensure Tailwind loads first to prevent FOUC
+    viewer: true
   },
   
   // Fix CSS flash (FOUC) on page navigation - inline critical CSS
@@ -72,9 +68,7 @@ export default defineNuxtConfig({
   },
   
   // Fix FOUC (Flash of Unstyled Content) during navigation
-  experimental: {
-    inlineSSRStyles: true
-  },
+  experimental: {},
   
   build: {
     transpile: ['@googlemaps/js-api-loader']

@@ -14,20 +14,22 @@
 // Import layout utilities
 @use 'layout';
 
-// Ensure Inter font is loaded for Tailwind classes
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@100;200;300;400;500;600;700;800&family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
 
 // Force Tailwind font classes to work
 .font-inter {
   font-family: 'Inter', sans-serif !important;
 }
 
-.font-lexend {
-  font-family: 'Lexend', sans-serif !important;
+.font-sora {
+  font-family: 'Sora', sans-serif !important;
 }
 
 body {
   font-family: 'Inter', sans-serif !important;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  background-color: $bg-app;
 }
 
 // Custom Animations
@@ -77,7 +79,7 @@ body {
 
 
   .base-highlighter{
-    color: $primary-color;
+    color: $primary;
   }
 
 

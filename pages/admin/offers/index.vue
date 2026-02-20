@@ -1,58 +1,72 @@
 <template>
-  <div>
+  <div class="p-4 transition-colors">
     <div class="flex items-center justify-between mb-8">
-      <h1 class="text-3xl font-bold text-gray-900">Offers & Promotions</h1>
-      <button
-        @click="showCreateModal = true"
-        class="px-6 py-2.5 bg-amber-500 hover:bg-amber-600 text-white rounded-lg font-semibold transition-colors inline-flex items-center space-x-2"
-      >
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-        </svg>
+      <h1 class="text-3xl font-bold text-gray-900 dark:text-white transition-colors">Offers & Promotions</h1>
+      <Button variant="primary" size="lg" @click="showCreateModal = true">
+        <el-icon class="mr-1">
+          <Plus />
+        </el-icon>
         <span>Create New Offer</span>
-      </button>
+      </Button>
     </div>
 
     <!-- Offers Grid -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       <!-- Loading State -->
-      <div v-if="isLoading" class="col-span-full flex justify-center py-12">
-        <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-amber-600"></div>
+      <div v-if="isLoading" class="col-span-full">
+        <AdminLoader text="Synchronizing Promotions..." />
       </div>
 
       <!-- Empty State -->
-      <div v-else-if="offers.length === 0" class="col-span-full text-center py-12">
-        <svg class="mx-auto h-16 w-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
-        </svg>
-        <h3 class="mt-4 text-lg font-medium text-gray-900">No offers yet</h3>
-        <p class="mt-2 text-sm text-gray-500">Get started by creating your first promotional offer.</p>
+      <div v-else-if="offers.length === 0" class="col-span-full py-20 text-center">
+        <div class="max-w-md mx-auto space-y-6">
+          <div
+            class="w-20 h-20 bg-slate-50 dark:bg-slate-800 rounded-[2rem] flex items-center justify-center text-slate-300 dark:text-slate-600 mx-auto border border-slate-100/50 dark:border-white/5 transition-colors">
+            <el-icon size="32">
+              <MagicStick />
+            </el-icon>
+          </div>
+          <div class="space-y-2">
+            <h3 class="text-xl font-bold text-slate-900 dark:text-white font-sora transition-colors">No Active Campaigns
+            </h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400 max-w-xs mx-auto leading-relaxed transition-colors">
+              Incentivize your passengers with
+              exclusive promotions and discount tiers to drive higher engagement.</p>
+          </div>
+          <Button variant="primary" size="xl" @click="showCreateModal = true" class="uppercase tracking-widest">
+            Initialize Promotion
+          </Button>
+        </div>
       </div>
 
       <!-- Offers Cards -->
-      <div
-        v-for="offer in offers"
-        :key="offer.id"
-        class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
-      >
-        <div class="p-6">
+      <div v-for="offer in offers" :key="offer.id"
+        class="bg-white dark:bg-slate-900 h-[360px] rounded-xl shadow-md overflow-hidden hover:shadow-lg border border-gray-200 dark:border-white/5 transition-all duration-300 flex flex-col">
+        <div class="p-6 flex flex-col flex-1">
           <div class="flex items-center justify-between mb-4">
-            <h3 class="text-lg font-bold text-gray-900">{{ offer.title }}</h3>
-            <span
-              :class="[
-                'inline-flex px-2 py-1 text-xs font-semibold rounded-full',
-                offer.isActive ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
-              ]"
-            >
+            <h3 class="text-lg font-bold text-gray-900 dark:text-white transition-colors">{{ offer.title }}</h3>
+            <span :class="[
+              'inline-flex px-2 py-1 text-xs font-semibold rounded-full',
+              offer.isActive ? 'bg-green-100 text-green-800 dark:bg-green-500/10 dark:text-green-400' : 'bg-gray-100 text-gray-800 dark:bg-white/10 dark:text-slate-400'
+            ]">
               {{ offer.isActive ? 'Active' : 'Inactive' }}
             </span>
           </div>
 
-          <p class="text-sm text-gray-600 mb-4">{{ offer.description }}</p>
+          <div class="mb-4">
+            <p
+              class="text-sm text-gray-600 dark:text-slate-400 transition-colors leading-relaxed tracking-tight font-medium line-clamp-2">
+              {{ offer.description }}
+            </p>
+            <button v-if="offer.description?.length > 80" @click="openDescription(offer)"
+              class="text-xs text-amber-500 hover:text-amber-600 dark:text-amber-400 dark:hover:text-amber-300 font-semibold mt-1 transition-colors">
+              Read More
+            </button>
+          </div>
 
-          <div class="space-y-2 mb-4">
+          <div class="space-y-3 mb-6 transition-colors">
             <div class="flex items-center text-sm">
-              <span class="font-medium text-gray-700 w-24">Discount:</span>
+              <span class="font-medium text-gray-700 dark:text-slate-500 w-24">Discount:</span>
               <span class="text-gray-900">{{ offer.discountPercent }}% OFF</span>
             </div>
             <div class="flex items-center text-sm">
@@ -69,19 +83,14 @@
             </div>
           </div>
 
-          <div class="flex space-x-2">
-            <button
-              @click="editOffer(offer)"
-              class="flex-1 px-4 py-2 bg-amber-100 hover:bg-amber-200 text-amber-700 rounded-lg text-sm font-semibold transition-colors"
-            >
+          <div class="flex space-x-2 mt-auto">
+            <Button variant="white" size="sm" @click="editOffer(offer)" class="flex-1">
               Edit
-            </button>
-            <button
-              @click="toggleOffer(offer)"
-              class="flex-1 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-sm font-semibold transition-colors"
-            >
+            </Button>
+            <Button variant="white" size="sm" @click="toggleOffer(offer)" :loading="loadingItems[offer.id]"
+              class="flex-1">
               {{ offer.isActive ? 'Deactivate' : 'Activate' }}
-            </button>
+            </Button>
           </div>
         </div>
       </div>
@@ -93,55 +102,76 @@
         <h2 class="text-2xl font-bold text-gray-900 mb-6">
           {{ isEditMode ? 'Edit Offer' : 'Create New Offer' }}
         </h2>
-        
+
         <div class="space-y-4 mb-6">
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">Offer Title</label>
-            <input v-model="newOffer.title" type="text" required placeholder="e.g., Summer Special" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500" />
+            <input v-model="newOffer.title" type="text" required placeholder="e.g., Summer Special"
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500" />
           </div>
 
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
-            <textarea v-model="newOffer.description" rows="3" required placeholder="Describe your offer..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"></textarea>
+            <textarea v-model="newOffer.description" rows="3" required placeholder="Describe your offer..."
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"></textarea>
           </div>
 
           <div class="grid grid-cols-2 gap-4">
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">Promo Code</label>
-              <input v-model="newOffer.code" type="text" required placeholder="SUMMER2024" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500" />
+              <input v-model="newOffer.code" type="text" required placeholder="SUMMER2024"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500" />
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">Discount %</label>
-              <input v-model.number="newOffer.discountPercent" type="number" required placeholder="15" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500" />
+              <input v-model.number="newOffer.discountPercent" type="number" required placeholder="15"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500" />
             </div>
           </div>
 
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">Valid Until</label>
-            <input v-model="newOffer.validUntil" type="date" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500" />
+            <input v-model="newOffer.validUntil" type="date" required
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500" />
           </div>
 
           <div>
             <label class="flex items-center">
-              <input v-model="newOffer.isActive" type="checkbox" class="w-4 h-4 text-amber-600 border-gray-300 rounded focus:ring-amber-500" />
+              <input v-model="newOffer.isActive" type="checkbox"
+                class="w-4 h-4 text-amber-600 border-gray-300 rounded focus:ring-amber-500" />
               <span class="ml-2 text-sm text-gray-700">Activate offer immediately</span>
             </label>
           </div>
         </div>
 
         <div class="flex space-x-3">
-          <button
-            @click="isEditMode ? saveEdit() : createOffer()"
-            class="flex-1 px-6 py-2.5 bg-amber-500 hover:bg-amber-600 text-white rounded-lg font-semibold transition-colors"
-          >
+          <Button variant="primary" size="lg" @click="isEditMode ? saveEdit() : createOffer()" :loading="isSubmitting"
+            class="flex-1">
             {{ isEditMode ? 'Save Changes' : 'Create Offer' }}
-          </button>
-          <button
-            @click="closeModal"
-            class="flex-1 px-6 py-2.5 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg font-semibold transition-colors"
-          >
+          </Button>
+          <Button variant="white" size="lg" @click="closeModal" :disabled="isSubmitting" class="flex-1">
             Cancel
-          </button>
+          </Button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Description Read More Modal -->
+    <div v-if="showDescriptionModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div
+        class="bg-white dark:bg-slate-900 rounded-lg p-8 max-w-lg w-full mx-4 border border-transparent dark:border-white/10">
+        <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4">
+          {{ selectedDescriptionOffer?.title }}
+        </h2>
+        <div class="max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
+          <p class="text-sm text-gray-600 dark:text-slate-300 leading-relaxed whitespace-pre-wrap font-medium">
+            {{ selectedDescriptionOffer?.description }}
+          </p>
+        </div>
+        <div class="mt-6 flex justify-end">
+          <Button variant="white" @click="showDescriptionModal = false">
+            Close
+          </Button>
         </div>
       </div>
     </div>
@@ -150,6 +180,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
+import { MagicStick, Plus } from '@element-plus/icons-vue';
 
 definePageMeta({
   layout: 'admin',
@@ -158,7 +189,11 @@ definePageMeta({
 });
 
 const showCreateModal = ref(false);
+const showDescriptionModal = ref(false);
+const selectedDescriptionOffer = ref<any>(null);
 const isLoading = ref(true);
+const isSubmitting = ref(false);
+const loadingItems = ref<Record<string, boolean>>({});
 const offers = ref<any[]>([]);
 const isEditMode = ref(false);
 const editingOfferId = ref('');
@@ -186,29 +221,40 @@ const formatDate = (dateString: any) => {
   }
 };
 
+const openDescription = (offer: any) => {
+  selectedDescriptionOffer.value = offer;
+  showDescriptionModal.value = true;
+};
+
 const createOffer = async () => {
+  if (isSubmitting.value) return;
+  isSubmitting.value = true;
   try {
-    console.log('[OFFERS] Creating offer...');
     const { createOffer: createOfferInDb } = useAdminFirestore();
     await createOfferInDb(newOffer.value);
-    console.log('[OFFERS] ✅ Offer created successfully');
     closeModal();
-    
+
     // Reload offers
     await loadOffers();
   } catch (error: any) {
-    console.error('[OFFERS] ❌ Error creating offer:', error);
-    alert('Failed to create offer: ' + error.message);
+    const { adminUser } = useAdminAuth();
+    console.error('[OFFERS] ❌ Error creating offer:', {
+      error,
+      user: adminUser.value?.email,
+      role: adminUser.value?.role
+    });
+    alert(`Failed to create offer. \n\nRole: ${adminUser.value?.role || 'None'} \nError: ${error.message}`);
+  } finally {
+    isSubmitting.value = false;
   }
 };
 
 const editOffer = (offer: any) => {
-  console.log('[OFFERS] Edit offer:', offer);
-  
+
   // Set edit mode and store offer ID
   isEditMode.value = true;
   editingOfferId.value = offer.id;
-  
+
   // Pre-fill form with offer data
   newOffer.value = {
     title: offer.title || '',
@@ -218,24 +264,26 @@ const editOffer = (offer: any) => {
     validUntil: formatDateForInput(offer.validUntil),
     isActive: offer.isActive || false
   };
-  
+
   // Show modal
   showCreateModal.value = true;
 };
 
 const saveEdit = async () => {
+  if (isSubmitting.value) return;
+  isSubmitting.value = true;
   try {
-    console.log('[OFFERS] Saving offer edits...', editingOfferId.value);
     const { updateOffer } = useAdminFirestore();
     await updateOffer(editingOfferId.value, newOffer.value);
-    console.log('[OFFERS] ✅ Offer updated successfully');
     closeModal();
-    
+
     // Reload offers to show updated data
     await loadOffers();
   } catch (error: any) {
     console.error('[OFFERS] ❌ Error updating offer:', error);
     alert('Failed to update offer: ' + error.message);
+  } finally {
+    isSubmitting.value = false;
   }
 };
 
@@ -243,7 +291,7 @@ const closeModal = () => {
   showCreateModal.value = false;
   isEditMode.value = false;
   editingOfferId.value = '';
-  
+
   // Reset form
   newOffer.value = {
     title: '',
@@ -266,30 +314,30 @@ const formatDateForInput = (dateValue: any) => {
 };
 
 const toggleOffer = async (offer: any) => {
+  if (loadingItems.value[offer.id]) return;
+  loadingItems.value[offer.id] = true;
   try {
     const newStatus = !offer.isActive;
-    console.log('[OFFERS] Toggle offer:', offer.id, newStatus);
-    
+
     const { toggleOfferStatus } = useAdminFirestore();
     await toggleOfferStatus(offer.id, newStatus);
-    
+
     // Update local state
     offer.isActive = newStatus;
-    
-    console.log('[OFFERS] ✅ Offer', newStatus ? 'activated' : 'deactivated');
+
   } catch (error: any) {
     console.error('[OFFERS] ❌ Error toggling offer:', error);
     alert('Failed to update offer status: ' + error.message);
+  } finally {
+    loadingItems.value[offer.id] = false;
   }
 };
 
 const loadOffers = async () => {
   isLoading.value = true;
   try {
-    console.log('[OFFERS] Loading offers from Firestore...');
     const { getAllOffers } = useAdminFirestore();
     offers.value = await getAllOffers();
-    console.log('[OFFERS] ✅ Loaded', offers.value.length, 'offers');
     isLoading.value = false;
   } catch (error: any) {
     console.error('[OFFERS] ❌ Error loading offers:', error);
@@ -301,4 +349,3 @@ onMounted(async () => {
   await loadOffers();
 });
 </script>
-

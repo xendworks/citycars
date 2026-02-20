@@ -11,6 +11,8 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue';
+
 interface Props {
   status: 'pending' | 'confirmed' | 'in-progress' | 'completed' | 'cancelled' | string;
 }

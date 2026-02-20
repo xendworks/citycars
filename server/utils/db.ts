@@ -43,12 +43,9 @@ export function initializeFirebaseAdmin(): Firestore {
         // or work without auth if using emulator
       });
       
-      console.log(`⚠️  Firebase Admin initialized in development mode with project: ${projectId}`);
-      console.log('⚠️  For production, set FIREBASE_SERVICE_ACCOUNT environment variable');
     }
 
     db = getFirestore(adminApp);
-    console.log('✓ Firebase Admin initialized successfully');
     return db;
   } catch (error) {
     console.error('Failed to initialize Firebase Admin:', error);
@@ -77,6 +74,7 @@ export const collections = {
   walletData: () => getDb().collection('walletData'),
   walletTransactions: () => getDb().collection('walletTransactions'),
   routes: () => getDb().collection('routes'),
+  offers: () => getDb().collection('offers'),
 };
 
 /**

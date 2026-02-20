@@ -3,7 +3,7 @@
     <!-- Hero Section -->
     <section class="bg-amber-50 py-12">
       <div class="container mx-auto px-4 text-center">
-        <h1 class="text-3xl font-bold mb-4 font-lexend">City Cars Contractor - Driver Agreement</h1>
+        <h1 class="text-3xl font-bold mb-4 font-sora">City Cars Contractor - Driver Agreement</h1>
         <p class="max-w-3xl mx-auto text-gray-700 mb-8 font-inter">
           Terms and Conditions for Contractors and Drivers
         </p>
@@ -17,7 +17,7 @@
           
           <!-- Terms and Conditions -->
           <div class="mb-8">
-            <h2 class="text-2xl font-bold mb-4 font-lexend">Terms and Conditions:</h2>
+            <h2 class="text-2xl font-bold mb-4 font-sora">Terms and Conditions:</h2>
           </div>
 
           <!-- Clause 1 -->
@@ -177,7 +177,7 @@ definePageMeta({
 
 <style scoped>
 .prose h2 {
-  @apply text-2xl font-bold mb-4 font-lexend;
+  @apply text-2xl font-bold mb-4 font-sora;
 }
 
 .prose p {

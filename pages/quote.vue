@@ -460,7 +460,6 @@ const formatPickupTime = computed(() => {
 const calculateAndDisplayRoute = async () => {
   // Only use mock if we don't have real coordinates
   if (fromCoords.value && toCoords.value) {
-    console.log('Skipping mock map - using real Google Maps');
     return true;
   }
   
@@ -510,7 +509,6 @@ const calculateAndDisplayRoute = async () => {
 
 // Handle search event from BookingForm component
 const handleSearchFromForm = (searchData: any) => {
-  console.log('📥 Received search event from BookingForm:', searchData);
   
   // Update form values with search data
   fromLocation.value = searchData.from;
@@ -656,8 +654,6 @@ const generateMockCabResults = () => {
     'Wheelchair': 'wheelchair'
   }
 
-  console.log('💰 Calculating fares for', distanceInMiles.toFixed(2), 'miles');
-  console.log('Vehicle Type Map:', vehicleTypeMap);
 
   const availableCabs = baseCabs
     .filter(cab => cab.passengerCapacity >= passengers.value && cab.luggageCapacity >= luggage.value)
@@ -666,7 +662,6 @@ const generateMockCabResults = () => {
       const vehicleType = vehicleTypeMap[cab.name] || 'saloon'
       const fareForVehicle = calculateFare(distanceInMiles, vehicleType)
       
-      console.log(`🚗 ${cab.name}: Vehicle Type="${vehicleType}", Fare=£${fareForVehicle.toFixed(2)}`);
       
       return {
         ...cab,

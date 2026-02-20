@@ -335,7 +335,6 @@ const loadInitial = async () => {
     totalRoutes.value = routes.length; // Start with what we have
     hasMore.value = routes.length === BATCH_SIZE; // If we got full batch, there's more
     
-    console.log(`✅ Loaded ${routes.length} routes`);
     
     // Setup observer after data loads
     await nextTick();
@@ -352,7 +351,6 @@ const loadMore = async () => {
   if (loading.value || !hasMore.value) return;
   
   loading.value = true;
-  console.log('🔄 Loading more...');
   
   try {
     const alreadyLoaded = allRoutes.value.length;
@@ -366,7 +364,6 @@ const loadMore = async () => {
     }));
     
     const newRoutes = routes.slice(alreadyLoaded);
-    console.log(`📦 Loaded ${newRoutes.length} more routes`);
     
     allRoutes.value = routes;
     displayedRoutes.value = routes;
@@ -375,7 +372,6 @@ const loadMore = async () => {
     // If we didn't get a full batch of new routes, we've reached the end
     hasMore.value = newRoutes.length === BATCH_SIZE;
     
-    console.log(`✅ Total now: ${routes.length}`);
   } catch (error) {
     console.error('❌ Error loading more:', error);
   } finally {
@@ -386,7 +382,6 @@ const loadMore = async () => {
 // Setup Intersection Observer for infinite scroll
 const setupObserver = () => {
   if (!scrollTrigger.value) {
-    console.log('⚠️ No scroll trigger element');
     return;
   }
   
@@ -399,7 +394,6 @@ const setupObserver = () => {
     (entries) => {
       const entry = entries[0];
       if (entry.isIntersecting && hasMore.value && !loading.value && !searchQuery.value) {
-        console.log('👀 Scroll trigger visible - loading more...');
         loadMore();
       }
     },
@@ -411,7 +405,6 @@ const setupObserver = () => {
   );
   
   observer.observe(scrollTrigger.value);
-  console.log('✅ Intersection Observer set up');
 };
 
 // Watch for hasMore changes to re-setup observer
@@ -431,7 +424,6 @@ onMounted(async () => {
 onUnmounted(() => {
   if (observer) {
     observer.disconnect();
-    console.log('🔌 Observer disconnected');
   }
 });
 </script>

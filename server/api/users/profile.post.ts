@@ -34,11 +34,9 @@ export default defineEventHandler(async (event) => {
         ...userData,
         createdAt: new Date().toISOString()
       });
-      console.log(`✓ Created user profile for ${email}`);
     } else {
       // Update existing user document
       await userRef.update(userData);
-      console.log(`✓ Updated user profile for ${email}`);
     }
 
     return {

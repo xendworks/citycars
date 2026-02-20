@@ -3,7 +3,6 @@ export default defineNuxtPlugin((nuxtApp) => {
   // Only run on client side
   if (typeof window === 'undefined') return
   
-  console.log('Google Maps plugin initialized')
   
   // Track loading state
   let isLoading = false
@@ -17,7 +16,6 @@ export default defineNuxtPlugin((nuxtApp) => {
     
     // If already loading, return existing promise
     if (isLoading && loadPromise) {
-      console.log('Google Maps already loading, returning existing promise')
       return loadPromise
     }
     
@@ -30,7 +28,6 @@ export default defineNuxtPlugin((nuxtApp) => {
       // Create a callback function
       const callbackName = 'googleMapsInitialized_' + Date.now()
       window[callbackName] = function() {
-        console.log('Google Maps loaded via plugin')
         isLoaded = true
         isLoading = false
         

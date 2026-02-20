@@ -1,154 +1,204 @@
 <template>
-  <div class="min-h-screen bg-gray-100 overflow-x-hidden">
-    <!-- Top Navigation Bar -->
-    <nav class="bg-gray-900 text-white shadow-lg fixed top-0 left-0 right-0 z-10">
-      <div class="px-6 py-4">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center space-x-4">
-            <h1 class="text-2xl font-bold">
+  <div
+    :class="['admin-layout-wrapper min-h-screen font-sora transition-colors duration-300', isDarkMode ? 'dark bg-slate-950' : 'bg-slate-50']">
+    <!-- Authenticated View -->
+    <div v-if="isAuthenticated && !isLoading" class="min-h-screen">
+      <!-- Top Navigation Bar -->
+      <nav class="bg-slate-950 border-b border-white/5 fixed top-0 left-0 right-0 z-[100] shadow backdrop-blur-md">
+        <div class="px-8 py-4 flex items-center justify-between w-full">
+          <div class="flex items-center space-x-6 flex-1">
+            <h1 class="text-xl font-bold font-sora tracking-tight shrink-0">
               <span class="text-white">CITY</span><span class="text-amber-400">CARS</span>
-              <span class="ml-3 text-sm font-normal text-gray-400">Admin Portal</span>
+              <span
+                class="ml-3 px-2 py-0.5 bg-slate-800 text-slate-400 text-[10px] font-bold uppercase tracking-widest rounded-md border border-slate-700">Admin</span>
             </h1>
+
+            <!-- Global Search -->
+            <AdminGlobalSearch />
           </div>
-          <div class="flex items-center space-x-4">
-            <button
-              @click="handleLogout"
-              class="px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg text-sm font-semibold transition-colors"
-            >
-              Logout
+
+          <div class="flex items-center space-x-5">
+            <!-- Dark Mode Toggle -->
+            <button type="button" @click="toggleDarkMode"
+              class="p-2 text-slate-400 hover:text-white transition-all hover:bg-white/5 rounded-xl group"
+              title="Toggle Dark Mode">
+              <SunIcon v-if="isDarkMode" class="size-5" />
+              <MoonIcon v-else class="size-5" />
             </button>
+
+            <!-- Notifications -->
+            <button type="button" @click="notifStore.isDrawerOpen = true"
+              class="relative p-2 text-slate-400 hover:text-white transition-colors group">
+              <BellIcon class="size-5" />
+              <span v-if="notifStore.unreadCount > 0"
+                class="absolute top-1.5 right-1.5 min-w-[18px] h-[18px] bg-amber-500 text-white text-[10px] font-bold flex items-center justify-center rounded-full border-2 border-slate-950 px-1 shadow-lg shadow-amber-500/20 group-hover:scale-110 transition-transform">
+                {{ notifStore.unreadCount > 9 ? '9+' : notifStore.unreadCount }}
+              </span>
+            </button>
+
+            <!-- Profile dropdown -->
+            <Menu as="div" class="relative">
+              <MenuButton class="flex items-center space-x-3 p-1 rounded-xl hover:bg-white/5 transition-all group">
+                <div
+                  class="w-9 h-9 rounded-lg bg-amber-500 flex items-center justify-center text-white text-xs font-bold shadow-lg shadow-amber-500/20 group-hover:scale-105 transition-transform">
+                  {{ adminUser?.name?.slice(0, 2).toUpperCase() || 'AD' }}
+                </div>
+                <div class="hidden md:block text-left">
+                  <p class="text-xs font-bold text-white leading-none">{{ adminUser?.name }}</p>
+                  <p class="text-[10px] text-slate-400 font-medium mt-1 uppercase tracking-wider">{{ adminUser?.role }}
+                  </p>
+                </div>
+                <ChevronDownIcon class="size-4 text-slate-500 group-hover:text-slate-300 transition-colors" />
+              </MenuButton>
+
+              <transition enter-active-class="transition ease-out duration-100"
+                enter-from-class="transform opacity-0 scale-95" enter-to-class="transform scale-100"
+                leave-active-class="transition ease-in duration-75" leave-from-class="transform scale-100"
+                leave-to-class="transform opacity-0 scale-95">
+                <MenuItems
+                  class="absolute right-0 z-50 mt-3 w-56 origin-top-right rounded-2xl bg-white dark:bg-slate-900 p-2 shadow-2xl ring-1 ring-black/5 dark:ring-white/10 focus:outline-none">
+                  <div class="px-3 py-3 border-b border-slate-50 dark:border-white/5 mb-1">
+                    <p class="text-xs font-bold text-slate-900 dark:text-white leading-none">{{ adminUser?.name }}</p>
+                    <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1.5 truncate">{{ adminUser?.email }}</p>
+                  </div>
+
+                  <MenuItem v-slot="{ active }">
+                  <NuxtLink to="/admin/profile"
+                    :class="[active ? 'bg-slate-50 dark:bg-white/5 text-amber-600' : 'text-slate-700 dark:text-slate-300', 'flex items-center space-x-3 px-3 py-2.5 rounded-xl text-[13px] font-semibold transition-colors']">
+                    <el-icon>
+                      <User />
+                    </el-icon>
+                    <span>Your Profile</span>
+                  </NuxtLink>
+                  </MenuItem>
+                  <MenuItem v-slot="{ active }">
+                  <NuxtLink to="/admin/settings"
+                    :class="[active ? 'bg-slate-50 dark:bg-white/5 text-amber-600' : 'text-slate-700 dark:text-slate-300', 'flex items-center space-x-3 px-3 py-2.5 rounded-xl text-[13px] font-semibold transition-colors']">
+                    <el-icon>
+                      <Setting />
+                    </el-icon>
+                    <span>Settings</span>
+                  </NuxtLink>
+                  </MenuItem>
+
+                  <div class="h-px bg-slate-50 dark:bg-white/5 my-1"></div>
+
+                  <MenuItem v-slot="{ active }">
+                  <button @click="handleLogout"
+                    :class="[active ? 'bg-red-50 dark:bg-red-500/10 text-red-600' : 'text-slate-700 dark:text-slate-300', 'w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-[13px] font-semibold transition-colors']">
+                    <el-icon>
+                      <SwitchButton />
+                    </el-icon>
+                    <span>Sign out</span>
+                  </button>
+                  </MenuItem>
+                </MenuItems>
+              </transition>
+            </Menu>
           </div>
         </div>
+      </nav>
+
+      <div class="flex pt-[73px]">
+        <aside
+          class="w-56 bg-white dark:bg-slate-900 fixed min-h-[calc(100vh-60px)] flex-shrink-0 border-r border-slate-200/60 dark:border-white/5 sticky top-[73px] transition-colors duration-300">
+          <AdminSidebarNav />
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-4 overflow-x-hidden min-h-[calc(100vh-73px)]">
+          <slot />
+        </main>
       </div>
-    </nav>
-
-    <div class="flex overflow-x-hidden">
-      <!-- Sidebar -->
-      <aside class="w-64 bg-white min-h-screen shadow-lg flex-shrink-0">
-        <nav class="p-4 mt-16 fixed space-y-2">
-          <NuxtLink
-            to="/admin"
-            :class="[
-              'flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors',
-              $route.path === '/admin' || $route.path === '/admin/'
-                ? 'bg-amber-50 text-amber-600 font-semibold'
-                : 'text-gray-700 hover:bg-gray-50'
-            ]"
-          >
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-            </svg>
-            <span>Dashboard</span>
-          </NuxtLink>
-
-          <NuxtLink
-            to="/admin/bookings"
-            :class="[
-              'flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors',
-              $route.path.startsWith('/admin/bookings')
-                ? 'bg-amber-50 text-amber-600 font-semibold'
-                : 'text-gray-700 hover:bg-gray-50'
-            ]"
-          >
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-            </svg>
-            <span>Bookings</span>
-          </NuxtLink>
-
-          <NuxtLink
-            to="/admin/drivers"
-            :class="[
-              'flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors',
-              $route.path.startsWith('/admin/drivers')
-                ? 'bg-amber-50 text-amber-600 font-semibold'
-                : 'text-gray-700 hover:bg-gray-50'
-            ]"
-          >
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-            </svg>
-            <span>Drivers</span>
-          </NuxtLink>
-
-          <NuxtLink
-            to="/admin/offers"
-            :class="[
-              'flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors',
-              $route.path.startsWith('/admin/offers')
-                ? 'bg-amber-50 text-amber-600 font-semibold'
-                : 'text-gray-700 hover:bg-gray-50'
-            ]"
-          >
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
-            </svg>
-            <span>Offers & Promotions</span>
-          </NuxtLink>
-
-          <NuxtLink
-            to="/admin/pricing"
-            :class="[
-              'flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors',
-              $route.path.startsWith('/admin/pricing')
-                ? 'bg-amber-50 text-amber-600 font-semibold'
-                : 'text-gray-700 hover:bg-gray-50'
-            ]"
-          >
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <span>Pricing Rules</span>
-          </NuxtLink>
-
-          <NuxtLink
-            to="/admin/users"
-            :class="[
-              'flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors',
-              $route.path.startsWith('/admin/users')
-                ? 'bg-amber-50 text-amber-600 font-semibold'
-                : 'text-gray-700 hover:bg-gray-50'
-            ]"
-          >
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-            </svg>
-            <span>Users</span>
-          </NuxtLink>
-
-          <NuxtLink
-            to="/admin/settings"
-            :class="[
-              'flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors',
-              $route.path.startsWith('/admin/settings')
-                ? 'bg-amber-50 text-amber-600 font-semibold'
-                : 'text-gray-700 hover:bg-gray-50'
-            ]"
-          >
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
-            <span>Settings</span>
-          </NuxtLink>
-        </nav>
-      </aside>
-
-      <!-- Main Content -->
-      <main class="flex-1 p-4 mt-20 overflow-x-hidden max-w-full">
-        <slot />
-      </main>
     </div>
+
+    <!-- Loading State -->
+    <AdminLoader v-if="isLoading" full-screen text="Initializing Dashboard..." />
+
+    <!-- Auth Fallback Overlay -->
+    <div v-if="!isLoading && !isAuthenticated" class="min-h-screen bg-slate-900 fixed inset-0 z-[100]"></div>
+
+    <!-- Realtime Notifications Slideout -->
+    <AdminNotificationDrawer />
   </div>
 </template>
 
 <script setup lang="ts">
+import { useAdminAuth } from '~/composables/useAdminAuth';
+import { useAdminDarkMode } from '~/composables/useAdminDarkMode';
+import { useAdminNotificationsStore } from '~/stores/adminNotifications';
+import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue';
+import { BellIcon, ChevronDownIcon, SunIcon, MoonIcon } from '@heroicons/vue/20/solid';
+import { User, Setting, SwitchButton } from '@element-plus/icons-vue';
+import { onMounted, onUnmounted } from 'vue';
+
+const { adminUser, isAuthenticated, isLoading, logoutAdmin } = useAdminAuth();
+const { isDarkMode, toggleDarkMode } = useAdminDarkMode();
+const notifStore = useAdminNotificationsStore();
 const router = useRouter();
 
-const handleLogout = () => {
-  // TODO: Implement logout logic
-  console.log('Logging out...');
-  router.push('/admin/login');
+const handleLogout = async () => {
+  try {
+    await logoutAdmin();
+    router.push('/admin/login');
+  } catch (error) {
+    console.error('Logout failed:', error);
+  }
 };
+
+// Lifecycle for Realtime Notifications
+onMounted(() => {
+  if (process.client) {
+    notifStore.initListener();
+  }
+});
+
+onUnmounted(() => {
+  notifStore.stopListener();
+  if (process.client) {
+    document.documentElement.classList.remove('dark');
+  }
+});
 </script>
 
+<style scoped>
+/* Ensure fixed sidebar works with wide screens */
+aside nav {
+  max-width: 16rem;
+}
+
+/* Dark Mode Global Overrides */
+.dark {
+  --el-bg-color: #0f172a;
+  --el-bg-color-overlay: #1e293b;
+  --el-text-color-primary: #f1f5f9;
+  --el-text-color-regular: #cbd5e1;
+  --el-border-color-light: rgba(255, 255, 255, 0.1);
+  --el-fill-color-blank: transparent;
+}
+
+.dark :deep(.el-card) {
+  background-color: #1e293b;
+  border-color: rgba(255, 255, 255, 0.05);
+}
+
+.dark :deep(.el-button:not(.el-button--primary):not(.el-button--danger)) {
+  background-color: #1e293b;
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #f1f5f9;
+}
+
+.dark :deep(.el-table) {
+  --el-table-border-color: rgba(255, 255, 255, 0.05);
+  --el-table-header-bg-color: #1e293b;
+}
+
+.dark :deep(.el-input__wrapper) {
+  background-color: #0f172a !important;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1) inset !important;
+}
+
+.dark :deep(.el-input__inner) {
+  color: #f1f5f9 !important;
+}
+</style>

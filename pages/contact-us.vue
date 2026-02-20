@@ -3,7 +3,7 @@
     <!-- Hero Section -->
     <section class="bg-amber-50 py-12">
       <div class="container mx-auto px-4 text-center">
-        <h1 class="text-3xl font-bold mb-4 font-lexend">Contact Us</h1>
+        <h1 class="text-3xl font-bold mb-4 font-sora">Contact Us</h1>
         <p class="max-w-3xl mx-auto text-gray-700 mb-8 font-inter">
           Have questions about our services or need to make a special booking? Our friendly team is here to help.
           Contact us today and we'll get back to you as soon as possible.
@@ -17,7 +17,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
           <!-- Contact Information -->
           <div>
-            <h2 class="text-2xl font-bold mb-8 font-lexend">Get In Touch</h2>
+            <h2 class="text-2xl font-bold mb-8 font-sora">Get In Touch</h2>
             
             <div class="space-y-6">
               <!-- Phone -->
@@ -28,7 +28,7 @@
                   </svg>
                 </div>
                 <div>
-                  <h3 class="text-lg font-semibold mb-1 font-lexend">Phone</h3>
+                  <h3 class="text-lg font-semibold mb-1 font-sora">Phone</h3>
                   <p class="text-gray-600 mb-1 font-inter">+44 1293 222710</p>
                   <p class="text-gray-500 text-sm font-inter">Available 24/7 for bookings and inquiries</p>
                 </div>
@@ -42,7 +42,7 @@
                   </svg>
                 </div>
                 <div>
-                  <h3 class="text-lg font-semibold mb-1 font-lexend">Email</h3>
+                  <h3 class="text-lg font-semibold mb-1 font-sora">Email</h3>
                   <p class="text-gray-600 mb-1 font-inter">bookings@citycars.co.uk</p>
                   <p class="text-gray-500 text-sm font-inter">We'll respond as quickly as possible</p>
                 </div>
@@ -57,7 +57,7 @@
                   </svg>
                 </div>
                 <div>
-                  <h3 class="text-lg font-semibold mb-1 font-lexend">Office Address</h3>
+                  <h3 class="text-lg font-semibold mb-1 font-sora">Office Address</h3>
                   <p class="text-gray-600 mb-1 font-inter">123 Airport Road</p>
                   <p class="text-gray-600 mb-1 font-inter">Gatwick</p>
                   <p class="text-gray-600 font-inter">RH6 0NP, United Kingdom</p>
@@ -72,7 +72,7 @@
                   </svg>
                 </div>
                 <div>
-                  <h3 class="text-lg font-semibold mb-1 font-lexend">Business Hours</h3>
+                  <h3 class="text-lg font-semibold mb-1 font-sora">Business Hours</h3>
                   <p class="text-gray-600 mb-1 font-inter">Monday - Friday: 8:00 AM - 8:00 PM</p>
                   <p class="text-gray-600 mb-1 font-inter">Saturday: 9:00 AM - 6:00 PM</p>
                   <p class="text-gray-600 font-inter">Sunday: 10:00 AM - 4:00 PM</p>
@@ -84,7 +84,7 @@
           
           <!-- Contact Form -->
           <div>
-            <h2 class="text-2xl font-bold mb-8 font-lexend">Send Us a Message</h2>
+            <h2 class="text-2xl font-bold mb-8 font-sora">Send Us a Message</h2>
             
             <!-- Success Message -->
             <div v-if="successMessage" class="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg animate-fade-in">
@@ -107,25 +107,25 @@
             <form @submit.prevent="handleSubmit" class="space-y-6">
               <!-- Name -->
               <div>
-                <label for="name" class="block text-sm font-medium text-gray-700 mb-1 font-lexend">Your Name</label>
+                <label for="name" class="block text-sm font-medium text-gray-700 mb-1 font-sora">Your Name</label>
                 <input v-model="form.name" type="text" id="name" required class="w-full p-3 border border-gray-300 rounded-md font-inter focus:ring-2 focus:ring-amber-500 focus:border-amber-500" placeholder="John Doe">
               </div>
               
               <!-- Email -->
               <div>
-                <label for="email" class="block text-sm font-medium text-gray-700 mb-1 font-lexend">Email Address</label>
+                <label for="email" class="block text-sm font-medium text-gray-700 mb-1 font-sora">Email Address</label>
                 <input v-model="form.email" type="email" id="email" required class="w-full p-3 border border-gray-300 rounded-md font-inter focus:ring-2 focus:ring-amber-500 focus:border-amber-500" placeholder="john@example.com">
               </div>
               
               <!-- Phone -->
               <div>
-                <label for="phone" class="block text-sm font-medium text-gray-700 mb-1 font-lexend">Phone Number</label>
+                <label for="phone" class="block text-sm font-medium text-gray-700 mb-1 font-sora">Phone Number</label>
                 <input v-model="form.phone" type="tel" id="phone" class="w-full p-3 border border-gray-300 rounded-md font-inter focus:ring-2 focus:ring-amber-500 focus:border-amber-500" placeholder="+44 1234 567890">
               </div>
               
               <!-- Subject -->
               <div>
-                <label for="subject" class="block text-sm font-medium text-gray-700 mb-1 font-lexend">Subject</label>
+                <label for="subject" class="block text-sm font-medium text-gray-700 mb-1 font-sora">Subject</label>
                 <select v-model="form.subject" id="subject" required class="w-full p-3 border border-gray-300 rounded-md font-inter focus:ring-2 focus:ring-amber-500 focus:border-amber-500">
                   <option value="">Select a subject</option>
                   <option value="General Inquiry">General Inquiry</option>
@@ -138,13 +138,13 @@
               
               <!-- Message -->
               <div>
-                <label for="message" class="block text-sm font-medium text-gray-700 mb-1 font-lexend">Your Message</label>
+                <label for="message" class="block text-sm font-medium text-gray-700 mb-1 font-sora">Your Message</label>
                 <textarea v-model="form.message" id="message" rows="4" required class="w-full p-3 border border-gray-300 rounded-md font-inter focus:ring-2 focus:ring-amber-500 focus:border-amber-500" placeholder="Please provide details about your inquiry..."></textarea>
               </div>
               
               <!-- Submit Button -->
               <div>
-                <button type="submit" :disabled="isSubmitting" class="w-full bg-amber-400 hover:bg-amber-500 disabled:opacity-50 disabled:cursor-not-allowed text-white py-3 px-6 rounded-md font-semibold font-lexend transition-colors">
+                <button type="submit" :disabled="isSubmitting" class="w-full bg-amber-400 hover:bg-amber-500 disabled:opacity-50 disabled:cursor-not-allowed text-white py-3 px-6 rounded-md font-semibold font-sora transition-colors">
                   <span v-if="isSubmitting">Sending...</span>
                   <span v-else>Send Message</span>
                 </button>
@@ -158,7 +158,7 @@
     <!-- Map Section -->
     <section class="py-12 bg-gray-50">
       <div class="container mx-auto px-4">
-        <h2 class="text-2xl font-bold text-center mb-8 font-lexend">Find Us</h2>
+        <h2 class="text-2xl font-bold text-center mb-8 font-sora">Find Us</h2>
         <div class="bg-white p-4 rounded-lg shadow-md">
           <iframe 
             src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2500.0000000000005!2d-0.2082155!3d51.1268316!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4875ee39ded8fab5%3A0x80788f4a0b177445!2s55%20Fitchet%20Cl%2C%20Crawley%20RH11%207PY%2C%20UK!5e0!3m2!1sen!2suk!4v1652345678901!5m2!1sen!2suk" 
@@ -178,12 +178,12 @@
     <!-- FAQ Section -->
     <section class="py-16 bg-white">
       <div class="container mx-auto px-4">
-        <h2 class="text-2xl font-bold text-center mb-12 font-lexend">Frequently Asked Questions</h2>
+        <h2 class="text-2xl font-bold text-center mb-12 font-sora">Frequently Asked Questions</h2>
         
         <div class="max-w-3xl mx-auto space-y-6">
           <!-- FAQ Item 1 -->
           <div class="bg-gray-50 rounded-lg p-6">
-            <h3 class="text-lg font-semibold mb-2 font-lexend">How do I book a taxi?</h3>
+            <h3 class="text-lg font-semibold mb-2 font-sora">How do I book a taxi?</h3>
             <p class="text-gray-600 font-inter">
               You can book a taxi through our website, by calling our 24/7 booking line, or by sending us an email.
               For the quickest service, we recommend booking online or by phone.
@@ -192,7 +192,7 @@
           
           <!-- FAQ Item 2 -->
           <div class="bg-gray-50 rounded-lg p-6">
-            <h3 class="text-lg font-semibold mb-2 font-lexend">What payment methods do you accept?</h3>
+            <h3 class="text-lg font-semibold mb-2 font-sora">What payment methods do you accept?</h3>
             <p class="text-gray-600 font-inter">
               We accept all major credit and debit cards, cash payments, and corporate account billing.
               Card payments can be made securely online, through our app, or directly to the driver.
@@ -201,7 +201,7 @@
           
           <!-- FAQ Item 3 -->
           <div class="bg-gray-50 rounded-lg p-6">
-            <h3 class="text-lg font-semibold mb-2 font-lexend">How far in advance should I book?</h3>
+            <h3 class="text-lg font-semibold mb-2 font-sora">How far in advance should I book?</h3>
             <p class="text-gray-600 font-inter">
               For airport transfers and wheelchair accessible vehicles, we recommend booking at least 24 hours in advance.
               However, we can often accommodate last-minute bookings depending on availability.
@@ -210,7 +210,7 @@
           
           <!-- FAQ Item 4 -->
           <div class="bg-gray-50 rounded-lg p-6">
-            <h3 class="text-lg font-semibold mb-2 font-lexend">What if my flight is delayed?</h3>
+            <h3 class="text-lg font-semibold mb-2 font-sora">What if my flight is delayed?</h3>
             <p class="text-gray-600 font-inter">
               Don't worry! We monitor all flight arrivals in real-time. Your driver will adjust their schedule
               based on your actual arrival time, and there's no extra charge for flight delays.

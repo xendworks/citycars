@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  darkMode: 'class',
   content: [
     "./components/**/*.{js,vue,ts}",
     "./layouts/**/*.vue",
@@ -10,7 +11,7 @@ module.exports = {
     "./assets/**/*.{css,scss}"
   ],
   safelist: [
-    'font-lexend',
+    'font-sora',
     'font-inter',
     'inter-thin',
     'inter-light',
@@ -29,8 +30,9 @@ module.exports = {
         'city-gold': '#F5A623', // Gold accent color for branding
       },
       fontFamily: {
-        'lexend': ['Lexend', 'sans-serif'],
+        'sora': ['Sora', 'sans-serif'],
         'inter': ['Inter', 'sans-serif'],
+        'sora': ['Sora', 'sans-serif'],
       }
     },
   },

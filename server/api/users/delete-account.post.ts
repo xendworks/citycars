@@ -13,13 +13,11 @@ export default defineEventHandler(async (event) => {
       });
     }
 
-    console.log('[API] Deleting Firebase Auth user:', uid);
 
     // Delete the user from Firebase Authentication
     const auth = getAuth();
     await auth.deleteUser(uid);
 
-    console.log('[API] ✅ Successfully deleted Firebase Auth user:', uid);
 
     return {
       success: true,

@@ -16,7 +16,7 @@
   justify-content: space-between;
   align-items: center;
   position: fixed;
-  background-color: $white-color;
+  background-color: $white;
   font-family: $font-family-primary;
   height: 70px;
   padding: 0 $spacing-medium;
@@ -29,9 +29,9 @@
 
   .navbar-right {
     .chat-btn {
-      background-color: $primary-color;
+      background-color: $primary;
       font-family: $font-family-primary;
-      color: $white-color;
+      color: $white;
       border: none;
       padding: 10px 20px;
       border-radius: 5px;
@@ -40,7 +40,7 @@
       transition: background-color 0.3s ease;
 
       &:hover {
-        background-color: color.scale($primary-color, $lightness: -10%);
+        background-color: color.scale($primary, $lightness: -10%);
       }
     }
   }

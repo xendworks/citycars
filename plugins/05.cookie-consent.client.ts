@@ -144,23 +144,18 @@ export default defineNuxtPlugin(() => {
       // UK GDPR compliance settings
       onConsent: ({ cookie }) => {
         // This callback is called when consent is given or changed
-        console.log('Cookie consent updated:', cookie);
       },
       onChange: ({ changedCategories, changedServices }) => {
         // This callback is called when user changes preferences
-        console.log('Cookie preferences changed:', changedCategories, changedServices);
       },
       onModalReady: ({ modalName }) => {
         // This callback is called when the modal is ready
-        console.log('Cookie consent modal ready:', modalName);
       },
       onModalShow: ({ modalName }) => {
         // This callback is called when the modal is shown
-        console.log('Cookie consent modal shown:', modalName);
       },
       onModalHide: ({ modalName }) => {
         // This callback is called when the modal is hidden
-        console.log('Cookie consent modal hidden:', modalName);
       }
     });
   }

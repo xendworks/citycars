@@ -5,7 +5,7 @@
       <div class="grid grid-cols-1 md:grid-cols-3 gap-x-8 gap-y-10">
         <!-- Help Section -->
         <div>
-          <h3 class="text-xl font-lexend font-semibold mb-6 text-white border-b border-gray-700 pb-2">Let us help you</h3>
+          <h3 class="text-xl font-sora font-semibold mb-6 text-white border-b border-gray-700 pb-2">Let us help you</h3>
           <div class="space-y-4">
             <a href="#" class="flex items-center group">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-city-gold group-hover:text-white transition-colors" viewBox="0 0 20 20" fill="currentColor">
@@ -36,7 +36,7 @@
 
         <!-- Airport & Station Transfers -->
         <div>
-          <h3 class="text-xl font-lexend font-semibold mb-6 text-white border-b border-gray-700 pb-2">Popular Transfers</h3>
+          <h3 class="text-xl font-sora font-semibold mb-6 text-white border-b border-gray-700 pb-2">Popular Transfers</h3>
           <div class="grid grid-cols-2 gap-x-4 gap-y-2">
             <div>
               <h4 class="text-city-gold font-medium mb-3">Airports</h4>
@@ -63,7 +63,7 @@
 
         <!-- UK Wide Cities -->
         <div>
-          <h3 class="text-xl font-lexend font-semibold mb-6 text-white border-b border-gray-700 pb-2">UK Wide Service</h3>
+          <h3 class="text-xl font-sora font-semibold mb-6 text-white border-b border-gray-700 pb-2">UK Wide Service</h3>
           <div class="grid grid-cols-3 gap-x-2 gap-y-2 text-sm">
             <NuxtLink to="/london-to-gatwick-airport" class="hover:text-city-gold transition-colors">London</NuxtLink>
             <NuxtLink to="/birmingham-to-gatwick-airport" class="hover:text-city-gold transition-colors">Birmingham</NuxtLink>
@@ -81,7 +81,7 @@
         </div>
       </div>
       <div class="mt-6 bg-gray-800 bg-opacity-30 p-4 rounded-lg w-full">
-            <h4 class="text-city-gold font-lexend font-medium mb-2 flex items-center">
+            <h4 class="text-city-gold font-sora font-medium mb-2 flex items-center">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
                 <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
               </svg>
@@ -96,7 +96,7 @@
       <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
         <!-- Why Choose Us -->
         <div>
-          <h3 class="text-xl font-lexend font-semibold mb-4">Why ride with City Cars?</h3>
+          <h3 class="text-xl font-sora font-semibold mb-4">Why ride with City Cars?</h3>
           <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div class="flex items-start">
               <div class="bg-city-gold bg-opacity-20 p-2 rounded-full mr-3 flex-shrink-0">
@@ -105,7 +105,7 @@
                 </svg>
               </div>
               <div class="min-w-0">
-                <h4 class="font-lexend font-medium text-white whitespace-nowrap">Competitive Pricing</h4>
+                <h4 class="font-sora font-medium text-white whitespace-nowrap">Competitive Pricing</h4>
                 <p class="text-sm text-gray-300 mt-1">Great value, affordable rates.</p>
               </div>
             </div>
@@ -116,7 +116,7 @@
                 </svg>
               </div>
               <div class="min-w-0">
-                <h4 class="font-lexend font-medium text-white whitespace-nowrap">Easy Booking</h4>
+                <h4 class="font-sora font-medium text-white whitespace-nowrap">Easy Booking</h4>
                 <p class="text-sm text-gray-300 mt-1">Fast online bookings.</p>
               </div>
             </div>
@@ -127,7 +127,7 @@
                 </svg>
               </div>
               <div class="min-w-0">
-                <h4 class="font-lexend font-medium text-white whitespace-nowrap">Professional Drivers</h4>
+                <h4 class="font-sora font-medium text-white whitespace-nowrap">Professional Drivers</h4>
                 <p class="text-sm text-gray-300 mt-1">Expert, safe journey.</p>
               </div>
             </div>
@@ -138,7 +138,7 @@
                 </svg>
               </div>
               <div class="min-w-0">
-                <h4 class="font-lexend font-medium text-white whitespace-nowrap">Safe & Secure</h4>
+                <h4 class="font-sora font-medium text-white whitespace-nowrap">Safe & Secure</h4>
                 <p class="text-sm text-gray-300 mt-1">Your safety is our priority.</p>
               </div>
             </div>
@@ -148,7 +148,7 @@
         <!-- Contact Information -->
         <div class="flex flex-col justify-between">
           <div>
-            <h3 class="text-xl font-lexend font-semibold mb-4">Contact Information</h3>
+            <h3 class="text-xl font-sora font-semibold mb-4">Contact Information</h3>
             <ul class="space-y-3">
               <li class="flex items-start">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-city-gold" viewBox="0 0 20 20" fill="currentColor">
@@ -193,7 +193,7 @@
       <div class="flex flex-col md:flex-row justify-between items-center">
         <!-- Logo & Copyright -->
         <div class="flex flex-col items-center md:items-start mb-6 md:mb-0">
-          <div class="text-2xl font-bold font-lexend mb-2">
+          <div class="text-2xl font-bold font-sora mb-2">
             <span class="text-white">CITY</span>
             <span class="text-city-gold">CARS</span>
           </div>

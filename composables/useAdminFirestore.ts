@@ -1,4 +1,4 @@
-import { getFirestore, collection, getDocs, doc, updateDoc, addDoc, deleteDoc, query, where, orderBy, limit, Timestamp } from 'firebase/firestore';
+import { getFirestore, collection, getDocs, getDoc, doc, updateDoc, setDoc, addDoc, deleteDoc, query, where, orderBy, limit, Timestamp, getCountFromServer, startAfter, onSnapshot, serverTimestamp } from 'firebase/firestore';
 
 export const useAdminFirestore = () => {
   if (process.server) {
@@ -17,15 +17,106 @@ export const useAdminFirestore = () => {
   // BOOKINGS
   // =====================================
   
+  const getCollectionCount = async (collectionName: string, filters?: any) => {
+    try {
+      let q = query(collection(db, collectionName));
+      
+      if (filters?.status) {
+        q = query(q, where('status', '==', filters.status));
+      }
+      
+      const snapshot = await getCountFromServer(q);
+      return snapshot.data().count;
+    } catch (error) {
+      console.error(`[ADMIN] Error counting ${collectionName}:`, error);
+      return 0;
+    }
+  };
+
+  const getBookingsPage = async (page: number, pageSize: number, filters?: any) => {
+    try {
+      
+      let baseQuery = query(collection(db, 'bookings'));
+      let sortField = filters?.searchQuery ? '' : (filters?.time ? 'pickupDateTime' : 'createdAt');
+      
+      // Handle Search (Server-side prefix search)
+      if (filters?.searchQuery) {
+        const queryTerm = filters.searchQuery.trim();
+        let searchField = 'bookingReference'; // Default
+        
+        if (filters.searchFilter === 'customer') searchField = 'userName';
+        else if (filters.searchFilter === 'phone') searchField = 'userPhone';
+        else if (filters.searchFilter === 'email') searchField = 'userEmail';
+        
+        // When searching, we must sort by the searched field first
+        baseQuery = query(
+          baseQuery, 
+          where(searchField, '>=', queryTerm), 
+          where(searchField, '<=', queryTerm + '\uf8ff'),
+          orderBy(searchField, 'asc')
+        );
+      } else {
+        // Handle Time Filtering - Only if NOT searching (to avoid complex index requirements)
+        if (filters?.time) {
+          const now = new Date();
+          const startOfToday = new Date(now.setHours(0, 0, 0, 0)).toISOString();
+          const endOfToday = new Date(now.setHours(23, 59, 59, 999)).toISOString();
+
+          if (filters.time === 'today') {
+            baseQuery = query(baseQuery, where('pickupDateTime', '>=', startOfToday), where('pickupDateTime', '<=', endOfToday));
+          } else if (filters.time === 'past') {
+            baseQuery = query(baseQuery, where('pickupDateTime', '<', startOfToday));
+          } else if (filters.time === 'future') {
+            baseQuery = query(baseQuery, where('pickupDateTime', '>', endOfToday));
+          }
+        }
+        
+        // Add default ordering
+        baseQuery = query(baseQuery, orderBy(sortField, filters?.time === 'future' ? 'asc' : 'desc'));
+      }
+
+      if (filters?.status) {
+        baseQuery = query(baseQuery, where('status', '==', filters.status));
+      }
+
+      // Fetch total count for these filters
+      const countSnapshot = await getCountFromServer(baseQuery);
+      const totalCount = countSnapshot.data().count;
+
+      // Fetch data for the current view
+      const totalToFetch = page * pageSize;
+      const limitedQuery = query(baseQuery, limit(totalToFetch));
+      const snapshot = await getDocs(limitedQuery);
+      
+      const allDocs = snapshot.docs;
+      const startIdx = (page - 1) * pageSize;
+      const pageDocs = allDocs.slice(startIdx, startIdx + pageSize);
+      
+      const items = pageDocs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      
+      return {
+        items,
+        total: totalCount
+      };
+    } catch (error: any) {
+      if (error.message?.includes('requires an index')) {
+        console.error('[ADMIN] 🛠️ Index required for this search/filter combination! Click the link in the error log.');
+      }
+      console.error('[ADMIN] ❌ Error loading bookings page:', error);
+      throw error;
+    }
+  };
+
   const getAllBookings = async (filters?: any) => {
     try {
-      console.log('[ADMIN] Fetching bookings with filters:', filters);
       
       let q = query(collection(db, 'bookings'), orderBy('createdAt', 'desc'), limit(100));
       
-      // Apply status filter
       if (filters?.status) {
-        q = query(collection(db, 'bookings'), where('status', '==', filters.status), orderBy('createdAt', 'desc'), limit(100));
+        q = query(q, where('status', '==', filters.status));
       }
       
       const snapshot = await getDocs(q);
@@ -34,7 +125,6 @@ export const useAdminFirestore = () => {
         ...doc.data()
       }));
       
-      console.log('[ADMIN] ✅ Loaded', bookings.length, 'bookings');
       return bookings;
     } catch (error: any) {
       console.error('[ADMIN] ❌ Error loading bookings:', error);
@@ -44,16 +134,63 @@ export const useAdminFirestore = () => {
 
   const updateBookingStatus = async (bookingId: string, status: string) => {
     try {
-      console.log('[ADMIN] Updating booking status:', bookingId, status);
       const bookingRef = doc(db, 'bookings', bookingId);
       await updateDoc(bookingRef, {
         status,
         updatedAt: Timestamp.now()
       });
-      console.log('[ADMIN] ✅ Booking status updated');
       return { success: true };
     } catch (error: any) {
       console.error('[ADMIN] ❌ Error updating booking:', error);
+      throw error;
+    }
+  };
+
+  const assignDriverToBooking = async (bookingId: string, driverId: string) => {
+    try {
+      const bookingRef = doc(db, 'bookings', bookingId);
+      const driverRef = doc(db, 'drivers', driverId);
+      const driverSnap = await getDoc(driverRef);
+      
+      if (!driverSnap.exists()) {
+        throw new Error('Driver not found');
+      }
+      
+      const driverData = driverSnap.data();
+      
+      await updateDoc(bookingRef, {
+        driverId: driverId,
+        driverName: driverData.name || driverData.displayName || 'Unnamed Driver',
+        driverPhone: driverData.phone || driverData.phoneNumber || 'N/A',
+        status: 'confirmed', // Automatically confirm when driver is assigned
+        updatedAt: Timestamp.now()
+      });
+      
+      return { success: true };
+    } catch (error: any) {
+      console.error('[ADMIN] ❌ Error assigning driver:', error);
+      throw error;
+    }
+  };
+
+  const listenToActiveBookings = (callback: (bookings: any[]) => void) => {
+    try {
+      const q = query(
+        collection(db, 'bookings'), 
+        orderBy('updatedAt', 'desc'), 
+        limit(100)
+      );
+      return onSnapshot(q, (snapshot) => {
+        const bookings = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+        callback(bookings);
+      }, (error) => {
+        console.error('[ADMIN] ❌ Error in bookings listener:', error);
+      });
+    } catch (error: any) {
+      console.error('[ADMIN] ❌ Error setting up listener:', error);
       throw error;
     }
   };
@@ -64,7 +201,6 @@ export const useAdminFirestore = () => {
   
   const getAllDrivers = async () => {
     try {
-      console.log('[ADMIN] Fetching drivers...');
       const q = query(collection(db, 'drivers'), limit(100));
       const snapshot = await getDocs(q);
       const drivers = snapshot.docs.map(doc => ({
@@ -72,7 +208,6 @@ export const useAdminFirestore = () => {
         ...doc.data()
       }));
       
-      console.log('[ADMIN] ✅ Loaded', drivers.length, 'drivers');
       return drivers;
     } catch (error: any) {
       console.error('[ADMIN] ❌ Error loading drivers:', error);
@@ -80,9 +215,22 @@ export const useAdminFirestore = () => {
     }
   };
 
+  const getDriverById = async (driverId: string) => {
+    try {
+      const driverRef = doc(db, 'drivers', driverId);
+      const snap = await getDoc(driverRef);
+      if (snap.exists()) {
+        return { id: snap.id, ...snap.data() };
+      }
+      return null;
+    } catch (error: any) {
+      console.error('[ADMIN] ❌ Error fetching driver by ID:', error);
+      throw error;
+    }
+  };
+
   const addDriver = async (driverData: any) => {
     try {
-      console.log('[ADMIN] Adding driver:', driverData);
       const driversRef = collection(db, 'drivers');
       const docRef = await addDoc(driversRef, {
         ...driverData,
@@ -93,7 +241,6 @@ export const useAdminFirestore = () => {
         totalTrips: 0
       });
       
-      console.log('[ADMIN] ✅ Driver added with ID:', docRef.id);
       return { success: true, id: docRef.id };
     } catch (error: any) {
       console.error('[ADMIN] ❌ Error adding driver:', error);
@@ -103,16 +250,25 @@ export const useAdminFirestore = () => {
 
   const updateDriver = async (driverId: string, driverData: any) => {
     try {
-      console.log('[ADMIN] Updating driver:', driverId, driverData);
       const driverRef = doc(db, 'drivers', driverId);
       await updateDoc(driverRef, {
         ...driverData,
         updatedAt: Timestamp.now()
       });
-      console.log('[ADMIN] ✅ Driver updated');
       return { success: true };
     } catch (error: any) {
       console.error('[ADMIN] ❌ Error updating driver:', error);
+      throw error;
+    }
+  };
+
+  const deleteDriver = async (driverId: string) => {
+    try {
+      const driverRef = doc(db, 'drivers', driverId);
+      await deleteDoc(driverRef);
+      return { success: true };
+    } catch (error: any) {
+      console.error('[ADMIN] ❌ Error deleting driver:', error);
       throw error;
     }
   };
@@ -123,7 +279,6 @@ export const useAdminFirestore = () => {
   
   const getAllUsers = async () => {
     try {
-      console.log('[ADMIN] Fetching users...');
       const q = query(collection(db, 'users'), limit(100));
       const snapshot = await getDocs(q);
       const users = snapshot.docs.map(doc => ({
@@ -131,7 +286,6 @@ export const useAdminFirestore = () => {
         ...doc.data()
       }));
       
-      console.log('[ADMIN] ✅ Loaded', users.length, 'users');
       return users;
     } catch (error: any) {
       console.error('[ADMIN] ❌ Error loading users:', error);
@@ -145,35 +299,47 @@ export const useAdminFirestore = () => {
   
   const getAllOffers = async () => {
     try {
-      console.log('[ADMIN] Fetching offers...');
-      const q = query(collection(db, 'offers'), orderBy('createdAt', 'desc'), limit(50));
+      const q = query(collection(db, 'offers'), limit(50));
       const snapshot = await getDocs(q);
-      const offers = snapshot.docs.map(doc => ({
+      const offersList = snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
       }));
       
-      console.log('[ADMIN] ✅ Loaded', offers.length, 'offers');
-      return offers;
+      return offersList;
     } catch (error: any) {
       console.error('[ADMIN] ❌ Error loading offers:', error);
-      return []; // Return empty array if collection doesn't exist yet
+      throw error;
     }
   };
 
   const createOffer = async (offerData: any) => {
+    const { adminUser } = useAdminAuth();
     try {
-      console.log('[ADMIN] Creating offer:', offerData);
-      const offersRef = collection(db, 'offers');
-      const docRef = await addDoc(offersRef, {
-        ...offerData,
-        createdAt: Timestamp.now(),
-        updatedAt: Timestamp.now(),
-        usedCount: 0
-      });
       
-      console.log('[ADMIN] ✅ Offer created with ID:', docRef.id);
-      return { success: true, id: docRef.id };
+      const payload: any = {
+        title: offerData.title,
+        description: offerData.description,
+        code: offerData.code?.toUpperCase(),
+        discountPercent: Number(offerData.discountPercent),
+        isActive: Boolean(offerData.isActive),
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+        createdBy: adminUser.value?.id || 'system',
+        usedCount: 0
+      };
+
+      if (offerData.validUntil) {
+        const date = new Date(offerData.validUntil);
+        if (!isNaN(date.getTime())) {
+          payload.validUntil = Timestamp.fromDate(date);
+        }
+      }
+
+      const offerDocRef = doc(db, 'offers', payload.code);
+      await setDoc(offerDocRef, payload);
+      
+      return { success: true, id: payload.code };
     } catch (error: any) {
       console.error('[ADMIN] ❌ Error creating offer:', error);
       throw error;
@@ -181,14 +347,28 @@ export const useAdminFirestore = () => {
   };
 
   const updateOffer = async (offerId: string, offerData: any) => {
+    const { adminUser } = useAdminAuth();
     try {
-      console.log('[ADMIN] Updating offer:', offerId, offerData);
+      
+      const payload: any = {
+        title: offerData.title,
+        description: offerData.description,
+        code: offerId,
+        discountPercent: Number(offerData.discountPercent),
+        isActive: Boolean(offerData.isActive),
+        updatedAt: serverTimestamp(),
+        updatedBy: adminUser.value?.id || 'system'
+      };
+
+      if (offerData.validUntil) {
+        const date = new Date(offerData.validUntil);
+        if (!isNaN(date.getTime())) {
+          payload.validUntil = Timestamp.fromDate(date);
+        }
+      }
+
       const offerRef = doc(db, 'offers', offerId);
-      await updateDoc(offerRef, {
-        ...offerData,
-        updatedAt: Timestamp.now()
-      });
-      console.log('[ADMIN] ✅ Offer updated');
+      await updateDoc(offerRef, payload);
       return { success: true };
     } catch (error: any) {
       console.error('[ADMIN] ❌ Error updating offer:', error);
@@ -198,16 +378,25 @@ export const useAdminFirestore = () => {
 
   const toggleOfferStatus = async (offerId: string, isActive: boolean) => {
     try {
-      console.log('[ADMIN] Toggling offer status:', offerId, isActive);
       const offerRef = doc(db, 'offers', offerId);
       await updateDoc(offerRef, {
         isActive,
-        updatedAt: Timestamp.now()
+        updatedAt: serverTimestamp()
       });
-      console.log('[ADMIN] ✅ Offer status toggled');
       return { success: true };
     } catch (error: any) {
       console.error('[ADMIN] ❌ Error toggling offer:', error);
+      throw error;
+    }
+  };
+
+  const deleteOffer = async (offerId: string) => {
+    try {
+      const offerRef = doc(db, 'offers', offerId);
+      await deleteDoc(offerRef);
+      return { success: true };
+    } catch (error: any) {
+      console.error('[ADMIN] ❌ Error deleting offer:', error);
       throw error;
     }
   };
@@ -218,7 +407,6 @@ export const useAdminFirestore = () => {
   
   const getDashboardStats = async () => {
     try {
-      console.log('[ADMIN] Fetching dashboard stats...');
       
       // Get all bookings
       const bookingsSnapshot = await getDocs(collection(db, 'bookings'));
@@ -270,27 +458,229 @@ export const useAdminFirestore = () => {
     }
   };
 
+  const globalSearch = async (searchTerm: string) => {
+    if (!searchTerm || searchTerm.length < 2) return [];
+    
+    const results: any[] = [];
+    const term = searchTerm.trim();
+    
+    try {
+      // 1. Search Bookings (by Reference - usually starts with CTY)
+      // We try both uppercase and original term
+      const bookingRef = term.toUpperCase().startsWith('CTY') ? term.toUpperCase() : `CTY${term.toUpperCase()}`;
+      const bookingsQ = query(
+        collection(db, 'bookings'),
+        where('bookingReference', '>=', term.toUpperCase()),
+        where('bookingReference', '<=', term.toUpperCase() + '\uf8ff'),
+        limit(5)
+      );
+
+      // 2. Search Drivers (by Name)
+      const driversQ = query(
+        collection(db, 'drivers'),
+        where('name', '>=', term),
+        where('name', '<=', term + '\uf8ff'),
+        limit(5)
+      );
+
+      // 3. Search Users (by Name)
+      const usersQ = query(
+        collection(db, 'users'),
+        where('displayName', '>=', term),
+        where('displayName', '<=', term + '\uf8ff'),
+        limit(5)
+      );
+
+      const [bookingsSnap, driversSnap, usersSnap] = await Promise.all([
+        getDocs(bookingsQ),
+        getDocs(driversQ),
+        getDocs(usersQ)
+      ]);
+
+      bookingsSnap.forEach(doc => results.push({ 
+        type: 'booking', 
+        id: doc.id, 
+        label: doc.data().bookingReference,
+        sublabel: doc.data().userName,
+        ...doc.data() 
+      }));
+      
+      driversSnap.forEach(doc => results.push({ 
+        type: 'driver', 
+        id: doc.id, 
+        label: doc.data().name || doc.data().displayName,
+        sublabel: 'Driver',
+        ...doc.data() 
+      }));
+      
+      usersSnap.forEach(doc => results.push({ 
+        type: 'user', 
+        id: doc.id, 
+        label: doc.data().displayName || doc.data().name,
+        sublabel: 'Customer',
+        ...doc.data() 
+      }));
+
+      return results;
+    } catch (error) {
+      console.error('[SEARCH] ❌ Error in global search:', error);
+      return [];
+    }
+  };
+
   return {
     // Bookings
     getAllBookings,
+    getBookingsPage,
+    getCollectionCount,
     updateBookingStatus,
+    assignDriverToBooking,
+    listenToActiveBookings,
     
     // Drivers
     getAllDrivers,
+    getDriverById,
     addDriver,
     updateDriver,
+    deleteDriver,
     
     // Users
     getAllUsers,
+    
+    // Global Search
+    globalSearch,
     
     // Offers
     getAllOffers,
     createOffer,
     updateOffer,
     toggleOfferStatus,
+    deleteOffer,
     
     // Dashboard
     getDashboardStats,
+    
+    // System Settings
+    getSystemSettings: async () => {
+      try {
+        const docRef = doc(db, 'config', 'system');
+        const snap = await getDoc(docRef);
+        if (snap.exists()) {
+          return snap.data();
+        }
+        return null;
+      } catch (error) {
+        console.error('[ADMIN] Error fetching system settings:', error);
+        return null;
+      }
+    },
+    updateSystemSettings: async (settings: any) => {
+      try {
+        const docRef = doc(db, 'config', 'system');
+        await setDoc(docRef, {
+          ...settings,
+          updatedAt: Timestamp.now()
+        }, { merge: true });
+        return { success: true };
+      } catch (error) {
+        console.error('[ADMIN] Error updating system settings:', error);
+        throw error;
+      }
+    },
+    
+    // Roles & Permissions Master
+    getAllRoles: async () => {
+      try {
+        const snap = await getDocs(collection(db, 'roles'));
+        return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      } catch (error) {
+        console.error('[ADMIN] Error fetching roles:', error);
+        return [];
+      }
+    },
+    upsertRole: async (roleId: string, permissions: any) => {
+      try {
+        const roleRef = doc(db, 'roles', roleId);
+        await setDoc(roleRef, {
+          ...permissions,
+          updatedAt: Timestamp.now()
+        }, { merge: true });
+        return { success: true };
+      } catch (error) {
+        console.error('[ADMIN] Error saving role:', error);
+        throw error;
+      }
+    },
+    deleteRole: async (roleId: string) => {
+      try {
+        await deleteDoc(doc(db, 'roles', roleId));
+        return { success: true };
+      } catch (error) {
+        console.error('[ADMIN] Error deleting role:', error);
+        throw error;
+      }
+    },
+
+    // Emergency Cleanup
+    cleanupDatabase: async (keepRef: string) => {
+      try {
+        console.log('[ADMIN] 🧹 Starting Emergency Database Cleanup...');
+        
+        const collectionsToClear = ['bookings', 'drivers', 'offers', 'quotes'];
+        const results = { deleted: 0, skipped: 0 };
+        
+        for (const colName of collectionsToClear) {
+          const snap = await getDocs(collection(db, colName));
+          console.log(`[ADMIN] Cleaning collection: ${colName} (${snap.size} docs)`);
+          
+          for (const docSnap of snap.docs) {
+            const data = docSnap.data();
+            if (colName === 'bookings' && data.bookingReference === keepRef) {
+              console.log(`[ADMIN] ℹ️ Keeping booking: ${keepRef}`);
+              results.skipped++;
+              continue;
+            }
+            await deleteDoc(doc(db, colName, docSnap.id));
+            results.deleted++;
+          }
+        }
+        
+        console.log('[ADMIN] ✅ Cleanup complete:', results);
+        return { success: true, ...results };
+      } catch (error: any) {
+        console.error('[ADMIN] ❌ Cleanup failed:', error);
+        throw error;
+      }
+    },
+    
+    // Admin User Hub
+    upsertAdminUser: async (uid: string | null, userData: any) => {
+      try {
+        if (!uid) {
+          // If no UID (creating new from scratch via email lookup or invite)
+          // We usually use addDoc for profile if UID isn't known yet, 
+          // but for auth purposes, UID is required.
+          // For now, we'll assume uid is provided or we generate a placeholder
+          const userRef = collection(db, 'users');
+          const docRef = await addDoc(userRef, {
+            ...userData,
+            createdAt: Timestamp.now(),
+            updatedAt: Timestamp.now()
+          });
+          return { success: true, id: docRef.id };
+        } else {
+          const userRef = doc(db, 'users', uid);
+          await setDoc(userRef, {
+            ...userData,
+            updatedAt: Timestamp.now()
+          }, { merge: true });
+          return { success: true };
+        }
+      } catch (error) {
+        console.error('[ADMIN] Error upserting user:', error);
+        throw error;
+      }
+    },
     
     // Direct DB access
     db

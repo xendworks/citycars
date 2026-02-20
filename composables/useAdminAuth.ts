@@ -8,6 +8,7 @@ export interface AdminUser {
   id: string;
   email: string;
   name: string;
+  photoURL?: string;
   role: AdminRole;
   permissions: {
     canViewBookings: boolean;
@@ -108,28 +109,32 @@ const rolePermissions: Record<AdminRole, AdminUser['permissions']> = {
 const adminUser = ref<AdminUser | null>(null);
 const isAuthenticated = ref(false);
 const isLoading = ref(true);
+let isInitialized = false;
 
 export const useAdminAuth = () => {
   const { $firebaseAuth } = useNuxtApp();
+  const auth = $firebaseAuth as any; // Cast to bypass linting issues with unknown type
   
-  // Initialize auth state listener
-  if (process.client && $firebaseAuth) {
-    onAuthStateChanged($firebaseAuth, async (firebaseUser) => {
-      isLoading.value = true;
+  // Initialize auth state listener exactly once
+  if (process.client && auth && !isInitialized) {
+    isInitialized = true;
+    
+    onAuthStateChanged(auth, async (firebaseUser) => {
+      // Don't set isLoading = true here because it might cause flickers on subsequent checks
+      // only use isLoading for the initial boot up
       
       if (firebaseUser) {
         try {
-          // Fetch user profile from Firestore to get role
           const { getUserProfile } = useFirestore();
           const userProfile = await getUserProfile(firebaseUser.uid);
           
-          // Check if user has an admin role
-          const adminRole = userProfile?.role as AdminRole;
+          const adminRole = (userProfile?.role as string)?.trim().toLowerCase() as AdminRole;
           if (adminRole && ['admin', 'super_admin', 'manager', 'operator'].includes(adminRole)) {
             const user: AdminUser = {
               id: firebaseUser.uid,
               email: firebaseUser.email || '',
               name: userProfile?.displayName || firebaseUser.displayName || 'Admin',
+              photoURL: userProfile?.photoURL || firebaseUser.photoURL || undefined,
               role: adminRole,
               permissions: rolePermissions[adminRole],
             };
@@ -138,11 +143,10 @@ export const useAdminAuth = () => {
             isAuthenticated.value = true;
             console.log('[ADMIN AUTH] ✅ Admin user authenticated:', adminRole);
           } else {
-            // User exists but doesn't have admin role
             console.warn('[ADMIN AUTH] ❌ User does not have admin role');
             adminUser.value = null;
             isAuthenticated.value = false;
-            await signOut($firebaseAuth);
+            await signOut(auth);
           }
         } catch (error) {
           console.error('[ADMIN AUTH] ❌ Error fetching user profile:', error);
@@ -159,7 +163,7 @@ export const useAdminAuth = () => {
   }
 
   const loginAdmin = async (email: string, password: string, remember: boolean = false) => {
-    if (!process.client || !$firebaseAuth) {
+    if (!process.client || !auth) {
       throw new Error('Firebase Auth not available');
     }
 
@@ -167,7 +171,7 @@ export const useAdminAuth = () => {
       console.log('[ADMIN AUTH] Attempting login for:', email);
       
       // Sign in with Firebase Auth
-      const userCredential = await signInWithEmailAndPassword($firebaseAuth, email, password);
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
       console.log('[ADMIN AUTH] ✅ Firebase Auth successful');
       
       // Fetch user profile to check role
@@ -178,7 +182,7 @@ export const useAdminAuth = () => {
       
       // Verify user has admin role
       if (!adminRole || !['admin', 'super_admin', 'manager', 'operator'].includes(adminRole)) {
-        await signOut($firebaseAuth);
+        await signOut(auth);
         throw new Error('You do not have admin access');
       }
       
@@ -189,6 +193,7 @@ export const useAdminAuth = () => {
         id: userCredential.user.uid,
         email: userCredential.user.email || '',
         name: userProfile?.displayName || userCredential.user.displayName || 'Admin',
+        photoURL: userProfile?.photoURL || userCredential.user.photoURL || undefined,
         role: adminRole,
         permissions: rolePermissions[adminRole],
       };
@@ -214,12 +219,12 @@ export const useAdminAuth = () => {
   };
 
   const logoutAdmin = async () => {
-    if (!process.client || !$firebaseAuth) {
+    if (!process.client || !auth) {
       return;
     }
 
     try {
-      await signOut($firebaseAuth);
+      await signOut(auth);
       adminUser.value = null;
       isAuthenticated.value = false;
       console.log('[ADMIN AUTH] ✅ Logged out successfully');

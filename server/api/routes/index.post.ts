@@ -76,7 +76,6 @@ export default defineEventHandler(async (event) => {
     const docRef = await collections.routes().add(routeData);
     const snapshot = await docRef.get();
 
-    console.log('[API] ✅ Route created successfully:', slug);
 
     return {
       success: true,

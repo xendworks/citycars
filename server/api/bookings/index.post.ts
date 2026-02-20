@@ -58,7 +58,6 @@ export default defineEventHandler(async (event) => {
   try {
     const body = await readBody<CreateBookingRequest>(event);
 
-    console.log('[API] Received booking request:', body);
 
     // Validate required fields
     if (!body.pickupAddress || !body.dropoffAddress || !body.pickupDateTime) {
@@ -136,12 +135,10 @@ export default defineEventHandler(async (event) => {
       completedAt: null
     };
 
-    console.log('[API] Saving booking to Firestore:', bookingData);
 
     const docRef = await collections.bookings().add(bookingData);
     const snapshot = await docRef.get();
 
-    console.log('[API] ✅ Booking saved successfully with ID:', snapshot.id);
 
     return {
       success: true,
