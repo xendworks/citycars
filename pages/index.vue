@@ -21,7 +21,7 @@
         <div class="absolute bottom-10 right-10 w-32 h-32 bg-amber-300 rounded-full opacity-20 animate-ping"></div>
         <div class="absolute top-1/2 left-1/4 w-16 h-16 bg-yellow-200 rounded-full opacity-40 animate-bounce"></div>
 
-        <div class="container-fluid mx-auto px-4 text-center relative z-10">
+        <div class="container mx-auto px-4 text-center relative z-10">
           <!-- Animated Heading -->
           <h1 class="text-2xl md:text-3xl lg:text-4xl font-bold mb-4 md:mb-6 text-gray-900 animate-fade-in-up">
             Book Wheel Chair Taxis from and to Gatwick
@@ -526,7 +526,7 @@
 
       <!-- Call to Action Section -->
       <section class="py-12 bg-amber-100">
-        <div class="container-fluid mx-auto px-4 text-center">
+        <div class="container mx-auto px-4 text-center">
           <h2 class="text-2xl font-bold mb-6 font-sora">Ready to Book Your Taxi?</h2>
           <p class="text-gray-700 mb-8 max-w-3xl mx-auto font-inter">
             Book your taxi now for reliable, comfortable, and affordable transportation from Gatwick Airport.

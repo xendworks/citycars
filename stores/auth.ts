@@ -20,7 +20,13 @@ interface UserProfile {
   email: string | null;
   displayName: string | null;
   phoneNumber: string | null;
+  companyName?: string | null;
+  emergencyContactName?: string | null;
+  emergencyContactPhone?: string | null;
+  specialRequirements?: string | null;
   photoURL: string | null;
+  preferredPickupLocations?: string[];
+  preferredDropoffLocations?: string[];
 }
 
 // Helper function to get error messages
@@ -99,7 +105,13 @@ export const useAuthStore = defineStore('auth', {
                   email: firestoreProfile.email || user.email,
                   displayName: firestoreProfile.displayName || user.displayName,
                   phoneNumber: firestoreProfile.phoneNumber || user.phoneNumber,
-                  photoURL: firestoreProfile.photoURL || user.photoURL
+                  companyName: firestoreProfile.companyName || null,
+                  emergencyContactName: firestoreProfile.emergencyContactName || null,
+                  emergencyContactPhone: firestoreProfile.emergencyContactPhone || null,
+                  specialRequirements: firestoreProfile.specialRequirements || null,
+                  photoURL: firestoreProfile.photoURL || user.photoURL,
+                  preferredPickupLocations: firestoreProfile.preferredPickupLocations || [],
+                  preferredDropoffLocations: firestoreProfile.preferredDropoffLocations || []
                 };
               } else {
               }

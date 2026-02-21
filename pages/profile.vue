@@ -150,122 +150,156 @@
             <h2 class="text-2xl font-bold text-gray-900 mb-6">My Bookings</h2>
 
             <!-- Loading State -->
-            <div v-if="loadingBookings" class="text-center py-16">
-              <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600"></div>
-              <p class="mt-4 text-gray-600">Loading your bookings...</p>
-            </div>
+            <AdminLoader v-if="loadingBookings" size="lg" text="Loading your bookings..." />
 
-            <!-- No Bookings -->
-            <div v-else-if="userBookings.length === 0" class="text-center py-16">
-              <svg class="mx-auto h-16 w-16 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-              </svg>
-              <h3 class="mt-4 text-lg font-medium text-gray-900">No bookings yet</h3>
-              <p class="mt-2 text-sm text-gray-500">Start booking your rides to see them here.</p>
-              <div class="mt-6">
-                <NuxtLink to="/"
-                  class="inline-flex items-center px-6 py-3 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-semibold transition-colors">
-                  Book a Ride Now
-                </NuxtLink>
+            <template v-else>
+              <!-- Segmented Control for Booking Tabs -->
+              <div class="mb-6 overflow-x-auto pb-1">
+                <span class="isolate inline-flex rounded-md shadow-sm dark:shadow-none">
+                  <button type="button" @click="activeBookingTab = 'upcoming'" :class="[
+                    'relative inline-flex items-center rounded-l-md px-4 py-2 text-sm font-semibold ring-1 ring-inset ring-gray-300 focus:z-10 transition-colors',
+                    activeBookingTab === 'upcoming'
+                      ? 'bg-amber-50 text-amber-700 ring-amber-500 z-10 hover:bg-amber-100'
+                      : 'bg-white text-gray-900 hover:bg-gray-50'
+                  ]">Upcoming</button>
+                  <button type="button" @click="activeBookingTab = 'in-progress'" :class="[
+                    'relative -ml-px inline-flex items-center px-4 py-2 text-sm font-semibold ring-1 ring-inset ring-gray-300 focus:z-10 transition-colors',
+                    activeBookingTab === 'in-progress'
+                      ? 'bg-amber-50 text-amber-700 ring-amber-500 z-10 hover:bg-amber-100'
+                      : 'bg-white text-gray-900 hover:bg-gray-50'
+                  ]">In Progress</button>
+                  <button type="button" @click="activeBookingTab = 'completed'" :class="[
+                    'relative -ml-px inline-flex items-center px-4 py-2 text-sm font-semibold ring-1 ring-inset ring-gray-300 focus:z-10 transition-colors',
+                    activeBookingTab === 'completed'
+                      ? 'bg-amber-50 text-amber-700 ring-amber-500 z-10 hover:bg-amber-100'
+                      : 'bg-white text-gray-900 hover:bg-gray-50'
+                  ]">Completed</button>
+                  <button type="button" @click="activeBookingTab = 'cancelled'" :class="[
+                    'relative -ml-px inline-flex items-center rounded-r-md px-4 py-2 text-sm font-semibold ring-1 ring-inset ring-gray-300 focus:z-10 transition-colors',
+                    activeBookingTab === 'cancelled'
+                      ? 'bg-amber-50 text-amber-700 ring-amber-500 z-10 hover:bg-amber-100'
+                      : 'bg-white text-gray-900 hover:bg-gray-50'
+                  ]">Cancelled</button>
+                </span>
               </div>
-            </div>
 
-            <!-- Bookings List -->
-            <div v-else class="space-y-4">
-              <div v-for="booking in userBookings" :key="booking.id"
-                class="bg-white rounded-xl border border-gray-100 shadow-sm hover:border-amber-200 hover:shadow-md transition-all p-5 flex flex-col lg:flex-row lg:items-center gap-5 lg:gap-8 group">
-
-                <!-- Status & Dates (Left) -->
-                <div
-                  class="w-full lg:w-40 shrink-0 flex flex-row lg:flex-col justify-between lg:justify-start items-center lg:items-start border-b lg:border-none border-gray-100 pb-4 lg:pb-0">
-                  <div class="flex flex-col items-start gap-1">
-                    <span
-                      class="inline-flex items-center px-3 py-1 lg:px-2 lg:py-0.5 rounded-full lg:rounded text-[11px] lg:text-[10px] font-black tracking-widest uppercase"
-                      :class="{
-                        'bg-amber-100 text-amber-700': booking.status === 'pending',
-                        'bg-green-100 text-green-700': booking.status === 'confirmed',
-                        'bg-blue-100 text-blue-700': booking.status === 'in-progress',
-                        'bg-gray-200 text-gray-600': booking.status === 'completed',
-                        'bg-red-100 text-red-700': booking.status === 'cancelled'
-                      }">
-                      {{ booking.status?.toUpperCase() || 'PENDING' }}
-                    </span>
-                    <div class="font-mono font-bold text-gray-900 text-[14px] lg:text-[13px] tracking-widest mt-1">{{
-                      booking.bookingReference }}</div>
-                    <div
-                      class="text-[10px] text-gray-400 hidden lg:block uppercase tracking-widest font-semibold mt-0.5">
-                      Booked {{ formatDate(booking.createdAt) }}</div>
-                  </div>
-
-                  <div class="lg:hidden text-right">
-                    <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-0.5">Fare</p>
-                    <p class="text-xl font-black text-amber-500 leading-none">£{{ booking.totalFare?.toFixed(2) ||
-                      '0.00' }}</p>
-                  </div>
+              <!-- No Bookings -->
+              <div v-if="filteredBookings.length === 0" class="text-center py-16">
+                <svg class="mx-auto h-16 w-16 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>
+                <h3 class="mt-4 text-lg font-medium text-gray-900">No {{ activeBookingTab }} bookings</h3>
+                <p class="mt-2 text-sm text-gray-500">Start booking your rides to see them here.</p>
+                <div class="mt-6" v-if="activeBookingTab === 'upcoming'">
+                  <NuxtLink to="/"
+                    class="inline-flex items-center px-6 py-3 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-semibold transition-colors">
+                    Book a Ride Now
+                  </NuxtLink>
                 </div>
+              </div>
 
-                <!-- Route Details (Middle) -->
-                <div class="flex-1 flex flex-col lg:flex-row gap-5 lg:gap-6 lg:items-center relative">
+              <!-- Bookings List -->
+              <div v-else class="space-y-4">
+                <div v-for="booking in filteredBookings" :key="booking.id"
+                  class="bg-white rounded-xl border border-gray-200 shadow-sm hover:border-amber-200 hover:shadow-md transition-all p-5 flex flex-col lg:flex-row lg:items-center gap-5 lg:gap-8 group">
 
-                  <!-- Pickup -->
-                  <div class="flex-1 relative pl-6 lg:pl-0">
-                    <div class="absolute left-[11px] top-2 bottom-2 w-0.5 bg-gray-200 lg:hidden"></div>
-                    <div class="relative lg:static">
-                      <div
-                        class="absolute -left-6 top-1 w-3 h-3 bg-white border-[3px] border-blue-500 rounded-full shadow-sm lg:hidden mt-0.5">
-                      </div>
-                      <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 mt-1 lg:mt-0">Pick up
-                        <span class="text-blue-600 ml-1 truncate">{{ formatDateTime(booking.pickupDateTime) }}</span>
-                      </p>
-                      <p class="text-sm font-semibold text-gray-900 leading-snug line-clamp-2"
-                        :title="booking.pickupAddress">{{ booking.pickupAddress }}</p>
-                    </div>
-                  </div>
-
-                  <!-- Arrow (Desktop) -->
+                  <!-- Status & Dates (Left) -->
                   <div
-                    class="hidden lg:flex w-8 h-8 rounded-full bg-slate-50 items-center justify-center shrink-0 border border-gray-100 text-gray-400 shadow-sm">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                        d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
-                    </svg>
-                  </div>
-
-                  <!-- Dropoff -->
-                  <div class="flex-1 relative pl-6 lg:pl-0">
-                    <div class="relative lg:static">
+                    class="w-full lg:w-40 shrink-0 flex flex-row lg:flex-col justify-between lg:justify-start items-center lg:items-start border-b lg:border-none border-gray-100 pb-4 lg:pb-0">
+                    <div class="flex flex-col items-start gap-1">
+                      <span
+                        class="inline-flex items-center px-3 py-1 lg:px-2 lg:py-0.5 rounded-full lg:rounded text-[11px] lg:text-[10px] font-black tracking-widest uppercase"
+                        :class="{
+                          'bg-amber-100 text-amber-700': booking.status === 'pending',
+                          'bg-green-100 text-green-700': booking.status === 'confirmed',
+                          'bg-blue-100 text-blue-700': booking.status === 'in-progress',
+                          'bg-gray-200 text-gray-600': booking.status === 'completed',
+                          'bg-red-100 text-red-700': booking.status === 'cancelled'
+                        }">
+                        {{ booking.status?.toUpperCase() || 'PENDING' }}
+                      </span>
+                      <div class="font-mono font-bold text-gray-900 text-[14px] lg:text-[13px] tracking-widest mt-1">{{
+                        booking.bookingReference }}</div>
                       <div
-                        class="absolute -left-6 top-1 w-3 h-3 bg-white border-[3px] border-amber-500 rounded-full shadow-sm lg:hidden mt-0.5">
-                      </div>
-                      <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 mt-1 lg:mt-0">Drop
-                        off</p>
-                      <p class="text-[13px] text-gray-600 leading-snug line-clamp-2 font-medium"
-                        :title="booking.dropoffAddress">{{ booking.dropoffAddress }}</p>
+                        class="text-[10px] text-gray-400 hidden lg:block uppercase tracking-widest font-semibold mt-0.5">
+                        Booked {{ formatDate(booking.createdAt) }}</div>
+                    </div>
+
+                    <div class="lg:hidden text-right">
+                      <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-0.5">Fare</p>
+                      <p class="text-xl font-black text-amber-500 leading-none">£{{ booking.totalFare?.toFixed(2) ||
+                        '0.00' }}</p>
                     </div>
                   </div>
-                </div>
 
-                <!-- Fare & Actions (Right) -->
-                <div
-                  class="w-full lg:w-32 flex lg:flex-col items-center lg:items-end justify-between border-t lg:border-none border-gray-100 pt-4 lg:pt-0 shrink-0 gap-3">
-                  <div class="hidden lg:block text-right mb-2">
-                    <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-0.5">Total Fare</p>
-                    <p class="text-2xl font-black text-amber-500 leading-none">£{{ booking.totalFare?.toFixed(2) ||
-                      '0.00' }}</p>
+                  <!-- Route Details (Middle) -->
+                  <div class="flex-1 flex flex-col lg:flex-row gap-5 lg:gap-6 lg:items-center relative">
+
+                    <!-- Pickup -->
+                    <div class="flex-1 relative pl-6 lg:pl-0">
+                      <div class="absolute left-[11px] top-2 bottom-2 w-0.5 bg-gray-200 lg:hidden"></div>
+                      <div class="relative lg:static">
+                        <div
+                          class="absolute -left-6 top-1 w-3 h-3 bg-white border-[3px] border-blue-500 rounded-full shadow-sm lg:hidden mt-0.5">
+                        </div>
+                        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 mt-1 lg:mt-0">Pick
+                          up <span class="text-blue-600 ml-1 truncate">{{ formatDateTime(booking.pickupDateTime)
+                          }}</span></p>
+                        <p class="text-sm font-semibold text-gray-900 leading-snug line-clamp-2"
+                          :title="booking.pickupAddress">{{ booking.pickupAddress }}</p>
+                      </div>
+                    </div>
+
+                    <!-- Arrow (Desktop) -->
+                    <div
+                      class="hidden lg:flex w-8 h-8 rounded-full bg-slate-50 items-center justify-center shrink-0 border border-gray-100 text-gray-400 shadow-sm">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                          d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                      </svg>
+                    </div>
+
+                    <!-- Dropoff -->
+                    <div class="flex-1 relative pl-6 lg:pl-0">
+                      <div class="relative lg:static">
+                        <div
+                          class="absolute -left-6 top-1 w-3 h-3 bg-white border-[3px] border-amber-500 rounded-full shadow-sm lg:hidden mt-0.5">
+                        </div>
+                        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 mt-1 lg:mt-0">Drop
+                          off</p>
+                        <p class="text-[13px] text-gray-600 leading-snug line-clamp-2 font-medium"
+                          :title="booking.dropoffAddress">{{ booking.dropoffAddress }}</p>
+                      </div>
+                    </div>
                   </div>
 
-                  <div class="lg:hidden text-[10px] uppercase font-semibold tracking-widest text-gray-400">Booked {{
-                    formatDate(booking.createdAt) }}</div>
+                  <!-- Fare & Actions (Right) -->
+                  <div
+                    class="w-full lg:w-32 flex lg:flex-col items-center lg:items-end justify-between border-t lg:border-none border-gray-100 pt-4 lg:pt-0 shrink-0 gap-3">
+                    <div class="hidden lg:block text-right mb-2">
+                      <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-0.5">Total Fare</p>
+                      <p class="text-2xl font-black text-amber-500 leading-none">£{{ booking.totalFare?.toFixed(2) ||
+                        '0.00' }}</p>
+                    </div>
 
-                  <button v-if="['pending', 'confirmed'].includes(booking.status?.toLowerCase())"
-                    @click="handleCancelBooking(booking.id)" :disabled="isCancellingBooking === booking.id"
-                    class="px-5 py-2.5 bg-slate-50 hover:bg-red-50 text-slate-700 hover:text-red-600 disabled:opacity-50 text-[11px] font-bold rounded-lg transition-all border border-slate-200 hover:border-red-200 uppercase tracking-widest whitespace-nowrap shadow-sm group-hover:scale-105 group-hover:shadow-md flex items-center justify-center w-full lg:w-auto">
-                    {{ isCancellingBooking === booking.id ? 'Cancelling...' : 'Cancel Booking' }}
-                  </button>
+                    <div class="lg:hidden text-[10px] uppercase font-semibold tracking-widest text-gray-400">Booked {{
+                      formatDate(booking.createdAt) }}</div>
+
+                    <button v-if="['pending', 'confirmed'].includes(booking.status?.toLowerCase())"
+                      @click="handleCancelBooking(booking.id)" :disabled="isCancellingBooking === booking.id"
+                      class="px-5 py-2.5 bg-slate-50 hover:bg-red-50 text-slate-700 hover:text-red-600 disabled:opacity-50 text-[11px] font-bold rounded-lg transition-all border border-slate-200 hover:border-red-200 uppercase tracking-widest whitespace-nowrap shadow-sm group-hover:scale-105 group-hover:shadow-md flex items-center justify-center w-full lg:w-auto">
+                      {{ isCancellingBooking === booking.id ? 'Cancelling...' : 'Cancel Booking' }}
+                    </button>
+
+                    <button v-if="booking.status?.toLowerCase() === 'completed'" @click="handleLeaveReview(booking.id)"
+                      class="px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white text-[11px] font-bold rounded-lg transition-all border border-amber-600 uppercase tracking-widest whitespace-nowrap shadow-sm group-hover:scale-105 flex items-center justify-center w-full lg:w-auto">
+                      Leave Review
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
+            </template>
           </div>
 
           <!-- Account Details Tab -->
@@ -279,37 +313,95 @@
             </div>
 
             <form @submit.prevent="saveProfile" class="space-y-6">
-              <!-- Full Name -->
-              <div>
-                <label for="displayName" class="block text-sm font-semibold text-gray-700 mb-2">
-                  Full Name
-                </label>
-                <input id="displayName" v-model="editForm.displayName" type="text" :disabled="!isEditing" :class="[
-                  'appearance-none block w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-amber-400',
-                  isEditing ? 'border-amber-300 bg-white' : 'border-gray-300 bg-gray-50 cursor-not-allowed'
-                ]" />
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Full Name -->
+                <div>
+                  <label for="displayName" class="block text-sm font-semibold text-gray-700 mb-2">
+                    Full Name
+                  </label>
+                  <input id="displayName" v-model="editForm.displayName" type="text" :disabled="!isEditing" :class="[
+                    'appearance-none block w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-amber-400',
+                    isEditing ? 'border-amber-300 bg-white' : 'border-gray-300 bg-gray-50 cursor-not-allowed'
+                  ]" />
+                </div>
+
+                <!-- Email -->
+                <div>
+                  <label for="email" class="block text-sm font-semibold text-gray-700 mb-2">
+                    Email Address
+                  </label>
+                  <input id="email" v-model="editForm.email" type="email" disabled
+                    class="appearance-none block w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 cursor-not-allowed" />
+                  <p class="mt-1 text-xs text-gray-500">Email cannot be changed</p>
+                </div>
+
+                <!-- Phone -->
+                <div>
+                  <label for="phone" class="block text-sm font-semibold text-gray-700 mb-2">
+                    Phone Number
+                  </label>
+                  <input id="phone" v-model="editForm.phoneNumber" type="tel" :disabled="!isEditing" :class="[
+                    'appearance-none block w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-amber-400',
+                    isEditing ? 'border-amber-300 bg-white' : 'border-gray-300 bg-gray-50 cursor-not-allowed'
+                  ]" placeholder="+44 1234 567890" />
+                  <p v-if="isEditing" class="mt-1 text-xs text-amber-600">✓ You can change your phone number</p>
+                </div>
+
+                <!-- Company Name -->
+                <div>
+                  <label for="companyName" class="block text-sm font-semibold text-gray-700 mb-2">
+                    Company Name <span class="text-gray-400 font-normal">(Optional)</span>
+                  </label>
+                  <input id="companyName" v-model="editForm.companyName" type="text" :disabled="!isEditing" :class="[
+                    'appearance-none block w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-amber-400',
+                    isEditing ? 'border-amber-300 bg-white' : 'border-gray-300 bg-gray-50 cursor-not-allowed'
+                  ]" placeholder="Corporate Account Name" />
+                </div>
               </div>
 
-              <!-- Email -->
-              <div>
-                <label for="email" class="block text-sm font-semibold text-gray-700 mb-2">
-                  Email Address
-                </label>
-                <input id="email" v-model="editForm.email" type="email" disabled
-                  class="appearance-none block w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 cursor-not-allowed" />
-                <p class="mt-1 text-xs text-gray-500">Email cannot be changed</p>
+              <div class="pt-4 border-t border-gray-100">
+                <h3 class="text-lg font-bold text-gray-900 mb-4">Emergency Contact</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <!-- Emergency Contact Name -->
+                  <div>
+                    <label for="emergencyName" class="block text-sm font-semibold text-gray-700 mb-2">
+                      Contact Name
+                    </label>
+                    <input id="emergencyName" v-model="editForm.emergencyContactName" type="text" :disabled="!isEditing"
+                      :class="[
+                        'appearance-none block w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-amber-400',
+                        isEditing ? 'border-amber-300 bg-white' : 'border-gray-300 bg-gray-50 cursor-not-allowed'
+                      ]" placeholder="Next of kin" />
+                  </div>
+
+                  <!-- Emergency Contact Phone -->
+                  <div>
+                    <label for="emergencyPhone" class="block text-sm font-semibold text-gray-700 mb-2">
+                      Contact Phone
+                    </label>
+                    <input id="emergencyPhone" v-model="editForm.emergencyContactPhone" type="tel"
+                      :disabled="!isEditing" :class="[
+                        'appearance-none block w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-amber-400',
+                        isEditing ? 'border-amber-300 bg-white' : 'border-gray-300 bg-gray-50 cursor-not-allowed'
+                      ]" placeholder="Emergency phone" />
+                  </div>
+                </div>
               </div>
 
-              <!-- Phone -->
-              <div>
-                <label for="phone" class="block text-sm font-semibold text-gray-700 mb-2">
-                  Phone Number <span v-if="isEditing" class="text-amber-600">(Editable)</span>
-                </label>
-                <input id="phone" v-model="editForm.phoneNumber" type="tel" :disabled="!isEditing" :class="[
-                  'appearance-none block w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-amber-400',
-                  isEditing ? 'border-amber-300 bg-white' : 'border-gray-300 bg-gray-50 cursor-not-allowed'
-                ]" placeholder="+44 1234 567890" />
-                <p v-if="isEditing" class="mt-1 text-xs text-amber-600">✓ You can change your phone number</p>
+              <div class="pt-4 border-t border-gray-100">
+                <h3 class="text-lg font-bold text-gray-900 mb-4">Preferences</h3>
+                <!-- Special Requirements -->
+                <div>
+                  <label for="specialReq" class="block text-sm font-semibold text-gray-700 mb-2">
+                    Special Travel Requirements <span class="text-gray-400 font-normal">(Optional)</span>
+                  </label>
+                  <textarea id="specialReq" v-model="editForm.specialRequirements" :disabled="!isEditing" rows="3"
+                    :class="[
+                      'appearance-none block w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-amber-400',
+                      isEditing ? 'border-amber-300 bg-white' : 'border-gray-300 bg-gray-50 cursor-not-allowed'
+                    ]" placeholder="Wheelchair access, child seat required, etc."></textarea>
+                  <p class="mt-1 text-xs text-gray-500">This information will be provided to your drivers.</p>
+                </div>
               </div>
 
               <!-- Action Buttons -->
@@ -333,90 +425,148 @@
           </div>
 
           <!-- Saved Addresses Tab -->
-          <div v-if="activeTab === 'addresses'" class="bg-white rounded-lg shadow-md p-8">
-            <div class="flex items-center justify-between mb-6">
-              <h2 class="text-2xl font-bold text-gray-900">Saved Addresses</h2>
-              <button @click="showAddressModal = true; addressType = 'pickup'; newAddress = ''"
-                class="px-6 py-2.5 bg-amber-500 hover:bg-amber-600 text-white rounded-lg font-semibold transition-colors">
-                + Add Address
-              </button>
+          <div v-if="activeTab === 'addresses'"
+            class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 lg:p-10">
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between mb-8 gap-4">
+              <div>
+                <h2 class="text-2xl font-bold text-gray-900">Saved Addresses</h2>
+                <p class="text-gray-500 text-sm mt-1">Manage your frequently used pickup and dropoff locations</p>
+              </div>
             </div>
 
-            <!-- Pickup Locations -->
-            <div class="mb-8">
-              <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-                <svg class="w-5 h-5 mr-2 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
-                </svg>
-                Pickup Locations ({{ pickupLocations.length }}/3)
-              </h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
+              <!-- Pickup Locations -->
+              <div>
+                <div class="flex items-center justify-between mb-5">
+                  <h3 class="text-lg font-bold text-gray-900 flex items-center">
+                    <div class="w-8 h-8 rounded-full bg-green-50 flex items-center justify-center mr-3">
+                      <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                          d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                      </svg>
+                    </div>
+                    Pickups <span
+                      class="ml-2 text-xs font-semibold px-2.5 py-0.5 rounded-full bg-gray-100 text-gray-600">{{
+                        pickupLocations.length }}/3</span>
+                  </h3>
 
-              <div v-if="pickupLocations.length === 0" class="text-gray-500 text-sm py-4">
-                No pickup locations saved yet
-              </div>
-
-              <div v-else class="space-y-3">
-                <div v-for="(location, idx) in pickupLocations" :key="`pickup-${idx}`"
-                  class="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                  <div class="flex items-center space-x-3">
-                    <svg class="w-5 h-5 text-green-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                      <path fill-rule="evenodd"
-                        d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
-                        clip-rule="evenodd" />
-                    </svg>
-                    <span class="text-gray-800">{{ location }}</span>
-                  </div>
-                  <button @click="removeAddress('pickup', idx)"
-                    class="text-red-600 hover:text-red-800 font-medium text-sm">
-                    Remove
+                  <button v-if="pickupLocations.length < 3"
+                    @click="showAddressModal = true; addressType = 'pickup'; newAddress = ''"
+                    class="text-sm font-bold tracking-widest uppercase text-amber-500 hover:text-amber-600 transition-colors flex items-center gap-1 group">
+                    <span class="text-xl leading-none group-hover:scale-110 transition-transform">+</span> Add
                   </button>
+                </div>
+
+                <div v-if="pickupLocations.length === 0"
+                  class="flex flex-col items-center justify-center p-8 bg-gray-50 rounded-2xl border border-dashed border-gray-200 text-center min-h-[200px]">
+                  <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm mb-3">
+                    <svg class="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                        d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                  </div>
+                  <h4 class="text-gray-900 font-bold text-sm mb-1">No pickups saved</h4>
+                  <p class="text-xs text-gray-500 max-w-[200px]">Save your home or office for quicker booking.</p>
+                  <button @click="showAddressModal = true; addressType = 'pickup'; newAddress = ''"
+                    class="mt-4 px-4 py-2 border border-gray-200 rounded-lg text-xs font-bold uppercase tracking-widest text-gray-600 hover:border-amber-200 hover:text-amber-600 hover:bg-amber-50 transition-all bg-white shadow-sm">
+                    Add First Location
+                  </button>
+                </div>
+
+                <div v-else class="space-y-3">
+                  <div v-for="(location, idx) in pickupLocations" :key="`pickup-${idx}`"
+                    class="group relative flex items-center p-4 pr-12 bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md hover:border-green-200 transition-all">
+                    <div
+                      class="w-10 h-10 rounded-full bg-green-50 flex items-center justify-center shrink-0 mr-4 group-hover:bg-green-100 transition-colors">
+                      <svg class="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd"
+                          d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
+                          clip-rule="evenodd" />
+                      </svg>
+                    </div>
+                    <div class="flex-1 truncate">
+                      <p class="text-sm font-semibold text-gray-900 truncate" :title="location">{{ location }}</p>
+                    </div>
+                    <button @click="removeAddress('pickup', idx)"
+                      class="absolute right-4 p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                      title="Remove address">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                    </button>
+                  </div>
                 </div>
               </div>
 
-              <button v-if="pickupLocations.length < 3"
-                @click="showAddressModal = true; addressType = 'pickup'; newAddress = ''"
-                class="mt-4 text-amber-600 hover:text-amber-700 font-medium text-sm">
-                + Add Pickup Location
-              </button>
-            </div>
+              <!-- Dropoff Locations -->
+              <div>
+                <div class="flex items-center justify-between mb-5">
+                  <h3 class="text-lg font-bold text-gray-900 flex items-center">
+                    <div class="w-8 h-8 rounded-full bg-red-50 flex items-center justify-center mr-3">
+                      <svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                          d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                      </svg>
+                    </div>
+                    Dropoffs <span
+                      class="ml-2 text-xs font-semibold px-2.5 py-0.5 rounded-full bg-gray-100 text-gray-600">{{
+                        dropoffLocations.length }}/3</span>
+                  </h3>
 
-            <!-- Dropoff Locations -->
-            <div>
-              <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-                <svg class="w-5 h-5 mr-2 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-                </svg>
-                Dropoff Locations ({{ dropoffLocations.length }}/3)
-              </h3>
-
-              <div v-if="dropoffLocations.length === 0" class="text-gray-500 text-sm py-4">
-                No dropoff locations saved yet
-              </div>
-
-              <div v-else class="space-y-3">
-                <div v-for="(location, idx) in dropoffLocations" :key="`dropoff-${idx}`"
-                  class="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                  <div class="flex items-center space-x-3">
-                    <svg class="w-5 h-5 text-red-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                      <path fill-rule="evenodd"
-                        d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
-                        clip-rule="evenodd" />
-                    </svg>
-                    <span class="text-gray-800">{{ location }}</span>
-                  </div>
-                  <button @click="removeAddress('dropoff', idx)"
-                    class="text-red-600 hover:text-red-800 font-medium text-sm">
-                    Remove
+                  <button v-if="dropoffLocations.length < 3"
+                    @click="showAddressModal = true; addressType = 'dropoff'; newAddress = ''"
+                    class="text-sm font-bold tracking-widest uppercase text-amber-500 hover:text-amber-600 transition-colors flex items-center gap-1 group">
+                    <span class="text-xl leading-none group-hover:scale-110 transition-transform">+</span> Add
                   </button>
                 </div>
-              </div>
 
-              <button v-if="dropoffLocations.length < 3"
-                @click="showAddressModal = true; addressType = 'dropoff'; newAddress = ''"
-                class="mt-4 text-amber-600 hover:text-amber-700 font-medium text-sm">
-                + Add Dropoff Location
-              </button>
+                <div v-if="dropoffLocations.length === 0"
+                  class="flex flex-col items-center justify-center p-8 bg-gray-50 rounded-2xl border border-dashed border-gray-200 text-center min-h-[200px]">
+                  <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm mb-3">
+                    <svg class="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                        d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                  </div>
+                  <h4 class="text-gray-900 font-bold text-sm mb-1">No dropoffs saved</h4>
+                  <p class="text-xs text-gray-500 max-w-[200px]">Save your favorite destinations like airports or
+                    stations.</p>
+                  <button @click="showAddressModal = true; addressType = 'dropoff'; newAddress = ''"
+                    class="mt-4 px-4 py-2 border border-gray-200 rounded-lg text-xs font-bold uppercase tracking-widest text-gray-600 hover:border-amber-200 hover:text-amber-600 hover:bg-amber-50 transition-all bg-white shadow-sm">
+                    Add First Location
+                  </button>
+                </div>
+
+                <div v-else class="space-y-3">
+                  <div v-for="(location, idx) in dropoffLocations" :key="`dropoff-${idx}`"
+                    class="group relative flex items-center p-4 pr-12 bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md hover:border-red-200 transition-all">
+                    <div
+                      class="w-10 h-10 rounded-full bg-red-50 flex items-center justify-center shrink-0 mr-4 group-hover:bg-red-100 transition-colors">
+                      <svg class="w-5 h-5 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd"
+                          d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
+                          clip-rule="evenodd" />
+                      </svg>
+                    </div>
+                    <div class="flex-1 truncate">
+                      <p class="text-sm font-semibold text-gray-900 truncate" :title="location">{{ location }}</p>
+                    </div>
+                    <button @click="removeAddress('dropoff', idx)"
+                      class="absolute right-4 p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                      title="Remove address">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -602,9 +752,9 @@
           </div>
 
           <div class="flex space-x-3">
-            <button type="submit"
-              class="flex-1 px-6 py-3 bg-amber-500 hover:bg-amber-600 text-white rounded-lg font-semibold transition-colors">
-              Add
+            <button type="submit" :disabled="isAddingAddress"
+              class="flex-1 px-6 py-3 bg-amber-500 hover:bg-amber-600 text-white rounded-lg font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+              {{ isAddingAddress ? 'Adding...' : 'Add' }}
             </button>
             <button type="button" @click="showAddressModal = false"
               class="flex-1 px-6 py-3 bg-gray-300 hover:bg-gray-400 text-gray-800 rounded-lg font-semibold transition-colors">
@@ -624,7 +774,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted, watch, nextTick } from 'vue';
+import { ref, reactive, onMounted, watch, nextTick, computed } from 'vue';
 import { useRouter } from 'vue-router';
 
 definePageMeta({
@@ -636,6 +786,7 @@ const router = useRouter();
 const { user, userProfile, logout, updateUserPhone, error } = useAuth();
 
 const activeTab = ref('bookings');
+const activeBookingTab = ref('upcoming');
 const isEditing = ref(false);
 const isSaving = ref(false);
 const successMessage = ref('');
@@ -646,7 +797,11 @@ const showDeleteSuccessAlert = ref(false);
 const editForm = reactive({
   displayName: '',
   email: '',
-  phoneNumber: ''
+  phoneNumber: '',
+  companyName: '',
+  emergencyContactName: '',
+  emergencyContactPhone: '',
+  specialRequirements: ''
 });
 
 // Address management
@@ -660,6 +815,37 @@ const addressAutocomplete = ref<any>(null);
 const userBookings = ref<any[]>([]);
 const loadingBookings = ref(true);
 const isCancellingBooking = ref<string | null>(null);
+const isAddingAddress = ref(false);
+
+const filteredBookings = computed(() => {
+  if (!userBookings.value) return [];
+
+  let filtered = userBookings.value.filter(b => {
+    const status = (b.status || 'pending').toLowerCase();
+    if (activeBookingTab.value === 'upcoming') {
+      return ['pending', 'confirmed'].includes(status);
+    } else if (activeBookingTab.value === 'in-progress') {
+      return status === 'in-progress';
+    } else if (activeBookingTab.value === 'completed') {
+      return status === 'completed';
+    } else if (activeBookingTab.value === 'cancelled') {
+      return status === 'cancelled';
+    }
+    return true;
+  });
+
+  return filtered.sort((a, b) => {
+    const parseDate = (d: any) => {
+      if (!d) return 0;
+      if (d.toDate) return d.toDate().getTime();
+      return new Date(d).getTime();
+    };
+
+    const timeA = parseDate(a.pickupDateTime || a.createdAt);
+    const timeB = parseDate(b.pickupDateTime || b.createdAt);
+    return timeB - timeA;
+  });
+});
 
 // Initialize form with user data
 onMounted(async () => {
@@ -671,6 +857,10 @@ onMounted(async () => {
   editForm.displayName = userProfile.value?.displayName || '';
   editForm.email = userProfile.value?.email || '';
   editForm.phoneNumber = userProfile.value?.phoneNumber || '';
+  editForm.companyName = userProfile.value?.companyName || '';
+  editForm.emergencyContactName = userProfile.value?.emergencyContactName || '';
+  editForm.emergencyContactPhone = userProfile.value?.emergencyContactPhone || '';
+  editForm.specialRequirements = userProfile.value?.specialRequirements || '';
 
   // Load addresses and bookings from Firestore (client-side only)
   if (process.client) {
@@ -740,6 +930,10 @@ watch(userProfile, (newProfile) => {
     editForm.displayName = newProfile.displayName || '';
     editForm.email = newProfile.email || '';
     editForm.phoneNumber = newProfile.phoneNumber || '';
+    editForm.companyName = newProfile.companyName || '';
+    editForm.emergencyContactName = newProfile.emergencyContactName || '';
+    editForm.emergencyContactPhone = newProfile.emergencyContactPhone || '';
+    editForm.specialRequirements = newProfile.specialRequirements || '';
   }
 }, { deep: true });
 
@@ -753,6 +947,10 @@ const cancelEditing = () => {
   // Reset form
   editForm.displayName = userProfile.value?.displayName || '';
   editForm.phoneNumber = userProfile.value?.phoneNumber || '';
+  editForm.companyName = userProfile.value?.companyName || '';
+  editForm.emergencyContactName = userProfile.value?.emergencyContactName || '';
+  editForm.emergencyContactPhone = userProfile.value?.emergencyContactPhone || '';
+  editForm.specialRequirements = userProfile.value?.specialRequirements || '';
 };
 
 const saveProfile = async () => {
@@ -775,6 +973,10 @@ const saveProfile = async () => {
         email: editForm.email,
         displayName: editForm.displayName,
         phoneNumber: editForm.phoneNumber,
+        companyName: editForm.companyName,
+        emergencyContactName: editForm.emergencyContactName,
+        emergencyContactPhone: editForm.emergencyContactPhone,
+        specialRequirements: editForm.specialRequirements,
         photoURL: user.value.photoURL,
         preferredPickupLocations: pickupLocations.value,
         preferredDropoffLocations: dropoffLocations.value
@@ -880,6 +1082,21 @@ const handleAlertAction = () => {
   router.push('/');
 };
 
+const handleLeaveReview = async (bookingId: string) => {
+  const reviewText = window.prompt("Please leave a short review about your ride (e.g. 'Great driver, arrived on time' or 'felt unsafe, driver was speeding'):");
+  if (!reviewText) return;
+
+  try {
+    const data: any = await $fetch('/api/reviews/submit', {
+      method: 'POST',
+      body: { bookingId, review: reviewText }
+    });
+    alert(data.message);
+  } catch (err: any) {
+    alert("Error submitting review: " + (err.message || 'Unknown error'));
+  }
+};
+
 // Date formatting helpers
 const formatDate = (dateInput: any) => {
   if (!dateInput) return '';
@@ -915,7 +1132,7 @@ const formatDateTime = (dateInput: any) => {
 
 // Address management functions
 const addAddress = async () => {
-  if (!newAddress.value.trim()) return;
+  if (!newAddress.value.trim() || isAddingAddress.value) return;
 
   const locations = addressType.value === 'pickup' ? pickupLocations : dropoffLocations;
 
@@ -924,13 +1141,18 @@ const addAddress = async () => {
     return;
   }
 
-  locations.value.push(newAddress.value.trim());
-  await syncAddressesToFirestore();
+  isAddingAddress.value = true;
+  try {
+    locations.value.push(newAddress.value.trim());
+    await syncAddressesToFirestore();
 
-  showAddressModal.value = false;
-  newAddress.value = '';
-  successMessage.value = `✓ ${addressType.value === 'pickup' ? 'Pickup' : 'Dropoff'} location added!`;
-  setTimeout(() => successMessage.value = '', 3000);
+    showAddressModal.value = false;
+    newAddress.value = '';
+    successMessage.value = `✓ ${addressType.value === 'pickup' ? 'Pickup' : 'Dropoff'} location added!`;
+    setTimeout(() => successMessage.value = '', 3000);
+  } finally {
+    isAddingAddress.value = false;
+  }
 };
 
 const removeAddress = async (type: 'pickup' | 'dropoff', index: number) => {

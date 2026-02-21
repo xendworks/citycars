@@ -2,7 +2,7 @@
   <div class="min-h-screen bg-gray-50">
     <!-- Hero Section -->
     <section class="bg-amber-50 py-12">
-      <div class="container-fluid mx-auto px-4 text-center">
+      <div class="container mx-auto px-4 text-center">
         <h1 class="text-3xl font-bold mb-4 font-sora">Wheelchair Accessible Taxis</h1>
         <p class="max-w-3xl mx-auto text-gray-700 mb-8 font-inter">
           Dedicated wheelchair accessible taxi service by City Cars. We provide reliable, comfortable, and safe
@@ -150,7 +150,7 @@
 
     <!-- Call to Action -->
     <section class="py-12 bg-amber-100">
-      <div class="container-fluid mx-auto px-4 text-center">
+      <div class="container mx-auto px-4 text-center">
         <h2 class="text-2xl font-bold mb-6 font-sora">Ready to Book Your Wheelchair Accessible Taxi?</h2>
         <p class="text-gray-700 mb-8 max-w-3xl mx-auto font-inter">
           Contact us today to book your wheelchair accessible taxi or to discuss your specific requirements.

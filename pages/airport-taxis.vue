@@ -2,7 +2,7 @@
   <div class="min-h-screen bg-gray-50">
     <!-- Hero Section -->
     <section class="bg-amber-50 py-12">
-      <div class="container-fluid mx-auto px-4 text-center">
+      <div class="container mx-auto px-4 text-center">
         <h1 class="text-3xl font-bold mb-4 font-sora">Airport Taxi Services</h1>
         <p class="max-w-3xl mx-auto text-gray-700 mb-8 font-inter">
           Reliable and comfortable airport taxi service by City Cars. We provide punctual transportation to and from all

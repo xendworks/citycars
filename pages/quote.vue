@@ -7,15 +7,9 @@
           Enter your journey details below to find the best available cabs for your trip.
         </p>
 
- <BookingForm
-  :key="fromLocation + toLocation + pickupDateTime + passengers + luggage"
-  :initialPickup="fromLocation"
-  :initialDropoff="toLocation"
-  :initialDateTime="pickupDateTime"
-  :initialPassengers="passengers"
-  :initialLuggage="luggage"
-  @search="handleSearchFromForm"
-/>
+        <BookingForm :key="fromLocation + toLocation + pickupDateTime + passengers + luggage"
+          :initialPickup="fromLocation" :initialDropoff="toLocation" :initialDateTime="pickupDateTime"
+          :initialPassengers="passengers" :initialLuggage="luggage" @search="handleSearchFromForm" />
       </div>
     </section>
 
@@ -26,7 +20,7 @@
           <!-- Cab Results -->
           <div class="lg:col-span-2">
             <h2 class="text-2xl font-bold mb-4">Available Cabs</h2>
-            
+
             <!-- Loading Placeholders -->
             <div v-if="isLoading" class="space-y-4">
               <div v-for="i in 3" :key="i" class="bg-white rounded-lg p-4 shadow-md animate-pulse">
@@ -41,39 +35,41 @@
                 </div>
               </div>
             </div>
-            
+
             <!-- No Results -->
             <div v-else-if="!cabResults.length && hasSearched" class="bg-white rounded-lg p-6 shadow-md text-center">
               <p class="text-lg text-gray-700">No cabs available for your search criteria.</p>
               <p class="text-sm text-gray-500 mt-2">Try adjusting your passenger count, luggage, or locations.</p>
             </div>
-            
+
             <!-- Initial State with Loader -->
             <div v-else-if="!hasSearched" class="bg-white rounded-lg p-8 shadow-md text-center">
               <div class="flex flex-col items-center space-y-6">
                 <!-- Animated Logo -->
                 <div class="relative">
-                  <div class="w-16 h-16 bg-gradient-to-r from-amber-400 to-yellow-500 rounded-full flex items-center justify-center animate-pulse">
+                  <div
+                    class="w-16 h-16 bg-gradient-to-r from-amber-400 to-yellow-500 rounded-full flex items-center justify-center animate-pulse">
                     <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                      <path
+                        d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
                     </svg>
                   </div>
                   <div class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full animate-ping"></div>
                 </div>
-                
+
                 <!-- Loading Text -->
                 <div class="space-y-2">
                   <h3 class="text-xl font-semibold text-gray-800">Welcome to City Cars</h3>
                   <p class="text-gray-600">Ready to find your perfect ride?</p>
                 </div>
-                
+
                 <!-- Animated Dots -->
                 <div class="flex space-x-2">
                   <div class="w-3 h-3 bg-amber-400 rounded-full animate-bounce"></div>
                   <div class="w-3 h-3 bg-amber-400 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
                   <div class="w-3 h-3 bg-amber-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
                 </div>
-                
+
                 <!-- Features -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6 text-sm">
                   <div class="flex items-center space-x-2">
@@ -91,30 +87,23 @@
                 </div>
               </div>
             </div>
-            
+
             <!-- Results List -->
             <div v-else class="space-y-4">
-              <div 
-                v-for="cab in cabResults" 
-                :key="cab.id"
+              <div v-for="cab in cabResults" :key="cab.id"
                 class="bg-white rounded-lg p-4 shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer"
-                :class="{'border-2 border-amber-400': selectedCab?.id === cab.id}"
-                @click="selectCab(cab)"
-              >
+                :class="{ 'border-2 border-amber-400': selectedCab?.id === cab.id }" @click="selectCab(cab)">
                 <div class="flex items-center space-x-4">
                   <div class="flex-shrink-0">
                     <div class="h-16 w-24 bg-amber-100 rounded-lg flex items-center justify-center">
-                      <img
-                        :src="cab.imageUrl"
-                        alt="Cab"
-                        class="h-16 w-auto object-contain"
-                      />
+                      <img :src="cab.imageUrl" alt="Cab" class="h-16 w-auto object-contain" />
                     </div>
                   </div>
                   <div class="flex-1">
                     <h3 class="text-lg font-semibold flex items-center">
                       {{ cab.name }}
-                      <span v-if="cab.suggested" class="ml-2 px-2 py-1 bg-amber-100 text-amber-700 rounded text-xs font-semibold">
+                      <span v-if="cab.suggested"
+                        class="ml-2 px-2 py-1 bg-amber-100 text-amber-700 rounded text-xs font-semibold">
                         Suggested
                       </span>
                     </h3>
@@ -126,10 +115,9 @@
                   </div>
                   <div class="text-right">
                     <div class="text-lg font-bold">£{{ cab.price.toFixed(2) }}</div>
-                    <button 
+                    <button
                       class="mt-2 bg-amber-400 hover:bg-amber-500 text-white py-1 px-3 rounded-md text-sm transition duration-300"
-                      @click.stop="bookCab(cab)"
-                    >
+                      @click.stop="bookCab(cab)">
                       Book Now
                     </button>
                   </div>
@@ -137,20 +125,16 @@
               </div>
             </div>
           </div>
-          
+
           <!-- Map and Trip Summary -->
           <div class="lg:col-span-1">
             <!-- Map Container -->
             <div class="bg-white rounded-lg shadow-md overflow-hidden mb-6">
-  
-              <div 
-                ref="realMapContainer" 
-                id="realMap" 
-                class="h-96 w-full relative"
-                :class="{'bg-gray-200 animate-pulse': isLoading && !mapLoaded}"
-              ></div>
+
+              <div ref="realMapContainer" id="realMap" class="h-96 w-full relative"
+                :class="{ 'bg-gray-200 animate-pulse': isLoading && !mapLoaded }"></div>
             </div>
-            
+
             <!-- Journey Details -->
             <div v-if="routeDetails" class="bg-white rounded-lg shadow-md overflow-hidden mb-6">
               <h3 class="bg-gray-100 py-2 px-4 font-semibold">Journey Details</h3>
@@ -169,7 +153,7 @@
                 </div>
               </div>
             </div>
-            
+
             <!-- Selected Cab Summary -->
             <div v-if="selectedCab" class="bg-white rounded-lg shadow-md overflow-hidden">
               <h3 class="bg-gray-100 py-2 px-4 font-semibold">Trip Summary</h3>
@@ -199,10 +183,8 @@
                   <span>£{{ selectedCab.price.toFixed(2) }}</span>
                 </div>
                 <div class="mt-4">
-                  <button 
-                    @click="bookCab(selectedCab)" 
-                    class="w-full bg-amber-400 hover:bg-amber-500 text-white py-2 px-4 rounded-md font-medium transition duration-300"
-                  >
+                  <button @click="bookCab(selectedCab)"
+                    class="w-full bg-amber-400 hover:bg-amber-500 text-white py-2 px-4 rounded-md font-medium transition duration-300">
                     Confirm Booking
                   </button>
                 </div>
@@ -225,8 +207,10 @@ import BookingForm from '~/components/BookingForm.vue'
 import { useQueryStore } from '~/stores/queryStore'
 import { useQuoteStore } from '~/stores/queryStore'
 import { calculateFare } from '~/utils/pricing'
+import { CAB_TYPES } from '~/constants/cabs'
 
 // TypeScript interfaces
+
 interface Cab {
   id: number
   name: string
@@ -315,7 +299,7 @@ const bookingId = computed(() => {
 onMounted(async () => {
   // Load Google Maps API first
   await loadGoogleMapsApi()
-  
+
   // Prefer Pinia store if available
   if (queryStore.from) fromLocation.value = queryStore.from
   if (queryStore.to) toLocation.value = queryStore.to
@@ -386,7 +370,7 @@ onMounted(async () => {
       realMapContainer.value.appendChild(mockMap);
     }
   }, 500);
-  
+
   // Perform initial search immediately if we have locations
   if (fromLocation.value && toLocation.value) {
     // Don't wait - search immediately
@@ -411,26 +395,18 @@ const calculateFareForRoute = async () => {
       lat: 51.1537, // Gatwick Airport coordinates
       lng: -0.1821
     }
-    
+
     const mockToLocation = {
       name: toLocation.value,
       lat: 51.5074, // London coordinates
       lng: -0.1278
     }
 
-    const request = {
-      from: mockFromLocation,
-      to: mockToLocation,
-      vehicleType: vehicleType.value,
-      passengers: passengers.value,
-      luggage: luggage.value,
-      pickupDateTime: pickupDateTime.value
-    }
-
-    const result = await calculateFare(request)
-    fareResult.value = result
+    const mockDistance = 10;
+    const result = calculateFare(mockDistance, vehicleType.value);
+    fareResult.value = result;
   } catch (err) {
-    console.error('Failed to calculate fare:', err)
+    console.error('Failed to calculate fare:', err);
   }
 }
 
@@ -462,24 +438,24 @@ const calculateAndDisplayRoute = async () => {
   if (fromCoords.value && toCoords.value) {
     return true;
   }
-  
+
   // Simulate API delay
   await new Promise(resolve => setTimeout(resolve, 500));
-  
+
   // Mock route details calculation
   const randomDistance = Math.floor(5 + Math.random() * 20);
   const randomDuration = Math.floor(15 + Math.random() * 45);
-  
+
   // Calculate mock eta
   const pickupTime = new Date(pickupDateTime.value);
   const arrivalTime = new Date(pickupTime.getTime() + (randomDuration * 60 * 1000));
-  
+
   routeDetails.value = {
     distance: `${randomDistance} miles`,
     duration: `${randomDuration} mins`,
     eta: arrivalTime.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })
   };
-  
+
   // Update map with mock route display ONLY if no real coords
   if (realMapContainer.value && !fromCoords.value && !toCoords.value) {
     const mockMapContent = `
@@ -503,13 +479,13 @@ const calculateAndDisplayRoute = async () => {
     `;
     realMapContainer.value.innerHTML = mockMapContent;
   }
-  
+
   return true;
 }
 
 // Handle search event from BookingForm component
 const handleSearchFromForm = (searchData: any) => {
-  
+
   // Update form values with search data
   fromLocation.value = searchData.from;
   toLocation.value = searchData.to;
@@ -517,7 +493,7 @@ const handleSearchFromForm = (searchData: any) => {
   luggage.value = searchData.luggage;
   pickupDateTime.value = searchData.pickupDateTime;
   vehicleType.value = searchData.vehicleType;
-  
+
   // Trigger the search
   searchCabs();
 };
@@ -529,11 +505,11 @@ const searchCabs = async () => {
     // Don't show alert, just return - the welcome screen will show
     return
   }
-  
+
   isLoading.value = true
   hasSearched.value = true
   selectedCab.value = null
-  
+
   try {
     // Try to geocode addresses in background (non-blocking)
     if (fromLocation.value && toLocation.value) {
@@ -551,13 +527,13 @@ const searchCabs = async () => {
         geocodeLoading.value = false
       })
     }
-    
+
     // Simulate API loading delay (reduced for better UX)
     await new Promise(resolve => setTimeout(resolve, 1000))
-    
+
     // Generate mock route details
     await calculateAndDisplayRoute()
-    
+
     // Generate mock cab results
     generateMockCabResults()
   } catch (error) {
@@ -572,73 +548,22 @@ const searchCabs = async () => {
 
 // Mock cab data generation
 const generateMockCabResults = () => {
-  // Images for cab types - using the same images as in index.vue
-  const cabImages = {
-    'Saloon': '/images/2.png',
-    'Estate': '/images/3.png',
-    'MPV': '/images/4.png',
-    '7 Seater': '/images/6.png',
-    '9 Seater': '/images/7.png',
-    'Wheelchair': '/images/8.png',
-  }
-
-  const baseCabs = [
-    {
-      id: 1,
-      name: 'Saloon',
-      passengerCapacity: 4,
-      luggageCapacity: 2,
-      basePrice: 25,
-      pricePerMile: 2.5,
-      description: 'Comfortable sedan ideal for up to 4 passengers with moderate luggage.',
-      imageUrl: cabImages['Saloon']
-    },
-    {
-      id: 2,
-      name: 'Estate',
-      passengerCapacity: 4,
-      luggageCapacity: 4,
-      basePrice: 30,
-      pricePerMile: 2.8,
-      description: 'Spacious estate with extra luggage space, perfect for airport transfers.',
-      imageUrl: cabImages['Estate']
-    },
-    {
-      id: 3,
-      name: 'MPV',
-      passengerCapacity: 6,
-      luggageCapacity: 4,
-      basePrice: 40,
-      pricePerMile: 3.2,
-      description: 'Multi-purpose vehicle ideal for families or small groups with luggage.',
-      imageUrl: cabImages['MPV']
-    },
-    {
-      id: 4,
-      name: '7 Seater',
-      passengerCapacity: 7,
-      luggageCapacity: 5,
-      basePrice: 50,
-      pricePerMile: 3.5,
-      description: 'Spacious van with seating for up to 7 passengers plus luggage.',
-      imageUrl: cabImages['7 Seater']
-    },
-    {
-      id: 5,
-      name: '9 Seater',
-      passengerCapacity: 9,
-      luggageCapacity: 6,
-      basePrice: 70,
-      pricePerMile: 4.0,
-      description: 'Large minibus perfect for bigger groups and tours.',
-      imageUrl: cabImages['9 Seater']
-    }
-  ]
-
+  const baseCabs = Object.values(CAB_TYPES).map((cab, index) => ({
+    id: index + 1,
+    name: cab.name,
+    passengerCapacity: cab.passengerCapacity,
+    luggageCapacity: cab.luggageCapacity,
+    description: cab.description,
+    imageUrl: cab.imageUrl,
+    // Provide some default dummy base prices in case calculateFare overrides
+    basePrice: 25,
+    pricePerMile: 2.5
+  }))
   // Estimate distance from route (or use mock value if no route yet)
   let distanceInMiles = 10
   if (routeDetails.value?.distance) {
-    const distanceStr = routeDetails.value.distance
+    // Remove commas from strings like "1,798 mi" so we don't accidentally treat it like 1798 miles!
+    const distanceStr = routeDetails.value.distance.replace(/,/g, '')
     const distanceValue = parseFloat(distanceStr.replace(/[^0-9.]/g, ''))
     distanceInMiles = distanceStr.includes('km') ? distanceValue * 0.621371 : distanceValue
   }
@@ -661,8 +586,8 @@ const generateMockCabResults = () => {
       // Calculate fare using new pricing utility
       const vehicleType = vehicleTypeMap[cab.name] || 'saloon'
       const fareForVehicle = calculateFare(distanceInMiles, vehicleType)
-      
-      
+
+
       return {
         ...cab,
         price: fareForVehicle
@@ -694,8 +619,8 @@ const selectCab = (cab: Cab) => {
 // Book the selected cab
 const bookCab = (cab: Cab) => {
   // Use existing booking ID if available, otherwise generate new one
-  const quoteId = bookingId.value || `q${Date.now()}${Math.floor(Math.random()*10000)}`;
-  
+  const quoteId = bookingId.value || `q${Date.now()}${Math.floor(Math.random() * 10000)}`;
+
   // Prepare quote details
   const details = {
     from: fromLocation.value,
@@ -712,47 +637,47 @@ const bookCab = (cab: Cab) => {
     pickupDateTime: pickupDateTime.value,
     quoteId,
   };
-  
+
   // Save quote details
   quoteStore.saveQuote(quoteId, details);
-  
+
   // Log what we're saving
   console.log('Saving quote with ID:', quoteId)
   console.log('Quote details:', details)
-  
+
   // Redirect to booking page using router
   router.push(`/${quoteId}/book`);
 }
 
 // Uber-style map theme JSON
 const uberMapStyle = [
-  {"featureType":"all","elementType":"labels.text.fill","stylers":[{"color":"#7c93a3"},{"lightness":"-10"}]},
-  {"featureType":"administrative.country","elementType":"geometry","stylers":[{"visibility":"on"}]},
-  {"featureType":"administrative.country","elementType":"geometry.stroke","stylers":[{"color":"#a0a4a5"}]},
-  {"featureType":"administrative.province","elementType":"geometry.stroke","stylers":[{"color":"#62838e"}]},
-  {"featureType":"landscape","elementType":"geometry.fill","stylers":[{"color":"#dde3e3"}]},
-  {"featureType":"landscape.man_made","elementType":"geometry.stroke","stylers":[{"color":"#3f4a51"},{"weight":"0.30"}]},
-  {"featureType":"poi","elementType":"all","stylers":[{"visibility":"simplified"}]},
-  {"featureType":"poi.attraction","elementType":"all","stylers":[{"visibility":"on"}]},
-  {"featureType":"poi.business","elementType":"all","stylers":[{"visibility":"on"}]},
-  {"featureType":"poi.government","elementType":"all","stylers":[{"visibility":"on"}]},
-  {"featureType":"poi.medical","elementType":"all","stylers":[{"visibility":"on"}]},
-  {"featureType":"poi.park","elementType":"geometry.fill","stylers":[{"color":"#a8dba8"}]},
-  {"featureType":"poi.place_of_worship","elementType":"all","stylers":[{"visibility":"on"}]},
-  {"featureType":"poi.school","elementType":"all","stylers":[{"visibility":"on"}]},
-  {"featureType":"poi.sports_complex","elementType":"all","stylers":[{"visibility":"on"}]},
-  {"featureType":"road","elementType":"all","stylers":[{"saturation":"-100"},{"lightness":"45"}]},
-  {"featureType":"road","elementType":"geometry.stroke","stylers":[{"color":"#bbcacf"}]},
-  {"featureType":"road.highway","elementType":"geometry.fill","stylers":[{"color":"#bbcacf"}]},
-  {"featureType":"road.highway","elementType":"geometry.stroke","stylers":[{"color":"#bbcacf"}]},
-  {"featureType":"road.arterial","elementType":"geometry.fill","stylers":[{"color":"#bbcacf"}]},
-  {"featureType":"road.arterial","elementType":"geometry.stroke","stylers":[{"color":"#bbcacf"}]},
-  {"featureType":"road.local","elementType":"geometry.fill","stylers":[{"color":"#bbcacf"}]},
-  {"featureType":"road.local","elementType":"geometry.stroke","stylers":[{"color":"#bbcacf"}]},
-  {"featureType":"transit","elementType":"all","stylers":[{"visibility":"on"}]},
-  {"featureType":"transit.line","elementType":"geometry.fill","stylers":[{"color":"#b4cbd4"}]},
-  {"featureType":"transit.station","elementType":"all","stylers":[{"visibility":"on"}]},
-  {"featureType":"water","elementType":"geometry.fill","stylers":[{"color":"#a6cbe3"}]}
+  { "featureType": "all", "elementType": "labels.text.fill", "stylers": [{ "color": "#7c93a3" }, { "lightness": "-10" }] },
+  { "featureType": "administrative.country", "elementType": "geometry", "stylers": [{ "visibility": "on" }] },
+  { "featureType": "administrative.country", "elementType": "geometry.stroke", "stylers": [{ "color": "#a0a4a5" }] },
+  { "featureType": "administrative.province", "elementType": "geometry.stroke", "stylers": [{ "color": "#62838e" }] },
+  { "featureType": "landscape", "elementType": "geometry.fill", "stylers": [{ "color": "#dde3e3" }] },
+  { "featureType": "landscape.man_made", "elementType": "geometry.stroke", "stylers": [{ "color": "#3f4a51" }, { "weight": "0.30" }] },
+  { "featureType": "poi", "elementType": "all", "stylers": [{ "visibility": "simplified" }] },
+  { "featureType": "poi.attraction", "elementType": "all", "stylers": [{ "visibility": "on" }] },
+  { "featureType": "poi.business", "elementType": "all", "stylers": [{ "visibility": "on" }] },
+  { "featureType": "poi.government", "elementType": "all", "stylers": [{ "visibility": "on" }] },
+  { "featureType": "poi.medical", "elementType": "all", "stylers": [{ "visibility": "on" }] },
+  { "featureType": "poi.park", "elementType": "geometry.fill", "stylers": [{ "color": "#a8dba8" }] },
+  { "featureType": "poi.place_of_worship", "elementType": "all", "stylers": [{ "visibility": "on" }] },
+  { "featureType": "poi.school", "elementType": "all", "stylers": [{ "visibility": "on" }] },
+  { "featureType": "poi.sports_complex", "elementType": "all", "stylers": [{ "visibility": "on" }] },
+  { "featureType": "road", "elementType": "all", "stylers": [{ "saturation": "-100" }, { "lightness": "45" }] },
+  { "featureType": "road", "elementType": "geometry.stroke", "stylers": [{ "color": "#bbcacf" }] },
+  { "featureType": "road.highway", "elementType": "geometry.fill", "stylers": [{ "color": "#bbcacf" }] },
+  { "featureType": "road.highway", "elementType": "geometry.stroke", "stylers": [{ "color": "#bbcacf" }] },
+  { "featureType": "road.arterial", "elementType": "geometry.fill", "stylers": [{ "color": "#bbcacf" }] },
+  { "featureType": "road.arterial", "elementType": "geometry.stroke", "stylers": [{ "color": "#bbcacf" }] },
+  { "featureType": "road.local", "elementType": "geometry.fill", "stylers": [{ "color": "#bbcacf" }] },
+  { "featureType": "road.local", "elementType": "geometry.stroke", "stylers": [{ "color": "#bbcacf" }] },
+  { "featureType": "transit", "elementType": "all", "stylers": [{ "visibility": "on" }] },
+  { "featureType": "transit.line", "elementType": "geometry.fill", "stylers": [{ "color": "#b4cbd4" }] },
+  { "featureType": "transit.station", "elementType": "all", "stylers": [{ "visibility": "on" }] },
+  { "featureType": "water", "elementType": "geometry.fill", "stylers": [{ "color": "#a6cbe3" }] }
 ];
 
 // Render real Google Map with route and custom markers/labels
@@ -763,22 +688,22 @@ async function renderRealMap() {
     hasToCoords: !!toCoords.value,
     hasContainer: !!realMapContainer.value
   });
-  
+
   if (!window.google || !window.google.maps) {
     console.warn('Google Maps not loaded yet');
     return;
   }
-  
+
   if (!fromCoords.value || !toCoords.value) {
     console.warn('Missing coordinates');
     return;
   }
-  
+
   if (!realMapContainer.value) {
     console.warn('Map container not ready');
     return;
   }
-  
+
   try {
     console.log('Creating Google Map...');
     const map = new window.google.maps.Map(realMapContainer.value, {
@@ -793,11 +718,11 @@ async function renderRealMap() {
       fullscreenControl: false,
       clickableIcons: false,
     });
-    
+
     console.log('Map created, setting up directions...');
     const directionsService = new window.google.maps.DirectionsService();
-    const directionsRenderer = new window.google.maps.DirectionsRenderer({ 
-      map, 
+    const directionsRenderer = new window.google.maps.DirectionsRenderer({
+      map,
       suppressMarkers: true,
       polylineOptions: {
         strokeColor: '#FFC107',
@@ -805,7 +730,7 @@ async function renderRealMap() {
         strokeOpacity: 0.8
       }
     });
-    
+
     directionsService.route({
       origin: { lat: fromCoords.value.lat, lng: fromCoords.value.lng },
       destination: { lat: toCoords.value.lat, lng: toCoords.value.lng },
@@ -820,10 +745,10 @@ async function renderRealMap() {
       console.log('Directions result:', status);
       if (status === 'OK') {
         directionsRenderer.setDirections(result);
-        
+
         // Update route details with real data
         const leg = result.routes[0].legs[0];
-        
+
         // Convert distance to miles if in KM
         let distanceText = leg.distance.text;
         if (distanceText.toLowerCase().includes('km')) {
@@ -831,13 +756,13 @@ async function renderRealMap() {
           const milesValue = (kmValue * 0.621371).toFixed(1);
           distanceText = `${milesValue} miles`;
         }
-        
+
         routeDetails.value = {
           distance: distanceText,
           duration: leg.duration.text,
           eta: new Date(Date.now() + leg.duration.value * 1000).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })
         };
-        
+
         // Custom markers for from/to
         const fromMarker = new window.google.maps.Marker({
           position: leg.start_location,
@@ -857,7 +782,7 @@ async function renderRealMap() {
             strokeColor: "#fff"
           }
         });
-        
+
         const toMarker = new window.google.maps.Marker({
           position: leg.end_location,
           map,
@@ -876,11 +801,11 @@ async function renderRealMap() {
             strokeColor: "#fff"
           }
         });
-        
+
         // Add tiny custom popovers for A and B
         function addCustomPopover(map: any, position: any, text: string) {
           const overlay = new window.google.maps.OverlayView();
-          overlay.onAdd = function() {
+          overlay.onAdd = function () {
             const div = document.createElement('div');
             div.style.position = 'absolute';
             div.style.background = 'rgba(255,255,255,0.95)';
@@ -895,7 +820,7 @@ async function renderRealMap() {
             const panes = this.getPanes();
             panes.overlayMouseTarget.appendChild(div);
           };
-          overlay.draw = function() {
+          overlay.draw = function () {
             const projection = this.getProjection();
             const pos = projection.fromLatLngToDivPixel(position);
             if (pos && this.div) {
@@ -903,17 +828,17 @@ async function renderRealMap() {
               this.div.style.top = pos.y - 18 + 'px';
             }
           };
-          overlay.onRemove = function() {
+          overlay.onRemove = function () {
             if (this.div) this.div.parentNode.removeChild(this.div);
             this.div = null;
           };
           overlay.setMap(map);
         }
-        
+
         // Use the place names entered by user instead of street addresses to avoid "Unnamed Road"
         addCustomPopover(map, leg.start_location, fromLocation.value || leg.start_address.split(',')[0]);
         addCustomPopover(map, leg.end_location, toLocation.value || leg.end_address.split(',')[0]);
-        
+
         // Add animated car marker with smoother animation
         const carIcon = {
           path: 'M29.395,0H17.636c-3.117,0-5.643,3.467-5.643,6.584v34.804c0,3.116,2.526,5.644,5.643,5.644h11.759   c3.116,0,5.644-2.527,5.644-5.644V6.584C35.037,3.467,32.511,0,29.395,0z M34.05,14.188v11.665l-2.729,0.351v-4.806L34.05,14.188z    M32.618,10.773c-1.016,3.9-2.219,8.51-2.219,8.51H16.631l-2.222-8.51C14.41,10.773,23.293,7.755,32.618,10.773z M15.741,21.713   v4.492l-2.73-0.349V14.502L15.741,21.713z M13.011,37.938V27.579l2.73,0.343v8.196L13.011,37.938z M14.568,40.882l2.218-3.336   h13.771l2.219,3.336H14.568z M31.321,35.805v-7.872l2.729-0.355v10.048L31.321,35.805',
@@ -922,31 +847,32 @@ async function renderRealMap() {
           strokeColor: '#FF6F00',
           strokeWeight: 1,
           scale: 0.6,
+          // @ts-ignore
           anchor: new window.google.maps.Point(23.5, 23.5),
           rotation: 0
         };
-        
+
         const carMarker = new window.google.maps.Marker({
           position: leg.start_location,
           map,
           icon: carIcon,
           zIndex: 1000
         });
-        
+
         // Smooth animation along the route with interpolation
         const path = result.routes[0].overview_path;
         const totalSteps = 200; // Number of interpolation steps
         let step = 0;
         const animationDuration = 8000; // 8 seconds for full route
         const delayBetweenSteps = animationDuration / totalSteps;
-        
+
         // Create interpolated path for smoother animation
         const smoothPath: any[] = [];
         for (let i = 0; i < path.length - 1; i++) {
           const start = path[i];
           const end = path[i + 1];
           const stepsForSegment = Math.ceil(totalSteps / (path.length - 1));
-          
+
           for (let j = 0; j < stepsForSegment; j++) {
             const fraction = j / stepsForSegment;
             smoothPath.push({
@@ -959,9 +885,9 @@ async function renderRealMap() {
           lat: path[path.length - 1].lat(),
           lng: path[path.length - 1].lng()
         });
-        
+
         let lastAngle = 0;
-        
+
         function animateCar() {
           if (step >= smoothPath.length) {
             // Restart animation from beginning
@@ -969,40 +895,43 @@ async function renderRealMap() {
             setTimeout(animateCar, 1000);
             return;
           }
-          
+
           // Update marker position
           carMarker.setPosition(smoothPath[step]);
-          
+
           // Calculate and update rotation every 10 steps for smooth rotation
           if (step % 10 === 0 && step < smoothPath.length - 10) {
             const current = smoothPath[step];
             const next = smoothPath[Math.min(step + 10, smoothPath.length - 1)];
+            // @ts-ignore
             const currentLatLng = new window.google.maps.LatLng(current.lat, current.lng);
+            // @ts-ignore
             const nextLatLng = new window.google.maps.LatLng(next.lat, next.lng);
+            // @ts-ignore
             const angle = window.google.maps.geometry.spherical.computeHeading(currentLatLng, nextLatLng);
-            
+
             // Smooth angle transition
             lastAngle = angle;
             const icon = carMarker.getIcon() as any;
             icon.rotation = angle;
             carMarker.setIcon(icon);
           }
-          
+
           step++;
           setTimeout(animateCar, delayBetweenSteps);
         }
-        
+
         // Start animation after a short delay
         setTimeout(animateCar, 500);
       } else {
         console.error('Directions request failed:', status);
       }
     });
-    
+
     // Add traffic layer
     const trafficLayer = new window.google.maps.TrafficLayer();
     trafficLayer.setMap(map);
-    
+
     console.log('Map rendering complete');
   } catch (error) {
     console.error('Error rendering map:', error);
@@ -1015,7 +944,7 @@ watch([fromCoords, toCoords], () => {
     from: fromCoords.value,
     to: toCoords.value
   });
-  
+
   if (fromCoords.value && toCoords.value && realMapContainer.value) {
     // Small delay to ensure DOM is ready
     setTimeout(() => {
@@ -1023,4 +952,4 @@ watch([fromCoords, toCoords], () => {
     }, 100);
   }
 });
-</script> 
+</script>

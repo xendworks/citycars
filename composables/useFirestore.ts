@@ -19,6 +19,10 @@ export const useFirestore = () => {
     email: string;
     displayName?: string | null;
     phoneNumber?: string | null;
+    companyName?: string | null;
+    emergencyContactName?: string | null;
+    emergencyContactPhone?: string | null;
+    specialRequirements?: string | null;
     photoURL?: string | null;
     preferredPickupLocations?: string[];
     preferredDropoffLocations?: string[];
@@ -32,6 +36,10 @@ export const useFirestore = () => {
         email: data.email,
         displayName: data.displayName || null,
         phoneNumber: data.phoneNumber || null,
+        companyName: data.companyName || null,
+        emergencyContactName: data.emergencyContactName || null,
+        emergencyContactPhone: data.emergencyContactPhone || null,
+        specialRequirements: data.specialRequirements || null,
         photoURL: data.photoURL || null,
         preferredPickupLocations: data.preferredPickupLocations || [],
         preferredDropoffLocations: data.preferredDropoffLocations || [],

@@ -9,7 +9,7 @@ export function useGeocode() {
     error.value = null
     try {
       const apiKey = process.env.GOOGLE_MAPS_API_KEY || 'AIzaSyACZ4JkEhZZAhafla2ePLtmNL7ktaxV8KM'
-      const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${apiKey}`
+      const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&components=country:GB&key=${apiKey}`
       const res = await fetch(url)
       const data = await res.json()
       if (data.status === 'OK' && data.results.length > 0) {

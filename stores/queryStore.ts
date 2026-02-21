@@ -7,6 +7,8 @@ interface QueryState {
   luggage: number;
   pickupDateTime: string;
   vehicleType: string;
+  bookingMode: 'normal' | 'ai';
+  aiHistory: { role: string; content: string }[];
 }
 
 export const useQueryStore = defineStore('queryStore', {
@@ -17,6 +19,11 @@ export const useQueryStore = defineStore('queryStore', {
     luggage: 0,
     pickupDateTime: '',
     vehicleType: 'saloon',
+    bookingMode: 'ai',
+    aiHistory: [{
+      role: 'assistant',
+      content: "Hi! I'm your AI booking assistant. Where would you like to be picked up from?"
+    }],
   }),
   actions: {
     setQueryData(data: Partial<QueryState>) {
@@ -29,6 +36,11 @@ export const useQueryStore = defineStore('queryStore', {
       this.luggage = 0;
       this.pickupDateTime = '';
       this.vehicleType = 'saloon';
+      this.bookingMode = 'ai';
+      this.aiHistory = [{
+        role: 'assistant',
+        content: "Hi! I'm your AI booking assistant. Where would you like to be picked up from?"
+      }];
     },
   }
 });
