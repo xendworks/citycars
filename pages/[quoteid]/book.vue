@@ -678,6 +678,19 @@ async function submitBooking() {
       // Save booking details to localStorage as backup
       localStorage.setItem('lastBooking', JSON.stringify(bookingData));
 
+      // Trigger confirmation email silently in background
+      try {
+        await $fetch('/api/email/booking-confirmation', {
+          method: 'POST',
+          body: {
+            ...bookingData,
+            bookingReference: response.bookingReference
+          }
+        });
+      } catch (emailError) {
+        console.error('Failed to dispatch confirmation email', emailError);
+      }
+
       // Redirect to success page immediately
       router.push({
         path: '/booking-success',

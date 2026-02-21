@@ -6,6 +6,7 @@ import CustomSelect from './CustomSelect.vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useQueryStore, useQuoteStore } from '~/stores/queryStore'
 import { suggestVehicleType, CAB_TYPES } from '~/constants/cabs'
+import { PRICING_CONFIG, calculateSaloonFare } from '~/utils/pricing'
 
 // Add type declarations for NEW PlaceAutocompleteElement API
 declare global {
@@ -344,9 +345,53 @@ const handleSearch = (aiSuggestedVehicleType?: string | Event) => {
   }
 };
 
-const handleConversationalBooking = async () => {
+const aiCabPrices = ref<Record<string, number>>({});
+const aiTotalBaseFare = ref<number>(75);
+
+const calculateAIPrices = async (origin: string, dest: string) => {
+  if (!window.google?.maps?.DirectionsService) return;
+  try {
+    const directionsService = new window.google.maps.DirectionsService();
+    const request = {
+      origin: origin,
+      destination: dest,
+      travelMode: (window as any).google.maps.TravelMode.DRIVING
+    };
+    const response: any = await new Promise((resolve, reject) => {
+      directionsService.route(request, (res: any, status: string) => {
+        if (status === 'OK') resolve(res);
+        else reject(status);
+      });
+    });
+    const distanceText = response.routes[0].legs[0].distance.text;
+    const miles = parseFloat(distanceText.replace(/,/g, ''));
+    const baseSaloon = calculateSaloonFare(miles);
+
+    aiTotalBaseFare.value = baseSaloon;
+
+    Object.values(CAB_TYPES).forEach(cab => {
+      const multiplier = PRICING_CONFIG.vehicleMultipliers[cab.id as keyof typeof PRICING_CONFIG.vehicleMultipliers] || 0;
+      aiCabPrices.value[cab.name] = baseSaloon * (1 + (multiplier / 100));
+    });
+  } catch (e) {
+    console.error("AI Price fetch failed", e);
+  }
+};
+
+const formatMessage = (text: string) => {
+  if (!text) return '';
+  // Convert markdown bold to html
+  let html = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+  // Convert newlines to html breaks
+  html = html.replace(/\n/g, '<br>');
+  // Add another replacing layer for single new line
+  return html.split('\n').join('<br/>');
+};
+
+const handleConversationalBooking = async (opt?: boolean | Event) => {
   if (!aiPrompt.value.trim()) return;
 
+  const useVoice = typeof opt === 'boolean' ? opt : false;
   const userText = aiPrompt.value;
   aiPrompt.value = ''; // clear input immediately to feel fast
   queryStore.aiHistory.push({ role: 'user', content: userText });
@@ -363,8 +408,11 @@ const handleConversationalBooking = async () => {
       }
     });
 
-    // Speak and store the reply
-    speakText(data.reply);
+    // Speak the reply only if voice input was used
+    if (useVoice) {
+      speakText(data.reply);
+    }
+
     queryStore.aiHistory.push({ role: 'assistant', content: data.reply });
     await scrollToBottom();
 
@@ -379,6 +427,10 @@ const handleConversationalBooking = async () => {
 
         if (data.bookingData.from) await handlePickupChange();
         if (data.bookingData.to) await handleDropoffChange();
+
+        if (data.bookingData.from && data.bookingData.to) {
+          await calculateAIPrices(data.bookingData.from, data.bookingData.to);
+        }
       }
 
       // Instead of forcing a redirect to the /quote page, let's mark the specific history item to show UI cards!
@@ -386,6 +438,7 @@ const handleConversationalBooking = async () => {
       if (lastMsg.role === 'assistant') {
         lastMsg['isShowQuotes'] = true;
         lastMsg['suggestedVehicleType'] = data.bookingData.suggestedVehicleType;
+        lastMsg['cabPrices'] = { ...aiCabPrices.value };
       }
     }
     // Phase 2: AI Determined vehicle type & preferences are satisfied and booking is confirmed!
@@ -405,10 +458,10 @@ const handleConversationalBooking = async () => {
         const flightNumber = data.bookingData.flightNumber || null;
 
         // Finalize Math
-        const baseFare = 75; // Automated AI default quote fare 
-        const meetAndGreetFee = meetAndGreet ? 10 : 0;
-        const childSeatFee = childSeat ? 5 : 0;
-        const surchargeAmount = paymentMethod.includes('Card') ? (baseFare * 3 / 100) : (paymentMethod.includes('Paypal') ? (baseFare * 5 / 100) : 0);
+        const baseFare = data.bookingData.baseFare || aiTotalBaseFare.value || 75; // Use the properly quoted price or fallback
+        const meetAndGreetFee = meetAndGreet ? PRICING_CONFIG.extras.meetAndGreet : 0;
+        const childSeatFee = childSeat ? PRICING_CONFIG.extras.childSeat : 0;
+        const surchargeAmount = paymentMethod.includes('Card') ? (baseFare * PRICING_CONFIG.paymentSurcharges.card / 100) : (paymentMethod.includes('Paypal') ? (baseFare * PRICING_CONFIG.paymentSurcharges.paypal / 100) : 0);
         const promoDiscount = promoCode ? (baseFare * 10 / 100) : 0; // AI applies a flat 10% discount for validated codes
 
         const totalAmount = baseFare + meetAndGreetFee + childSeatFee + surchargeAmount - promoDiscount;
@@ -449,6 +502,18 @@ const handleConversationalBooking = async () => {
           const response = await createBooking(generatedData);
 
           if (response && response.id) {
+            try {
+              await $fetch('/api/email/booking-confirmation', {
+                method: 'POST',
+                body: {
+                  ...generatedData,
+                  bookingReference: response.bookingReference
+                }
+              });
+            } catch (err) {
+              console.error('Email failed to send for AI booking', err);
+            }
+
             router.push({
               path: '/booking-success',
               query: {
@@ -494,7 +559,7 @@ const toggleVoiceInput = () => {
   recognition.onresult = (event: any) => {
     const transcript = event.results[0][0].transcript;
     aiPrompt.value = transcript;
-    handleConversationalBooking();
+    handleConversationalBooking(true);
   };
 
   recognition.onerror = (event: any) => {
@@ -519,8 +584,10 @@ const applyPrediction = () => {
   showPrediction.value = false;
 };
 const selectAICab = async (cabName: string) => {
-  aiPrompt.value = `I will take the ${cabName}.`;
-  await handleConversationalBooking();
+  const priceEstimate = aiCabPrices.value[cabName] || 75;
+  aiTotalBaseFare.value = priceEstimate; // Lock in the user's selected choice price for final checkout
+  aiPrompt.value = `I will take the ${cabName} vehicle for £${priceEstimate.toFixed(2)}.`;
+  await handleConversationalBooking(false);
 };
 </script>
 
@@ -546,7 +613,7 @@ const selectAICab = async (cabName: string) => {
     <div class="p-4 md:p-6">
 
       <!-- AI BOOKING MODE -->
-      <div v-show="queryStore.bookingMode === 'ai'" class="animate-fade-in-up">
+      <div v-show="queryStore.bookingMode === 'ai'">
         <div
           class="mb-4 bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl pt-6 pb-4 border border-amber-100 flex flex-col min-h-[160px]">
 
@@ -555,10 +622,10 @@ const selectAICab = async (cabName: string) => {
             <div v-for="(msg, idx) in queryStore.aiHistory" :key="idx" class="flex flex-col"
               :class="msg.role === 'user' ? 'items-end' : 'items-start'">
               <div :class="[
-                'p-3 max-w-[85%] rounded-2xl text-sm leading-relaxed whitespace-pre-line shadow-sm border border-transparent',
+                'p-3 max-w-[85%] rounded-2xl text-sm leading-relaxed shadow-sm border border-transparent text-left',
                 msg.role === 'user' ? 'bg-amber-500 text-white rounded-tr-sm' : 'bg-white text-gray-800 border-amber-200/50 rounded-tl-sm'
               ]">
-                {{ msg.content }}
+                <div v-html="formatMessage(msg.content)"></div>
 
                 <!-- Adaptive Quotes Card -->
                 <div v-if="(msg as any).isShowQuotes" class="mt-4 flex flex-wrap gap-2 pt-3 border-t border-gray-100">
@@ -569,6 +636,8 @@ const selectAICab = async (cabName: string) => {
                     <img :src="cab.imageUrl" :alt="cab.name"
                       class="h-8 object-contain drop-shadow transition-transform hover:scale-110" />
                     <span>{{ cab.name }}</span>
+                    <span v-if="(msg as any).cabPrices && (msg as any).cabPrices[cab.name]"
+                      class="text-xs font-bold text-gray-700">£{{ (msg as any).cabPrices[cab.name].toFixed(2) }}</span>
                   </button>
                 </div>
               </div>
@@ -584,13 +653,13 @@ const selectAICab = async (cabName: string) => {
           </div>
 
           <!-- Input Area -->
-          <div class="relative flex items-center gap-2 mt-auto">
+          <div class="relative flex items-center gap-2 p-3 mt-auto">
             <div class="relative flex-1">
-              <input v-model="aiPrompt" @keydown.enter="handleConversationalBooking" type="text"
+              <input v-model="aiPrompt" @keydown.enter="handleConversationalBooking(false)" type="text"
                 placeholder="Talk to me! e.g., 'From Heathrow to Gatwick tomorrow'"
                 class="w-full p-4 pr-16 bg-white border-2 border-amber-200 rounded-xl text-sm md:text-base shadow-sm focus:border-amber-400 focus:ring-0 transition-all font-medium placeholder-amber-900/40"
                 :disabled="isParsingAI || isListening" />
-              <button @click="handleConversationalBooking" :disabled="isParsingAI || isListening"
+              <button @click="handleConversationalBooking(false)" :disabled="isParsingAI || isListening"
                 class="absolute right-2 top-2 bottom-2 aspect-square flex items-center justify-center bg-amber-500 hover:bg-amber-600 text-white rounded-lg transition-colors disabled:opacity-50">
                 <svg class="w-5 h-5 ml-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
@@ -610,7 +679,7 @@ const selectAICab = async (cabName: string) => {
       </div>
 
       <!-- NORMAL BOOKING MODE -->
-      <div v-show="queryStore.bookingMode === 'normal'" class="animate-fade-in-up">
+      <div v-show="queryStore.bookingMode === 'normal'">
 
         <!-- Predictive Prediction Toast -->
         <div v-if="showPrediction"

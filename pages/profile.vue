@@ -245,7 +245,7 @@
                         </div>
                         <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 mt-1 lg:mt-0">Pick
                           up <span class="text-blue-600 ml-1 truncate">{{ formatDateTime(booking.pickupDateTime)
-                          }}</span></p>
+                            }}</span></p>
                         <p class="text-sm font-semibold text-gray-900 leading-snug line-clamp-2"
                           :title="booking.pickupAddress">{{ booking.pickupAddress }}</p>
                       </div>
@@ -287,7 +287,7 @@
                       formatDate(booking.createdAt) }}</div>
 
                     <button v-if="['pending', 'confirmed'].includes(booking.status?.toLowerCase())"
-                      @click="handleCancelBooking(booking.id)" :disabled="isCancellingBooking === booking.id"
+                      @click="promptCancelBooking(booking.id)" :disabled="isCancellingBooking === booking.id"
                       class="px-5 py-2.5 bg-slate-50 hover:bg-red-50 text-slate-700 hover:text-red-600 disabled:opacity-50 text-[11px] font-bold rounded-lg transition-all border border-slate-200 hover:border-red-200 uppercase tracking-widest whitespace-nowrap shadow-sm group-hover:scale-105 group-hover:shadow-md flex items-center justify-center w-full lg:w-auto">
                       {{ isCancellingBooking === booking.id ? 'Cancelling...' : 'Cancel Booking' }}
                     </button>
@@ -301,6 +301,11 @@
               </div>
             </template>
           </div>
+
+          <!-- Cancel Booking Confirmation Modal -->
+          <DeleteConfirmationModal v-model="showCancelModal" title="Cancel Booking"
+            message="Are you sure you want to cancel this booking?" confirmText="Cancel Booking"
+            :loading="isCancellingBooking !== null" @confirm="executeCancelBooking" />
 
           <!-- Account Details Tab -->
           <div v-if="activeTab === 'details'" class="bg-white rounded-lg shadow-md p-8">
@@ -814,7 +819,11 @@ const addressInput = ref<HTMLInputElement | null>(null);
 const addressAutocomplete = ref<any>(null);
 const userBookings = ref<any[]>([]);
 const loadingBookings = ref(true);
-const isCancellingBooking = ref<string | null>(null);
+const isCancellingBooking = ref<string | null>(null); // Keep this for loading state of specific booking cancellation
+
+// Specific Modal Actions
+const showCancelModal = ref(false);
+const bookingToCancel = ref<string | null>(null);
 const isAddingAddress = ref(false);
 
 const filteredBookings = computed(() => {
@@ -895,9 +904,14 @@ onMounted(async () => {
     }
   }
 });
+const promptCancelBooking = (bookingId: string) => {
+  bookingToCancel.value = bookingId;
+  showCancelModal.value = true;
+};
 
-const handleCancelBooking = async (bookingId: string) => {
-  if (!confirm('Are you sure you want to cancel this booking?')) return;
+const executeCancelBooking = async () => {
+  if (!bookingToCancel.value) return;
+  const bookingId = bookingToCancel.value;
 
   isCancellingBooking.value = bookingId;
   try {
@@ -910,17 +924,16 @@ const handleCancelBooking = async (bookingId: string) => {
       booking.status = 'cancelled';
     }
 
-    // Show success message
-    const alertSystem = computed(() => {
-      // Very basic alert for now, could be replaced with toast
-      alert('Booking has been cancelled successfully.');
-      return;
-    });
+    // Hide modal and show success logic natively 
+    showCancelModal.value = false;
+    successMessage.value = 'Booking has been cancelled successfully.';
+
   } catch (error) {
     console.error('[PROFILE] Failed to cancel booking:', error);
     alert('Failed to cancel booking. Please try again or contact support.');
   } finally {
     isCancellingBooking.value = null;
+    bookingToCancel.value = null;
   }
 };
 
