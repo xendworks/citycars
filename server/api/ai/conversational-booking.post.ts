@@ -1,6 +1,9 @@
+import { collections } from '~/server/utils/db';
+import { Timestamp } from 'firebase-admin/firestore';
+
 export default defineEventHandler(async (event) => {
   const body = await readBody(event);
-  const { message, history } = body;
+  const { message, history, sessionId } = body;
 
   const geminiKey = process.env.GEMINI_API_KEY;
   const openaiKey = process.env.OPENAI_API_KEY;
@@ -44,10 +47,11 @@ ___SHOW_QUOTES___
   "luggage": 0,
   "suggestedVehicleType": "suggested type"
 }
+CRITICAL INSTRUCTION: You MUST ONLY output the ___SHOW_QUOTES___ block EXACTLY ONCE. Never repeat it in subsequent messages.
 
 PHASE 2: Let the User choose a Cab
-Once you have shown them the quotes using ___SHOW_QUOTES___, wait for them to reply with which vehicle they'd like to book (e.g., "I'll take the Estate").
-Acknowledge their choice.
+Once you have shown them the quotes using ___SHOW_QUOTES___, wait for them to reply with which vehicle they'd like to book (e.g., "I'll take the Estate", "Saloon").
+Acknowledge their choice and IMMEDIATELY move to Phase 3. DO NOT output the quotes block again.
 
 PHASE 3: Gather Booking Preferences
 After getting their cab agreement, you MUST now gather their final booking preferences to complete the booking.
@@ -75,6 +79,7 @@ ___CONFIRM_BOOKING___
 Rules:
 1. Be concise, polite, and conversational.
 2. Ask for ONLY ONE missing piece of information at a time.
+3. NEVER repeat the ___SHOW_QUOTES___ payload block more than once in the entire conversation! If the user gives you a response choosing their vehicle, instantly proceed to gathering Flight Details / Meet & Greet preferences.
 
 IMPORTANT GEOGRAPHY RULES:
 - You are strictly operating a taxi service in the UNITED KINGDOM (UK).
@@ -157,6 +162,19 @@ IMPORTANT GEOGRAPHY RULES:
         isShowQuotes = true;
       } catch(e) {}
     }
+
+    const sessionKey = sessionId || `session_${Date.now()}`;
+    const logData = {
+      sessionId: sessionKey,
+      updatedAt: Timestamp.now(),
+      history: [...history, { role: 'user', content: message }, { role: 'assistant', content: spokenReply }],
+      bookingData,
+      isComplete: isShowQuotes || isConfirmBooking
+    };
+    
+    // Fire and forget server log
+    collections.aiChatLogs().doc(sessionKey).set(logData, { merge: true })
+      .catch((e: any) => console.error("Failed to save AI chat log:", e));
 
     return { 
       reply: spokenReply,

@@ -79,6 +79,8 @@ const isParsingAI = ref(false);
 const isListening = ref(false);
 const predictedDestinationMessage = ref('');
 const showPrediction = ref(false);
+const isAiChatExpanded = ref(false);
+const aiSessionId = ref(`session_${Date.now()}`);
 
 // Removed unused local useState for aiHistory and bookingMode
 
@@ -87,13 +89,18 @@ if (typeof window !== 'undefined' && window.speechSynthesis) {
   window.speechSynthesis.onvoiceschanged = () => { };
 }
 
-const speakText = (text: string) => {
+let activeUtterance: SpeechSynthesisUtterance | null = null; // Prevent GC bug in Chromium browsers
+
+const speakText = (text: string, onEndCallback?: () => void) => {
   if (typeof window === 'undefined' || !window.speechSynthesis) return;
   const synth = window.speechSynthesis;
   // Cancel any ongoing speech so it feels more responsive
   synth.cancel();
 
-  const utterance = new SpeechSynthesisUtterance(text);
+  // Strip markdown characters so the TTS engine doesn't read out "asterisk" or "hash"
+  const cleanText = text.replace(/[*_#`~>]/g, '');
+
+  activeUtterance = new SpeechSynthesisUtterance(cleanText);
   const voices = synth.getVoices();
   // Find a premium/natural British Female voice if possible
   const bestVoice =
@@ -110,12 +117,22 @@ const speakText = (text: string) => {
     voices.filter(v => v.lang.includes('en-'))[0];          // Any English as last resort
 
   if (bestVoice) {
-    utterance.voice = bestVoice;
+    activeUtterance.voice = bestVoice;
     console.log('🗣️ Using AI Voice:', bestVoice.name);
   }
-  utterance.pitch = 1.0;
-  utterance.rate = 1.0;
-  synth.speak(utterance);
+  activeUtterance.pitch = 1.0;
+  activeUtterance.rate = 1.0;
+
+  if (onEndCallback) {
+    activeUtterance.onend = () => {
+      // Add a slight delay before triggering the microphone again to prevent hardware collision
+      setTimeout(() => {
+        onEndCallback();
+      }, 500);
+    };
+  }
+
+  synth.speak(activeUtterance);
 };
 
 const scrollToBottom = async () => {
@@ -403,6 +420,7 @@ const handleConversationalBooking = async (opt?: boolean | Event) => {
     const data: any = await $fetch('/api/ai/conversational-booking', {
       method: 'POST',
       body: {
+        sessionId: aiSessionId.value,
         message: userText,
         history: queryStore.aiHistory.slice(0, -1) // send context
       }
@@ -410,7 +428,12 @@ const handleConversationalBooking = async (opt?: boolean | Event) => {
 
     // Speak the reply only if voice input was used
     if (useVoice) {
-      speakText(data.reply);
+      speakText(data.reply, () => {
+        // Automatically start listening again after AI finishes speaking its response
+        if (queryStore.bookingMode === 'ai' && !isListening.value) {
+          toggleVoiceInput();
+        }
+      });
     }
 
     queryStore.aiHistory.push({ role: 'assistant', content: data.reply });
@@ -589,6 +612,20 @@ const selectAICab = async (cabName: string) => {
   aiPrompt.value = `I will take the ${cabName} vehicle for £${priceEstimate.toFixed(2)}.`;
   await handleConversationalBooking(false);
 };
+
+const resetAiChat = () => {
+  // Clear the frontend history to its default first message
+  queryStore.aiHistory = [
+    { role: 'assistant', content: "Hi! I'm your AI booking assistant. Where would you like to be picked up from?" }
+  ];
+  // Re-sync name personalization on reset
+  if (userProfile.value?.displayName) {
+    const firstName = userProfile.value.displayName.split(' ')[0];
+    queryStore.aiHistory[0].content = `Hi ${firstName}! I'm your AI booking assistant. Where would you like to be picked up from?`;
+  }
+  // Generate a new tracking session id
+  aiSessionId.value = `session_${Date.now()}`;
+};
 </script>
 
 <template>
@@ -615,10 +652,37 @@ const selectAICab = async (cabName: string) => {
       <!-- AI BOOKING MODE -->
       <div v-show="queryStore.bookingMode === 'ai'">
         <div
-          class="mb-4 bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl pt-6 pb-4 border border-amber-100 flex flex-col min-h-[160px]">
+          class="mb-4 bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl pt-6 pb-4 border border-amber-100 flex flex-col transition-all duration-300 relative"
+          :class="isAiChatExpanded ? 'h-[80vh] min-h-[600px]' : 'min-h-[160px] max-h-[450px]'">
+
+          <div class="absolute top-3 right-3 flex items-center space-x-1 z-10">
+            <!-- Reset Button -->
+            <button @click="resetAiChat"
+              class="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+              title="Reset Chat">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+            </button>
+            <!-- Expand/Collapse Button -->
+            <button @click="isAiChatExpanded = !isAiChatExpanded"
+              class="p-1.5 text-amber-600 hover:bg-amber-100/50 rounded-lg transition-colors"
+              :title="isAiChatExpanded ? 'Collapse Chat' : 'Expand Chat'">
+              <svg v-if="!isAiChatExpanded" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+              </svg>
+              <svg v-else class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M4 14h4v4M4 14l5 5M20 10h-4V6m4 4l-5-5M4 10h4V6M4 10l5-5M20 14h-4v4m4-4l-5 5" />
+              </svg>
+            </button>
+          </div>
 
           <!-- AI Conversation History -->
-          <div class="flex-1 overflow-y-auto max-h-[450px] mb-4 space-y-3 px-6 custom-scrollbar">
+          <div class="flex-1 overflow-y-auto mb-4 space-y-3 px-6 custom-scrollbar"
+            :style="isAiChatExpanded ? '' : 'max-h-[350px]'">
             <div v-for="(msg, idx) in queryStore.aiHistory" :key="idx" class="flex flex-col"
               :class="msg.role === 'user' ? 'items-end' : 'items-start'">
               <div :class="[
@@ -667,13 +731,24 @@ const selectAICab = async (cabName: string) => {
                 </svg>
               </button>
             </div>
-            <button @click="toggleVoiceInput" :title="isListening ? 'Listening...' : 'Use Voice Input'"
-              :class="['flex items-center justify-center p-4 rounded-xl text-white shadow-sm transition-all flex-shrink-0', isListening ? 'bg-red-500 animate-pulse scale-105' : 'bg-gray-900 hover:bg-gray-800 hover:-translate-y-0.5']">
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
-              </svg>
-            </button>
+
+            <div class="relative flex items-center justify-center">
+              <!-- Animated Ring Waves when listening -->
+              <div v-if="isListening" class="absolute inset-0 rounded-xl border border-red-500 opacity-20 animate-ping"
+                style="animation-duration: 1.5s;"></div>
+              <div v-if="isListening"
+                class="absolute inset-[-4px] rounded-2xl border border-red-400 opacity-20 animate-ping"
+                style="animation-duration: 2s; animation-delay: 0.2s;"></div>
+
+              <button @click="toggleVoiceInput" :title="isListening ? 'Listening...' : 'Use Voice Input'"
+                :class="['relative flex items-center justify-center p-4 rounded-xl text-white shadow-sm transition-all flex-shrink-0 z-10', isListening ? 'bg-red-500 animate-pulse scale-105 shadow-red-500/50' : 'bg-gray-900 hover:bg-gray-800 hover:-translate-y-0.5']">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                </svg>
+              </button>
+            </div>
+
           </div>
         </div>
       </div>
