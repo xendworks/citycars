@@ -56,7 +56,7 @@ Acknowledge their choice and IMMEDIATELY move to Phase 3. DO NOT output the quot
 PHASE 3: Gather Booking Preferences
 After getting their cab agreement, you MUST now gather their final booking preferences to complete the booking.
 Ask them questions (one at a time) to determine:
-- Flight details (if either location is an airport)
+- Flight details (CRITICAL: ONLY ask for flight details if the Pickup Location or Drop-off Location explicitly contains the word "Airport" or is a known UK airport like Heathrow, Gatwick, Stansted, etc. DO NOT ASK THIS QUESTION IF IT IS JUST A NORMAL TOWN-TO-TOWN RIDE).
 - Meet & Greet service (yes/no, £10)
 - Child Seat (yes/no, £5)
 - Promo code (if they have an offer)

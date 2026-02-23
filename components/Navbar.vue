@@ -26,6 +26,12 @@
         <NuxtLink to="/contact-us" class="text-gray-700 hover:text-amber-500">Contact us</NuxtLink>
       </nav>
       <div class="flex items-center space-x-4">
+        <NuxtLink to="/ai-booking"
+          class="flex items-center gap-1.5 px-3 py-1.5 lg:px-4 lg:py-2 bg-gradient-to-r from-amber-100 to-orange-100 hover:from-amber-200 hover:to-orange-200 text-amber-900 rounded-full font-bold text-xs lg:text-sm font-sora shadow-sm transition-all transform hover:scale-105 border border-amber-200">
+          <span class="animate-pulse">✨</span>
+          <span class="hidden sm:inline">Book with AI</span>
+          <span class="sm:hidden">AI</span>
+        </NuxtLink>
         <template v-if="isAuthenticated">
           <NuxtLink to="/profile"
             class="flex items-center space-x-2 text-gray-700 hover:text-amber-500 font-inter text-sm transition-colors">
