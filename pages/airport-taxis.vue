@@ -1,17 +1,31 @@
 <template>
   <div class="min-h-screen bg-gray-50">
     <!-- Hero Section -->
-    <section class="bg-amber-50 py-12">
-      <div class="container mx-auto px-4 text-center">
-        <h1 class="text-3xl font-bold mb-4 font-sora">Airport Taxi Services</h1>
-        <p class="max-w-3xl mx-auto text-gray-700 mb-8 font-inter">
+    <section class="relative py-16 md:py-24 bg-gray-900 overflow-hidden flex flex-col justify-center min-h-[80vh]">
+      <!-- Local Video Background -->
+      <video autoplay loop muted playsinline class="absolute inset-0 w-full h-full object-cover opacity-70">
+        <source src="~/assets/videos/city-cars-taxi-hero.mp4" type="video/mp4" />
+      </video>
+
+      <!-- Dark Overlay for Readability -->
+      <div class="absolute inset-0 bg-black/50"></div>
+
+      <div class="container mx-auto px-4 text-center relative z-10 my-auto">
+        <h1
+          class="text-3xl md:text-5xl lg:text-6xl font-bold mb-4 md:mb-6 text-white drop-shadow-md animate-fade-in-up font-sora">
+          Airport Taxi Services
+        </h1>
+        <p
+          class="text-lg md:text-xl text-gray-200 mb-10 md:mb-14 max-w-3xl mx-auto drop-shadow-md animate-fade-in-up font-inter">
           Reliable and comfortable airport taxi service by City Cars. We provide punctual transportation to and from all
           major UK airports,
           ensuring you never miss your flight or wait around after landing.
         </p>
 
         <!-- Booking Form Component -->
-        <BookingForm />
+        <div class="mx-auto animate-fade-in-up max-w-[95%] lg:max-w-6xl">
+          <BookingForm />
+        </div>
       </div>
     </section>
 

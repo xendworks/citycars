@@ -1,40 +1,34 @@
 <template>
   <div class="min-h-screen bg-gray-50 relative">
-    <!-- CSS Background Pattern - This will definitely show up -->
-    <div class="absolute inset-0"
-      style="background-image: radial-gradient(circle, #F59E0B 1px, transparent 1px); background-size: 25px 25px; opacity: 0.3;">
-    </div>
 
     <!-- Content -->
     <div class="relative z-10">
       <!-- Hero Section -->
-      <section class="relative py-8 md:py-16 bg-gradient-to-br from-amber-50 to-yellow-100">
-        <!-- Background Pattern -->
-        <div class="absolute inset-0 opacity-20">
-          <div class="absolute inset-0"
-            style="background-image: radial-gradient(circle at 25% 25%, #f59e0b 2px, transparent 2px), radial-gradient(circle at 75% 75%, #f59e0b 2px, transparent 2px); background-size: 50px 50px;">
-          </div>
-        </div>
+      <section class="relative py-16 md:py-24 bg-gray-900 overflow-hidden flex flex-col justify-center min-h-[80vh]">
+        <!-- Local Video Background -->
+        <video autoplay loop muted playsinline class="absolute inset-0 w-full h-full object-cover opacity-70">
+          <source src="~/assets/videos/city-cars-herovideo.mp4" type="video/mp4" />
+        </video>
 
-        <!-- Animated Background Circles -->
-        <div class="absolute top-10 left-10 w-20 h-20 bg-amber-200 rounded-full opacity-30 animate-pulse"></div>
-        <div class="absolute bottom-10 right-10 w-32 h-32 bg-amber-300 rounded-full opacity-20 animate-ping"></div>
-        <div class="absolute top-1/2 left-1/4 w-16 h-16 bg-yellow-200 rounded-full opacity-40 animate-bounce"></div>
+        <!-- Dark Overlay for Readability -->
+        <div class="absolute inset-0 bg-black/50"></div>
 
-        <div class="container mx-auto px-4 text-center relative z-10">
+        <div class="container mx-auto px-4 text-center relative z-10 my-auto">
           <!-- Animated Heading -->
-          <h1 class="text-2xl md:text-3xl lg:text-4xl font-bold mb-4 md:mb-6 text-gray-900 animate-fade-in-up">
+          <h1
+            class="text-3xl md:text-5xl lg:text-6xl font-bold mb-4 md:mb-6 text-white drop-shadow-md animate-fade-in-up font-sora">
             Book Wheel Chair Taxis from and to Gatwick
           </h1>
 
           <!-- Subtitle -->
-          <p class="text-base md:text-lg text-gray-600 mb-8 md:mb-12 max-w-3xl mx-auto animate-fade-in-up">
+          <p
+            class="text-lg md:text-xl text-gray-200 mb-10 md:mb-14 max-w-3xl mx-auto drop-shadow-md animate-fade-in-up font-inter">
             Reliable, comfortable, and accessible taxi services. Book your journey with confidence and enjoy a
             stress-free travel experience.
           </p>
 
           <!-- Booking Form -->
-          <div class="mx-auto animate-fade-in-up">
+          <div class="mx-auto animate-fade-in-up max-w-[95%] lg:max-w-6xl">
             <BookingForm />
           </div>
         </div>
@@ -71,7 +65,8 @@
               <p class="text-gray-700">
                 Booking your taxi with us is simple and convenient. With our user-friendly online platform, you can
                 schedule your
-                ride in just a few clicks. Plus, you'll receive instant confirmation and can easily track your driver's
+                ride in just a few clicks. Plus, you'll receive instant confirmation and can easily track your
+                driver's
                 arrival.
               </p>
             </div>
@@ -84,7 +79,8 @@
         <div class="container mx-auto px-4">
           <div class="text-center mb-8 md:mb-12">
             <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-4">Choose Your Perfect Ride</h2>
-            <p class="text-base md:text-lg text-gray-600 max-w-2xl mx-auto">Select from our range of accessible vehicles
+            <p class="text-base md:text-lg text-gray-600 max-w-2xl mx-auto">Select from our range of accessible
+              vehicles
               designed for your comfort and convenience</p>
           </div>
 
@@ -213,7 +209,8 @@
           <h2 class="text-2xl md:text-3xl font-bold text-center mb-6 md:mb-8 font-sora">Cities & Towns We Cover from
             Gatwick</h2>
           <p class="text-base md:text-lg text-gray-600 text-center max-w-3xl mx-auto mb-8 md:mb-12 font-inter">
-            City Cars provides reliable taxi services to and from all major cities and towns within 100 miles of Gatwick
+            City Cars provides reliable taxi services to and from all major cities and towns within 100 miles of
+            Gatwick
             Airport.
             Our drivers know the best routes to get you to your destination quickly and safely.
           </p>
@@ -264,7 +261,7 @@
                     </svg>
                   </div>
                   <span class="font-inter text-gray-700 group-hover:text-amber-700 text-sm md:text-base">{{ city.name
-                  }}</span>
+                    }}</span>
                   <span class="text-xs text-gray-400 ml-auto font-inter">{{ city.distance }}</span>
                 </div>
               </div>
@@ -411,7 +408,8 @@
                 <h3 class="text-xl font-semibold mt-3 font-sora">Fixed Pricing</h3>
               </div>
               <p class="text-gray-600 text-center font-inter">
-                All our journeys come with fixed prices, regardless of traffic conditions or time of day. The price you
+                All our journeys come with fixed prices, regardless of traffic conditions or time of day. The price
+                you
                 see is the price you pay.
               </p>
             </div>
@@ -497,7 +495,8 @@
                 <div class="bg-gray-50 rounded-lg p-6 shadow-sm">
                   <h3 class="text-lg font-semibold mb-3 font-sora">Are your vehicles wheelchair accessible?</h3>
                   <p class="text-gray-600 font-inter">
-                    Yes, we have specially modified vehicles for wheelchair users. Please specify your requirements when
+                    Yes, we have specially modified vehicles for wheelchair users. Please specify your requirements
+                    when
                     booking, and check our <a href="/wheel-chair-taxis"
                       class="text-amber-500 hover:underline">Wheelchair Taxis</a> page for more information.
                   </p>
@@ -507,7 +506,8 @@
                 <div class="bg-gray-50 rounded-lg p-6 shadow-sm">
                   <h3 class="text-lg font-semibold mb-3 font-sora">Do you provide child seats?</h3>
                   <p class="text-gray-600 font-inter">
-                    Yes, we can provide child seats upon request. Please let us know the ages of children traveling when
+                    Yes, we can provide child seats upon request. Please let us know the ages of children traveling
+                    when
                     making your booking so we can arrange appropriate seating.
                   </p>
                 </div>

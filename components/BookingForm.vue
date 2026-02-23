@@ -343,7 +343,7 @@ const handleSearch = (aiSuggestedVehicleType?: string | Event) => {
 
         <!-- Drop-off Location - Full Width -->
         <div class="w-full">
-          <label class="block text-sm font-medium text-gray-700 mb-2">Drop-off Location</label>
+          <label class="block text-sm text-left font-medium text-gray-700 mb-2">Drop-off Location</label>
           <div class="relative">
             <input ref="dropoffInput" v-model="dropoffLocation" @focus="handleDropoffFocus" @blur="handleDropoffBlur"
               @change="handleDropoffChange" autocomplete="off" name="dropoff-autocomplete" type="text"
@@ -365,7 +365,7 @@ const handleSearch = (aiSuggestedVehicleType?: string | Event) => {
 
         <!-- Date & Time - Full Width -->
         <div class="w-full">
-          <label class="block text-sm font-medium text-gray-700 mb-2">Pickup Date & Time</label>
+          <label class="block text-sm text-left font-medium text-gray-700 mb-2">Pickup Date & Time</label>
           <input type="datetime-local" v-model="selectedDateTime"
             class="w-full p-3 border border-gray-200 rounded-lg text-sm shadow-sm focus:border-amber-400 focus:ring-2 focus:ring-amber-100 transition-all duration-200 hover:border-gray-300"
             :min="new Date().toISOString().slice(0, 16)" />

@@ -34,6 +34,12 @@ export default defineNuxtConfig({
   
   // Route rules to ensure sitemap.xml is served as static file
   routeRules: {
+    '/**': {
+      headers: {
+        'Cross-Origin-Opener-Policy': 'same-origin-allow-popups',
+        'Cross-Origin-Embedder-Policy': 'unsafe-none'
+      }
+    },
     '/sitemap.xml': { prerender: true },
     '/robots.txt': { prerender: true }
   },
@@ -71,7 +77,12 @@ export default defineNuxtConfig({
   experimental: {},
   
   build: {
-    transpile: ['@googlemaps/js-api-loader']
+    transpile: ['@googlemaps/js-api-loader', '@popperjs/core']
+  },
+  vite: {
+    optimizeDeps: {
+      include: ['@popperjs/core']
+    }
   },
   runtimeConfig: {
     // Private keys (server-side only) - For Firebase Admin SDK
